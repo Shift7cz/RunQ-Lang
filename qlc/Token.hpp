@@ -25,4 +25,5 @@ struct Token {
     TokenType type;
     std::string_view data;
     size_t line;
+    size_t column;
 };
