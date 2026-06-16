@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 4.2)
-project(qlang)
+project(RunQ)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(qlang qlc/main.cpp
+add_executable(RunQ qlc/main.cpp
         qlc/Lexer.cpp
         qlc/Lexer.hpp
         qlc/Parser.cpp
