@@ -24,7 +24,8 @@ int main() {
 
     std::cout << "\n\nParser out ->" << std::endl;
 
-    Parser parser(lexer);
+    Lexer lexer2(source);
+    Parser parser(lexer2);
 
     parser.parse();
     parser.ast.print();
