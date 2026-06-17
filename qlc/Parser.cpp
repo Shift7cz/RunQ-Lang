@@ -22,14 +22,9 @@ bool Parser::expectAndConsume(TokenType expected) {
 
 void Parser::parse() {
     advance();
-    std::cout << "Parse started" << std::endl;
 
     while (currentToken.type != TokenType::EndOfFile) {
-
-        std::cout << "In loop" << std::endl;
-
         if (currentToken.type == TokenType::Fn) {
-            std::cout << "Fn" << std::endl;
             std::unique_ptr<Node> funcNode = parseFn();
 
             if (funcNode != nullptr) {

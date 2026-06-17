@@ -27,4 +27,8 @@ add_executable(RunQ-Lang qlc/main.cpp
         qlc/Ast.cpp
 )
 
-target_link_libraries(RunQ-Lang PRIVATE ${llvm_libs})
+find_library(LLVM_SHARED_LIB LLVM HINTS ${LLVM_LIBRARY_DIRS})
+
+target_link_libraries(RunQ-Lang PRIVATE
+        ${LLVM_SHARED_LIB}
+)
