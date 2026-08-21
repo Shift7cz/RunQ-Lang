@@ -22,4 +22,5 @@ public:
     // helper parse for each type of statement.
     std::unique_ptr<Node> parseFn();
     std::unique_ptr<Node> parseRet();
+    std::unique_ptr<Node> parseI32Literal();
 };

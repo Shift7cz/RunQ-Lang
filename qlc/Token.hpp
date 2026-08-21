@@ -1,6 +1,5 @@
 #pragma once
 #include <string_view>
-#include <iostream>
 #include <iomanip>
 
 enum class TokenType {
@@ -32,7 +31,7 @@ struct Token {
     size_t column;
 };
 
-inline std::string_view tokenTypeToString(TokenType type) { // helper for debuging, temporery
+inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai}
     switch (type) {
         case TokenType::Identifier:  return "Identifier";
         case TokenType::Return:      return "Return";

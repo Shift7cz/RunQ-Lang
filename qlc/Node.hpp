@@ -7,7 +7,8 @@ enum class NodeType {
     Unassigned,
 
     Func,
-    RetInt
+    Return,
+    I32Literal
 };
 
 class Node {
@@ -32,9 +33,14 @@ public:
     FuncNode() : Node(NodeType::Func) {}
 };
 
-class RetIntNode : public Node {
+class ReturnNode : public Node {
+public:
+    std::unique_ptr<Node> body;
+    ReturnNode() : Node(NodeType::Return) {}
+};
+
+class I32LiteralNode : public Node {
 public:
     int value;
-
-    RetIntNode() : Node(NodeType::RetInt) {}
+    I32LiteralNode() : Node(NodeType::I32Literal) {}
 };

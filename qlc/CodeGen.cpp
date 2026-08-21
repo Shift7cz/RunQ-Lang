@@ -30,8 +30,8 @@ llvm::Value* CodeGen::compileLiteral(Node* node) {
     if (!node) return nullptr;
 
     switch (node->type) {
-        case NodeType::RetInt:
-            return compileReturn(static_cast<RetIntNode*>(node)); // ?
+        case NodeType::Return:
+            return compileReturn(static_cast<ReturnNode*>(node)); // ?
 
             // todo: add future features here
 
@@ -41,8 +41,8 @@ llvm::Value* CodeGen::compileLiteral(Node* node) {
     }
 }
 
-llvm::Value* CodeGen::compileReturn(RetIntNode* node) {
-    llvm::Value* retVal = llvm::ConstantInt::get(*context, llvm::APInt(32, node->value, true));
+llvm::Value* CodeGen::compileReturn(ReturnNode* node) {
+    llvm::Value* retVal = llvm::ConstantInt::get(*context, llvm::APInt(32, 28, true)); // todo: VAL IS WRONG
     return builder->CreateRet(retVal);
 }
 

@@ -14,7 +14,7 @@ private:
 
     void compileFunction(FuncNode* node); // todo: split fn and endpoint function
     llvm::Value *compileLiteral(Node *node);
-    llvm::Value *compileReturn(RetIntNode *node);
+    llvm::Value *compileReturn(ReturnNode *node);
 
 public:
     CodeGen();

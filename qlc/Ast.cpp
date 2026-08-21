@@ -11,7 +11,7 @@ void Ast::print() { // helper print function, debugging.
     printNode(root.get(), 0);
 }
 
-void Ast::printNode(Node* node, int indent) { // helper print function, debugging.
+void Ast::printNode(Node* node, int indent) { // helper print function, {ai}
     if (!node) return;
 
     // Create indentation string (2 spaces per level)
@@ -29,9 +29,16 @@ void Ast::printNode(Node* node, int indent) { // helper print function, debuggin
             }
             break;
         }
-        case NodeType::RetInt: {
-            auto ret = static_cast<RetIntNode*>(node);
-            std::cout << spaces << "[Return Statement] -> value: " << ret->value << "\n";
+        case NodeType::Return: {
+            auto ret = static_cast<ReturnNode*>(node);
+            std::cout << spaces << "[Return Statement] \n";
+
+            printNode(ret->body.get(), indent + 1);
+            break;
+        }
+        case NodeType::I32Literal: {
+            auto intl = static_cast<I32LiteralNode*>(node);
+            std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'\n";
             break;
         }
     }

@@ -1,5 +1,7 @@
 #include "Parser.hpp"
 
+#include <iostream>
+
 void Parser::advance() {
     currentToken = lexer.nextToken();
 }
@@ -76,19 +78,25 @@ std::unique_ptr<Node> Parser::parseFn() {
 std::unique_ptr<Node> Parser::parseRet() {
     expectAndConsume(TokenType::Return);
 
-    if (expect(TokenType::I32Literal)) {
-        auto retNode = std::make_unique<RetIntNode>();
+    if (!expect(TokenType::I32Literal)) return nullptr;
 
-        std::string_view data = currentToken.data;
-        int value = 0;
-        std::from_chars(data.data(), data.data() + data.size(), value);
-        retNode->value = value;
+    auto retNode = std::make_unique<ReturnNode>();
+    retNode->body = parseI32Literal(); // this now leaves cursor right after the literal
+
+    if (!retNode->body) return nullptr;
+    if (!expectAndConsume(TokenType::Semicolon)) return nullptr;
+
+    return retNode;
+}
+
+std::unique_ptr<Node> Parser::parseI32Literal() {
+    if (expect(TokenType::I32Literal)) {
+        auto i32Node = std::make_unique<I32LiteralNode>();
+        i32Node->value = std::atoi(currentToken.data.data());
 
         advance();
 
-        if (!expectAndConsume(TokenType::Semicolon)) {return nullptr;}
-
-        return retNode;
+        return i32Node;
     }
     else {
         return nullptr;
