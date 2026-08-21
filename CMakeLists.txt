@@ -25,6 +25,8 @@ add_executable(RunQ-Lang qlc/main.cpp
         qlc/Node.hpp
         qlc/Ast.hpp
         qlc/Ast.cpp
+        qlc/LlvmWrap.cpp
+        qlc/LlvmWrap.hpp
 )
 
 find_library(LLVM_SHARED_LIB LLVM HINTS ${LLVM_LIBRARY_DIRS})

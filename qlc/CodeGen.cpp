@@ -1,39 +1,28 @@
 #include "CodeGen.hpp"
 #include <iostream>
+#include <string>
+#include <string_view>
 
-void CodeGen::compileFunction(FuncNode *node) {
+CodeGen::CodeGen() : llvm("RunQ-Lang_Test") {
+}
 
-    // defines function type (i32) todo: more function types
-    llvm::Type* i32Type = llvm::Type::getInt32Ty(*context);
-    llvm::FunctionType* funcType = llvm::FunctionType::get(i32Type, {}, false); // return i32, doesnt take arguments
+void CodeGen::compileFunction(FuncNode* node) {
+    llvm::Function* fn = llvm.createFunc(std::string(node->identifier), llvm.i32Type());
+    llvm.createBlock("entry", fn);
 
-    // creates the function
-    llvm::Function* llvmFunc = llvm::Function::Create(
-        funcType,
-        llvm::Function::ExternalLinkage, // External means the OS can see it to run it
-        node->identifier,            // "main"
-        module.get()                     // The blueprint it belongs to
-    );
-
-    // creates entry block
-    llvm::BasicBlock* entryBlock = llvm::BasicBlock::Create(*context, "entry", llvmFunc);
-
-    builder->SetInsertPoint(entryBlock); // moves to cursor into enteryblock.
-
-    // loop through the body and pass every statement to our router
-    for (const auto& statement : node->body) { // ?
-        compileLiteral(statement.get());
+    for (const auto& statement : node->body) {
+        compileExpression(statement.get());
     }
 }
 
-llvm::Value* CodeGen::compileLiteral(Node* node) {
+llvm::Value* CodeGen::compileExpression(Node* node) {
     if (!node) return nullptr;
 
     switch (node->type) {
         case NodeType::Return:
-            return compileReturn(static_cast<ReturnNode*>(node)); // ?
+            return compileReturn(static_cast<ReturnNode*>(node));
 
-            // todo: add future features here
+            // todo: I32Literal gets handled inside compileReturn for now will need its own case once expressions can appear standalone
 
         default:
             std::cerr << "Unknown node type in CodeGen!" << std::endl;
@@ -42,17 +31,12 @@ llvm::Value* CodeGen::compileLiteral(Node* node) {
 }
 
 llvm::Value* CodeGen::compileReturn(ReturnNode* node) {
-    llvm::Value* retVal = llvm::ConstantInt::get(*context, llvm::APInt(32, 28, true)); // todo: VAL IS WRONG
-    return builder->CreateRet(retVal);
+    auto* literal = static_cast<I32LiteralNode*>(node->body.get()); // todo: only handles I32Literal for now
+    llvm::Value* val = llvm.createI32Literal(literal->value);
+    return llvm.createReturn(val);
 }
 
-CodeGen::CodeGen() {
-    context = std::make_unique<llvm::LLVMContext>();
-    module = std::make_unique<llvm::Module>("RunQ-Lang_Module", *context);
-    builder = std::make_unique<llvm::IRBuilder<>>(*context);
-}
-
-void CodeGen::generate(Ast &ast) {
+void CodeGen::generate(Ast& ast) {
     if (!ast.root) return;
 
     if (ast.root->type == NodeType::Func) {
@@ -60,5 +44,5 @@ void CodeGen::generate(Ast &ast) {
     }
 
     std::cout << "\n--- LLVM IR Output ---\n";
-    module->print(llvm::outs(), nullptr);
+    llvm.print();
 }
