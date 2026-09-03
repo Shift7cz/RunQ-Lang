@@ -54,6 +54,12 @@ Token Lexer::nextToken() {
         case '{': advance(); return Token{TokenType::OpenBrace, "{", line, column};
         case '}': advance(); return Token{TokenType::ClosedBrace, "}", line, column};
         case ';': advance(); return Token{TokenType::Semicolon, ";", line, column};
+
+            // Math Operators
+        case '+': advance(); return Token{TokenType::Plus, "+", line, column};
+        case '-': advance(); return Token{TokenType::Dash, "-", line, column};
+        case '*': advance(); return Token{TokenType::Star, "*", line, column};
+        case '/': advance(); return Token{TokenType::Slash, "/", line, column};
     }
 
     if (isdigit(peak()) || peak() == '.') {

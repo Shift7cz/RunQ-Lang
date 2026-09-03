@@ -7,7 +7,7 @@ int main() {
     std::cout << "Hello, RunQ!" << std::endl;
 
     std::string source = "fn main( ) { \n"
-                         "  return 27;\n"
+                         "  return 6 + 27;\n"
                          "} ";
 
     std::cout << "Using test source (RunQ project is in active development) ->\n" << source << "\n\nLexer out ->"<< std::endl;

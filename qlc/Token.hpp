@@ -12,6 +12,12 @@ enum class TokenType {
     // literal (raw data)
     I32Literal,
 
+    // math operators
+    Plus, // '+'
+    Dash, // '-'
+    Star, // '*'
+    Slash, // '/'
+
     // Symbols
     OpenParen, // '('
     ClosedParen, // ')'
@@ -37,6 +43,10 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai}
         case TokenType::Return:      return "Return";
         case TokenType::Fn:          return "Fn";
         case TokenType::I32Literal:  return "I32Literal";
+        case TokenType::Plus:        return "Plus";
+        case TokenType::Dash:        return "Dash";
+        case TokenType::Star:        return "Star";
+        case TokenType::Slash:       return "Slash";
         case TokenType::OpenParen:   return "OpenParen";
         case TokenType::ClosedParen: return "ClosedParen";
         case TokenType::OpenBrace:   return "OpenBrace";
