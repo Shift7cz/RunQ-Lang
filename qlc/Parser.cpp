@@ -81,7 +81,7 @@ std::unique_ptr<Node> Parser::parseRet() {
     if (!expect(TokenType::I32Literal)) return nullptr;
 
     auto retNode = std::make_unique<ReturnNode>();
-    retNode->body = parseI32Literal(); // this now leaves cursor right after the literal
+    retNode->body = parseExpresion(); // this now leaves cursor right after the literal
 
     if (!retNode->body) return nullptr;
     if (!expectAndConsume(TokenType::Semicolon)) return nullptr;
@@ -101,4 +101,48 @@ std::unique_ptr<Node> Parser::parseI32Literal() {
     else {
         return nullptr;
     }
+}
+
+std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_ptr<Node> operand1) {
+    auto mathOpNode = std::make_unique<MathOperatorNode>();
+    mathOpNode->operatorType = opType;
+
+    advance();
+
+    if (expect(TokenType::I32Literal)) {
+        std::unique_ptr<Node> operand2 = parseI32Literal(); // todo: Parse expression instead of i32Literal for longer math operations?
+
+        mathOpNode->operand1 = std::move(operand1);
+        mathOpNode->operand2 = std::move(operand2);
+
+        return mathOpNode;
+    }
+
+    // todo: error handling
+    return nullptr;
+}
+
+
+std::unique_ptr<Node> Parser::parseExpresion() {
+    if (expect(TokenType::I32Literal)) {
+        std::unique_ptr<Node> i32Node1 = parseI32Literal();
+
+        if (expect(TokenType::Plus)) {
+            return parseMathOperator(TokenType::Plus, std::move(i32Node1));
+        }
+        if (expect(TokenType::Dash)) {
+            return parseMathOperator(TokenType::Dash, std::move(i32Node1));
+        }
+        if (expect(TokenType::Star)) {
+            return parseMathOperator(TokenType::Star, std::move(i32Node1));
+        }
+        if (expect(TokenType::Slash)) {
+            return parseMathOperator(TokenType::Slash, std::move(i32Node1));
+        }
+
+        return i32Node1;
+    }
+
+    // todo: error handling
+    return nullptr;
 }

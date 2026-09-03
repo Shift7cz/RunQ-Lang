@@ -2,13 +2,15 @@
 
 #include <vector>
 #include <memory>
+#include "Token.hpp"
 
 enum class NodeType {
     Unassigned,
 
     Func,
     Return,
-    I32Literal
+    I32Literal,
+    MathOperator
 };
 
 class Node {
@@ -43,4 +45,13 @@ class I32LiteralNode : public Node {
 public:
     int value;
     I32LiteralNode() : Node(NodeType::I32Literal) {}
+};
+
+class MathOperatorNode : public Node {
+public:
+    TokenType operatorType; // only section math operators are allowed!
+    std::unique_ptr<Node> operand1;
+    std::unique_ptr<Node> operand2;
+
+    MathOperatorNode() : Node(NodeType::MathOperator) {}
 };

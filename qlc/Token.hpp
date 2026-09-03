@@ -37,7 +37,7 @@ struct Token {
     size_t column;
 };
 
-inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai}
+inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
     switch (type) {
         case TokenType::Identifier:  return "Identifier";
         case TokenType::Return:      return "Return";
