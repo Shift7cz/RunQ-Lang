@@ -23,6 +23,7 @@ public:
     std::unique_ptr<Node> parseFn();
     std::unique_ptr<Node> parseRet();
     std::unique_ptr<Node> parseVarDeclare();
+    std::unique_ptr<Node> parseVarLoad();
     std::unique_ptr<Node> parseI32Literal();
     std::unique_ptr<Node> parseMathOperator(TokenType opType, std::unique_ptr<Node> operand1);
     std::unique_ptr<Node> parseExpresion();

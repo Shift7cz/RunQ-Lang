@@ -97,8 +97,6 @@ std::unique_ptr<Node> Parser::parseFn() {
 std::unique_ptr<Node> Parser::parseRet() {
     if (!expectAndConsume(TokenType::Return)) return nullptr;
 
-    if (!expect(TokenType::I32Literal)) return nullptr;
-
     auto retNode = std::make_unique<ReturnNode>();
     retNode->body = parseExpresion(); // this now leaves cursor right after the literal
 
@@ -138,6 +136,20 @@ std::unique_ptr<Node> Parser::parseVarDeclare() {
     return varNode;
 }
 
+std::unique_ptr<Node> Parser::parseVarLoad() {
+    if (expect(TokenType::Identifier)) {
+        auto varNode = std::make_unique<VarLoadNode>();
+        varNode->identifier = currentToken.data;
+
+        advance();
+
+        return varNode;
+    }
+
+    // todo: error handling
+    return nullptr;
+}
+
 std::unique_ptr<Node> Parser::parseI32Literal() {
     if (expect(TokenType::I32Literal)) {
         auto i32Node = std::make_unique<I32LiteralNode>();
@@ -147,9 +159,9 @@ std::unique_ptr<Node> Parser::parseI32Literal() {
 
         return i32Node;
     }
-    else {
-        return nullptr;
-    }
+
+    // todo: error handling
+    return nullptr;
 }
 
 std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_ptr<Node> operand1) {
@@ -160,6 +172,14 @@ std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_pt
 
     if (expect(TokenType::I32Literal)) {
         std::unique_ptr<Node> operand2 = parseI32Literal(); // todo: Parse expression instead of i32Literal for longer math operations?
+
+        mathOpNode->operand1 = std::move(operand1);
+        mathOpNode->operand2 = std::move(operand2);
+
+        return mathOpNode;
+    }
+    if (expect(TokenType::Identifier)) {
+        std::unique_ptr<Node> operand2 = parseVarLoad();
 
         mathOpNode->operand1 = std::move(operand1);
         mathOpNode->operand2 = std::move(operand2);
@@ -190,6 +210,24 @@ std::unique_ptr<Node> Parser::parseExpresion() {
         }
 
         return i32Node1;
+    }
+    if (expect(TokenType::Identifier)) {
+        std::unique_ptr<Node> varLoadNode1 = parseVarLoad();
+
+        if (expect(TokenType::Plus)) {
+            return parseMathOperator(TokenType::Plus, std::move(varLoadNode1));
+        }
+        if (expect(TokenType::Dash)) {
+            return parseMathOperator(TokenType::Dash, std::move(varLoadNode1));
+        }
+        if (expect(TokenType::Star)) {
+            return parseMathOperator(TokenType::Star, std::move(varLoadNode1));
+        }
+        if (expect(TokenType::Slash)) {
+            return parseMathOperator(TokenType::Slash, std::move(varLoadNode1));
+        }
+
+        return varLoadNode1;
     }
 
     // todo: error handling

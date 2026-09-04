@@ -59,6 +59,11 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             printNode(var->body.get(), indent + 1);
             break;
         }
+        case NodeType::VarLoad: {
+            auto var = static_cast<VarLoadNode*>(node);
+            std::cout << spaces << "[VarLoad] -> Name: '" << var->identifier << "'\n";
+            break;
+        }
         case NodeType::I32Literal: {
             auto intl = static_cast<I32LiteralNode*>(node);
             std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'\n";
@@ -85,6 +90,8 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
 
             printNode(op->operand1.get(), indent + 1);
             printNode(op->operand2.get(), indent + 1);
+
+            break;
         }
     }
 }

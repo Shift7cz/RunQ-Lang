@@ -8,7 +8,7 @@ int main() {
 
     std::string source = "fn main( ) : i32 { \n"
                          "  let i32 x = 12;\n"
-                         "  return 6 + 27;\n"
+                         "  return 27 * x;\n"
                          "} ";
 
     std::cout << "Using test source (RunQ project is in active development) ->\n" << source << "\n\nLexer out ->"<< std::endl;

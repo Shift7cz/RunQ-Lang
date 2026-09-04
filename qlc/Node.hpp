@@ -10,6 +10,7 @@ enum class NodeType {
     Func,
     Return,
     VarDeclare,
+    VarLoad,
     I32Literal,
     MathOperator
 };
@@ -50,6 +51,13 @@ public:
     TokenType valueType; // the type of the variable, only types allowed
 
     VarDeclareNode() : Node(NodeType::VarDeclare) {}
+};
+
+class VarLoadNode : public Node {
+public:
+    std::string_view identifier;
+
+    VarLoadNode() : Node(NodeType::VarLoad) {}
 };
 
 class I32LiteralNode : public Node {

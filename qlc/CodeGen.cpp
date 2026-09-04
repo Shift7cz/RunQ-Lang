@@ -52,6 +52,9 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
         case NodeType::VarDeclare: {
             return compileVarDeclare(static_cast<VarDeclareNode*>(node));
         }
+        case NodeType::VarLoad: {
+            return compileVarLoad(static_cast<VarLoadNode*>(node));
+        }
         default:
             std::cerr << "Unknown node type in CodeGen" << std::endl;
             return nullptr;
@@ -65,8 +68,16 @@ llvm::Value* CodeGen::compileReturn(ReturnNode* node) {
 
 llvm::Value * CodeGen::compileVarDeclare(VarDeclareNode *node) {
     llvm::Value* pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i32Type()); // todo: other types
+
+    symbolTable[std::string(node->identifier)] = pointer;
+
     llvm::Value* val = compileExpression(node->body.get());
-    return llvm.createStore(pointer, val);
+    return llvm.createStore(val, pointer);
+}
+
+llvm::Value * CodeGen::compileVarLoad(VarLoadNode *node) { // todo: look up actual type from symbol table when checker is implemented
+    auto* varLoadNode = static_cast<VarLoadNode*>(node);
+    return llvm.createLoad(llvm.i32Type(), symbolTable[std::string(node->identifier)]);
 }
 
 void CodeGen::generate(Ast& ast) {
