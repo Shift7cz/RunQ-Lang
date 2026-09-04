@@ -77,10 +77,14 @@ std::unique_ptr<Node> Parser::parseFn() {
     while (!expect(TokenType::ClosedBrace) && currentToken.type != TokenType::EndOfFile) {
         if (currentToken.type == TokenType::Return) {
             std::unique_ptr<Node> retNode = parseRet();
-                funcNode->body.push_back(std::move(retNode));
+            funcNode->body.push_back(std::move(retNode));
         }
-        else {
+        else if (currentToken.type == TokenType::Let) {
+            std::unique_ptr<Node> varNode = parseVariable();
+            funcNode->body.push_back(std::move(varNode));
+        }
         // Todo: other statements
+        else {
         advance();
         }
     }
@@ -91,7 +95,7 @@ std::unique_ptr<Node> Parser::parseFn() {
 }
 
 std::unique_ptr<Node> Parser::parseRet() {
-    expectAndConsume(TokenType::Return);
+    if (!expectAndConsume(TokenType::Return)) return nullptr;
 
     if (!expect(TokenType::I32Literal)) return nullptr;
 
@@ -102,6 +106,36 @@ std::unique_ptr<Node> Parser::parseRet() {
     if (!expectAndConsume(TokenType::Semicolon)) return nullptr;
 
     return retNode;
+}
+
+std::unique_ptr<Node> Parser::parseVariable() {
+    if (!expectAndConsume(TokenType::Let)) return nullptr;
+
+    auto varNode = std::make_unique<VariableNode>();
+
+    if (expect(TokenType::I32)) {
+        varNode->valueType = currentToken.type;
+    }
+    // todo: other else if statements for other data types
+
+    advance();
+
+    if (expect(TokenType::Identifier)) {
+        varNode->identifier = currentToken.data;
+        advance();
+    }
+    else {
+        return nullptr;
+    }
+
+    if (!expectAndConsume(TokenType::Equals)) return nullptr;
+
+    varNode->body = parseExpresion();
+
+    if (!varNode->body) return nullptr;
+    if (!expectAndConsume(TokenType::Semicolon)) return nullptr;
+
+    return varNode;
 }
 
 std::unique_ptr<Node> Parser::parseI32Literal() {

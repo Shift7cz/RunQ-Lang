@@ -7,7 +7,7 @@ int main() {
     std::cout << "Hello, RunQ!" << std::endl;
 
     std::string source = "fn main( ) : i32 { \n"
-                         //"  let i32 x = 12;\n"
+                         "  let i32 x = 12;\n"
                          "  return 6 + 27;\n"
                          "} ";
 

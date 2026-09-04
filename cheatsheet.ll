@@ -17,7 +17,7 @@
 %x = alloca i32                     ; allocate place for i32 in stack
 store i32 10, ptr %x                ; store value in x
 store i32 20, ptr %x                ; store new value in x
-%current_val = load i32, ptr %x     ; load it so it cna be used
+%current_val = load i32, ptr %x     ; load it so it can be used
 
 ; --- MATH OPERATIONS ---
 ; integer math

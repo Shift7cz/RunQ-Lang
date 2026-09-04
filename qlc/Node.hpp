@@ -9,6 +9,7 @@ enum class NodeType {
 
     Func,
     Return,
+    Variable,
     I32Literal,
     MathOperator
 };
@@ -40,6 +41,15 @@ class ReturnNode : public Node {
 public:
     std::unique_ptr<Node> body;
     ReturnNode() : Node(NodeType::Return) {}
+};
+
+class VariableNode : public Node {
+public:
+    std::unique_ptr<Node> body;
+    std::string_view identifier;
+    TokenType valueType; // the type of the variable, only types allowed
+
+    VariableNode() : Node(NodeType::Variable) {}
 };
 
 class I32LiteralNode : public Node {

@@ -55,6 +55,7 @@ Token Lexer::nextToken() {
         case '}': advance(); return Token{TokenType::ClosedBrace, "}", line, column};
         case ';': advance(); return Token{TokenType::Semicolon, ";", line, column};
         case ':': advance(); return Token{TokenType::Colon, ":", line, column};
+        case '=': advance(); return Token{TokenType::Equals, "=", line, column};
 
             // Math Operators
         case '+': advance(); return Token{TokenType::Plus, "+", line, column};
@@ -93,6 +94,9 @@ Token Lexer::nextToken() {
         }
         if (nextToken == "fn") {
             return Token{TokenType::Fn, "fn", line, column};
+        }
+        if (nextToken == "let") {
+            return Token{TokenType::Let, "let", line, column};
         }
         if (nextToken == "i32") {
             return Token{TokenType::I32, "i32", line, column};
