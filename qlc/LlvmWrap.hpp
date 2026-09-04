@@ -45,5 +45,5 @@ public:
  * Use:
  * todo: Documentation
  *
- * {ai/2}
+ * {ai}
  */

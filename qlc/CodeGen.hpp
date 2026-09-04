@@ -10,6 +10,7 @@ private:
     void compileFunction(FuncNode* node);
     llvm::Value* compileExpression(Node* node);
     llvm::Value* compileReturn(ReturnNode* node);
+    llvm::Value* compileVarDeclare(VarDeclareNode* node);
 
 public:
     CodeGen();

@@ -49,6 +49,9 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
                 default: return nullptr;
             }
         }
+        case NodeType::VarDeclare: {
+            return compileVarDeclare(static_cast<VarDeclareNode*>(node));
+        }
         default:
             std::cerr << "Unknown node type in CodeGen" << std::endl;
             return nullptr;
@@ -58,6 +61,12 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
 llvm::Value* CodeGen::compileReturn(ReturnNode* node) {
     llvm::Value* val = compileExpression(node->body.get());
     return llvm.createReturn(val);
+}
+
+llvm::Value * CodeGen::compileVarDeclare(VarDeclareNode *node) {
+    llvm::Value* pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i32Type()); // todo: other types
+    llvm::Value* val = compileExpression(node->body.get());
+    return llvm.createStore(pointer, val);
 }
 
 void CodeGen::generate(Ast& ast) {
