@@ -171,7 +171,7 @@ std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_pt
     advance();
 
     if (expect(TokenType::I32Literal)) {
-        std::unique_ptr<Node> operand2 = parseI32Literal(); // todo: Parse expression instead of i32Literal for longer math operations?
+        std::unique_ptr<Node> operand2 = parseExpresion(); // todo: Longer math equations will translate, but they wont compile in the correct order. fix.
 
         mathOpNode->operand1 = std::move(operand1);
         mathOpNode->operand2 = std::move(operand2);
@@ -179,7 +179,7 @@ std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_pt
         return mathOpNode;
     }
     if (expect(TokenType::Identifier)) {
-        std::unique_ptr<Node> operand2 = parseVarLoad();
+        std::unique_ptr<Node> operand2 = parseExpresion();
 
         mathOpNode->operand1 = std::move(operand1);
         mathOpNode->operand2 = std::move(operand2);
