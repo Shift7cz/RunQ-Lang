@@ -30,6 +30,22 @@ llvm::Value* LlvmWrap::createI32Literal(int value) {
     return llvm::ConstantInt::get(*context, llvm::APInt(32, value, true));
 }
 
+llvm::Value * LlvmWrap::createPlus(llvm::Value *operand1, llvm::Value *operand2) {
+    return builder->CreateAdd(operand1, operand2, "addtmp"); // Names are only for readability for now todo: review later
+}
+
+llvm::Value * LlvmWrap::createMinus(llvm::Value *operand1, llvm::Value *operand2) {
+    return builder->CreateSub(operand1, operand2, "subtmp");
+}
+
+llvm::Value * LlvmWrap::createMultiply(llvm::Value *operand1, llvm::Value *operand2) {
+    return builder->CreateMul(operand1, operand2, "multmp");
+}
+
+llvm::Value * LlvmWrap::createDevide(llvm::Value *operand1, llvm::Value *operand2) {
+    return builder->CreateSDiv(operand1, operand2, "sdivtmp");  // S = signed, matches i32
+}
+
 void LlvmWrap::print() {
     module->print(llvm::outs(), nullptr);
 }

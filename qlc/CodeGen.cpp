@@ -19,20 +19,34 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
     if (!node) return nullptr;
 
     switch (node->type) {
-        case NodeType::Return:
+        case NodeType::Return: {
             return compileReturn(static_cast<ReturnNode*>(node));
+        }
+        case NodeType::I32Literal: {
+            auto* literal = static_cast<I32LiteralNode*>(node);
+            return llvm.createI32Literal(literal->value);
+        }
+        case NodeType::MathOperator: {
+            auto* mathOp = static_cast<MathOperatorNode*>(node);
+            llvm::Value* left = compileExpression(mathOp->operand1.get());
+            llvm::Value* right = compileExpression(mathOp->operand2.get());
 
-            // todo: I32Literal gets handled inside compileReturn for now will need its own case once expressions can appear standalone
-
+            switch (mathOp->operatorType) {
+                case TokenType::Plus:  return llvm.createPlus(left, right);
+                case TokenType::Dash:  return llvm.createMinus(left, right);
+                case TokenType::Star:  return llvm.createMultiply(left, right);
+                case TokenType::Slash: return llvm.createDevide(left, right);
+                default: return nullptr;
+            }
+        }
         default:
-            std::cerr << "Unknown node type in CodeGen!" << std::endl;
+            std::cerr << "Unknown node type in CodeGen" << std::endl;
             return nullptr;
     }
 }
 
 llvm::Value* CodeGen::compileReturn(ReturnNode* node) {
-    auto* literal = static_cast<I32LiteralNode*>(node->body.get()); // todo: only handles I32Literal for now
-    llvm::Value* val = llvm.createI32Literal(literal->value);
+    llvm::Value* val = compileExpression(node->body.get());
     return llvm.createReturn(val);
 }
 

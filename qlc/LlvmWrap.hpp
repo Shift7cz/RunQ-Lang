@@ -26,6 +26,12 @@ public:
     llvm::Value* createReturn(llvm::Value* value);
     llvm::Value* createI32Literal(int value);
 
+    // math operations
+    llvm::Value* createPlus(llvm::Value* operand1, llvm::Value* operand2);
+    llvm::Value* createMinus(llvm::Value* operand1, llvm::Value* operand2);
+    llvm::Value* createMultiply(llvm::Value* operand1, llvm::Value* operand2);
+    llvm::Value* createDevide(llvm::Value* operand1, llvm::Value* operand2);
+
     // output
     void print();
 };
