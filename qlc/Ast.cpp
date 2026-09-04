@@ -44,15 +44,15 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             printNode(ret->body.get(), indent + 1);
             break;
         }
-        case NodeType::Variable: {
-            auto var = static_cast<VariableNode*>(node);
+        case NodeType::VarDeclare: {
+            auto var = static_cast<VarDeclareNode*>(node);
             switch (var->valueType) {
                 case TokenType::I32:
-                    std::cout << spaces << "[Variable] -> name: '" << var->identifier << "'; [Type] -> 'i32'\n";
+                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'i32'\n";
                     break;
                     // todo: Other return types printing here
                 default:
-                    std::cout << spaces << "[Variable] -> name: '" << var->identifier << "'; [Type] -> 'ERROR in Ast'\n";
+                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'ERROR in Ast'\n";
                     break;
             }
 

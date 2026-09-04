@@ -46,6 +46,18 @@ llvm::Value * LlvmWrap::createDevide(llvm::Value *operand1, llvm::Value *operand
     return builder->CreateSDiv(operand1, operand2, "sdivtmp");  // S = signed, matches i32
 }
 
+llvm::Value* LlvmWrap::createAlloca(const std::string& name, llvm::Type* type) {
+    return builder->CreateAlloca(type, nullptr, name);
+}
+
+llvm::Value* LlvmWrap::createStore(llvm::Value* value, llvm::Value* pointer) {
+    return builder->CreateStore(value, pointer);
+}
+
+llvm::Value* LlvmWrap::createLoad(llvm::Type* type, llvm::Value* pointer) {
+    return builder->CreateLoad(type, pointer, "loadtmp");
+}
+
 void LlvmWrap::print() {
     module->print(llvm::outs(), nullptr);
 }

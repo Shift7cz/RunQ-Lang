@@ -80,7 +80,7 @@ std::unique_ptr<Node> Parser::parseFn() {
             funcNode->body.push_back(std::move(retNode));
         }
         else if (currentToken.type == TokenType::Let) {
-            std::unique_ptr<Node> varNode = parseVariable();
+            std::unique_ptr<Node> varNode = parseVarDeclare();
             funcNode->body.push_back(std::move(varNode));
         }
         // Todo: other statements
@@ -108,10 +108,10 @@ std::unique_ptr<Node> Parser::parseRet() {
     return retNode;
 }
 
-std::unique_ptr<Node> Parser::parseVariable() {
+std::unique_ptr<Node> Parser::parseVarDeclare() {
     if (!expectAndConsume(TokenType::Let)) return nullptr;
 
-    auto varNode = std::make_unique<VariableNode>();
+    auto varNode = std::make_unique<VarDeclareNode>();
 
     if (expect(TokenType::I32)) {
         varNode->valueType = currentToken.type;
