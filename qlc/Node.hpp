@@ -31,6 +31,7 @@ class FuncNode : public Node {
 public:
     std::string_view identifier;
     std::vector<std::unique_ptr<Node>> body;
+    TokenType returnType; // only section types allowed.
 
     FuncNode() : Node(NodeType::Func) {}
 };

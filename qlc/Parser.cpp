@@ -54,10 +54,25 @@ std::unique_ptr<Node> Parser::parseFn() {
     // todo: implement parsing parameters
 
     if (!expectAndConsume(TokenType::ClosedParen)) return nullptr;
+
+    TokenType retType = TokenType::Unknown;
+    if (expectAndConsume(TokenType::Colon)) {
+        // moves into return type if return type is available
+        if (expect(TokenType::I32)) { // todo: dont forget other return types
+            retType = currentToken.type;
+            advance();
+        }
+        else {
+            // todo: error handling
+            return nullptr;
+        }
+    }
+
     if (!expectAndConsume(TokenType::OpenBrace)) return nullptr;
 
     auto funcNode = std::make_unique<FuncNode>();
     funcNode->identifier = identifier;
+    funcNode->returnType = retType;
 
     while (!expect(TokenType::ClosedBrace) && currentToken.type != TokenType::EndOfFile) {
         if (currentToken.type == TokenType::Return) {

@@ -12,6 +12,9 @@ enum class TokenType {
     // literal (raw data)
     I32Literal,
 
+    // Types
+    I32,
+
     // math operators
     Plus, // '+'
     Dash, // '-'
@@ -24,6 +27,7 @@ enum class TokenType {
     OpenBrace, // '{'
     ClosedBrace, // '}'
     Semicolon, // ';'
+    Colon, // ':'
 
     // Special
     EndOfFile,
@@ -43,6 +47,7 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::Return:      return "Return";
         case TokenType::Fn:          return "Fn";
         case TokenType::I32Literal:  return "I32Literal";
+        case TokenType::I32:         return "I32";
         case TokenType::Plus:        return "Plus";
         case TokenType::Dash:        return "Dash";
         case TokenType::Star:        return "Star";
@@ -52,6 +57,7 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::OpenBrace:   return "OpenBrace";
         case TokenType::ClosedBrace: return "ClosedBrace";
         case TokenType::Semicolon:   return "Semicolon";
+        case TokenType::Colon:       return "Colon";
         case TokenType::EndOfFile:   return "EndOfFile";
         case TokenType::Unknown:     return "Unknown";
     }

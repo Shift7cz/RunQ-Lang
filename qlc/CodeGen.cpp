@@ -7,7 +7,17 @@ CodeGen::CodeGen() : llvm("RunQ-Lang_Test") {
 }
 
 void CodeGen::compileFunction(FuncNode* node) {
-    llvm::Function* fn = llvm.createFunc(std::string(node->identifier), llvm.i32Type());
+    llvm::Function* fn;
+
+    switch (node->returnType) {
+        case TokenType::I32:
+            fn = llvm.createFunc(std::string(node->identifier), llvm.i32Type());
+            break;
+            // todo: other types here
+        default:
+            // todo: error handling
+            return;
+    }
     llvm.createBlock("entry", fn);
 
     for (const auto& statement : node->body) {

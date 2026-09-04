@@ -21,7 +21,15 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
         case NodeType::Func: {
             // 1. Cast to FuncNode to access unique features (.identifier and .body)
             auto func = static_cast<FuncNode*>(node);
-            std::cout << spaces << "[Function] -> name: '" << func->identifier << "'\n";
+            switch (func->returnType) {
+                case TokenType::I32:
+                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'i32'\n";
+                    break;
+                    // todo: Other return types printing here
+                default:
+                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'ERROR in Ast'\n";
+                    break;
+            }
 
             // 2. Recursively print all statements inside the function body
             for (const auto& child : func->body) {
