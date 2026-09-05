@@ -14,9 +14,9 @@ int main() {
                          "  let i32 x = 12;\n"
                          "  let i8 y = 128;\n"
                          "  let f64 pi = 3.141592;\n"
-                         "  let char letter = 'q'\n"
+                         "  let char letter = 'q';\n"
                          "  let bool isSomething = true;\n"
-                         "  return 27 - x + 6;\n" // exit codes on linux are only 0 - 255
+                         "  return 27 + x + 6;\n" // exit codes on linux are only 0 - 255
                          "} ";
 
     std::cout << "Using test source (RunQ project is in active development) ->\n" << source << "\n\nLexer out ->"<< std::endl;

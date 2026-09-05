@@ -32,9 +32,21 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
         case NodeType::Return: {
             return compileReturn(static_cast<ReturnNode*>(node));
         }
-        case NodeType::I32Literal: {
-            auto* literal = static_cast<I32LiteralNode*>(node);
-            return llvm.createI32Literal(literal->value);
+        case NodeType::IntLiteral: {
+            auto* literal = static_cast<IntLiteralNode*>(node);
+            return llvm.createIntLiteral(literal->value, 32);
+        }
+        case NodeType::FloatLiteral: {
+            auto* literal = static_cast<FloatLiteralNode*>(node);
+            return llvm.createF64Literal(literal->value); // todo: handling of f32 and potentially f128 later same as in ints
+        }
+        case NodeType::BoolLiteral: {
+            auto* literal = static_cast<BoolLiteralNode*>(node);
+            return llvm.createIntLiteral(literal->value, 1, false); // i1 has to actually be u1, otherwise its either 0 or -1
+        }
+        case NodeType::CharLiteral: {
+            auto* literal = static_cast<CharLiteralNode*>(node);
+            return llvm.createIntLiteral(literal->value, 8);
         }
         case NodeType::MathOperator: {
             auto* mathOp = static_cast<MathOperatorNode*>(node);
@@ -67,7 +79,24 @@ llvm::Value* CodeGen::compileReturn(ReturnNode* node) {
 }
 
 llvm::Value * CodeGen::compileVarDeclare(VarDeclareNode *node) {
-    llvm::Value* pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i32Type()); // todo: other types
+    llvm::Value* pointer;
+    switch (node->valueType) {
+        case TokenType::I32:
+            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i32Type());
+            break;
+        case TokenType::I8:
+            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i32Type()); // todo: change when literal typing is added
+            break;
+        case TokenType::F64:
+            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.f64Type());
+            break;
+        case TokenType::Bool:
+            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.boolType());
+            break;
+        case TokenType::Char:
+            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i8Type());
+            break;
+    }
 
     symbolTable[std::string(node->identifier)] = pointer;
 

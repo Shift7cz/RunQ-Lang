@@ -20,6 +20,18 @@ llvm::Type* LlvmWrap::i32Type() {
     return llvm::Type::getInt32Ty(*context);
 }
 
+llvm::Type * LlvmWrap::i8Type() {
+    return llvm::Type::getInt8Ty(*context);
+}
+
+llvm::Type * LlvmWrap::f64Type() {
+    return llvm::Type::getDoubleTy(*context);
+}
+
+llvm::Type * LlvmWrap::boolType() {
+    return llvm::Type::getInt1Ty(*context);
+}
+
 llvm::Function* LlvmWrap::createFunc(const std::string& name, llvm::Type* retType) {
     llvm::FunctionType* fnType = llvm::FunctionType::get(retType, {}, false);
     return llvm::Function::Create(fnType, llvm::Function::ExternalLinkage, name, module.get());
@@ -35,8 +47,12 @@ llvm::Value* LlvmWrap::createReturn(llvm::Value* value) {
     return builder->CreateRet(value);
 }
 
-llvm::Value* LlvmWrap::createI32Literal(int value) {
-    return llvm::ConstantInt::get(*context, llvm::APInt(32, value, true));
+llvm::Value* LlvmWrap::createIntLiteral(int value, int numBits, bool isSigned) {
+    return llvm::ConstantInt::get(*context, llvm::APInt(numBits, value, isSigned));
+}
+
+llvm::Value* LlvmWrap::createF64Literal(double value) {
+    return llvm::ConstantFP::get(*context, llvm::APFloat(value));
 }
 
 llvm::Value * LlvmWrap::createPlus(llvm::Value *operand1, llvm::Value *operand2) {

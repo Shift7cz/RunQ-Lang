@@ -24,6 +24,10 @@ public:
 
     // types
     llvm::Type* i32Type();
+    llvm::Type* i8Type();
+    llvm::Type* f64Type(); // double
+    llvm::Type* boolType();
+    // char is i8
 
     // structure
     llvm::Function* createFunc(const std::string& name, llvm::Type* retType);
@@ -31,7 +35,8 @@ public:
 
     // instructions
     llvm::Value* createReturn(llvm::Value* value);
-    llvm::Value* createI32Literal(int value);
+    llvm::Value* createIntLiteral(int value, int numBits, bool isSigned = true);
+    llvm::Value *createF64Literal(double value);
 
     // math operations
     llvm::Value* createPlus(llvm::Value* operand1, llvm::Value* operand2);

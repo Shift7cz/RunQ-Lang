@@ -50,6 +50,18 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
                 case TokenType::I32:
                     std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'i32'\n";
                     break;
+                case TokenType::I8:
+                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'i8'\n";
+                    break;
+                case TokenType::F64:
+                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'f64'\n";
+                    break;
+                case TokenType::Bool:
+                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'bool'\n";
+                    break;
+                case TokenType::Char:
+                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'char'\n";
+                    break;
                     // todo: Other return types printing here
                 default:
                     std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'ERROR in Ast'\n";
@@ -64,9 +76,24 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             std::cout << spaces << "[VarLoad] -> Name: '" << var->identifier << "'\n";
             break;
         }
-        case NodeType::I32Literal: {
-            auto intl = static_cast<I32LiteralNode*>(node);
+        case NodeType::IntLiteral: {
+            auto intl = static_cast<IntLiteralNode*>(node);
             std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'\n";
+            break;
+        }
+        case NodeType::FloatLiteral: {
+            auto floatl = static_cast<FloatLiteralNode*>(node);
+            std::cout << spaces << "[FloatLiteral] -> value: '" << floatl->value << "'\n";
+            break;
+        }
+        case NodeType::BoolLiteral: {
+            auto booll = static_cast<BoolLiteralNode*>(node);
+            std::cout << spaces << "[BoolLiteral] -> value: '" << booll->value << "'\n";
+            break;
+        }
+        case NodeType::CharLiteral: {
+            auto charl = static_cast<CharLiteralNode*>(node);
+            std::cout << spaces << "[CharLiteral] -> value: '" << charl->value << "'\n";
             break;
         }
         case NodeType::MathOperator: {

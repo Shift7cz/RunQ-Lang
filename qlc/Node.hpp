@@ -11,7 +11,10 @@ enum class NodeType {
     Return,
     VarDeclare,
     VarLoad,
-    I32Literal,
+    IntLiteral,
+    FloatLiteral,
+    BoolLiteral,
+    CharLiteral,
     MathOperator
 };
 
@@ -60,10 +63,28 @@ public:
     VarLoadNode() : Node(NodeType::VarLoad) {}
 };
 
-class I32LiteralNode : public Node {
+class IntLiteralNode : public Node {
 public:
     int value;
-    I32LiteralNode() : Node(NodeType::I32Literal) {}
+    IntLiteralNode() : Node(NodeType::IntLiteral) {}
+};
+
+class FloatLiteralNode : public Node {
+public:
+    double value;
+    FloatLiteralNode() : Node(NodeType::FloatLiteral) {}
+};
+
+class BoolLiteralNode : public Node {
+public:
+    bool value;
+    BoolLiteralNode() : Node(NodeType::BoolLiteral) {}
+};
+
+class CharLiteralNode : public Node {
+public:
+    char value;
+    CharLiteralNode() : Node(NodeType::CharLiteral) {}
 };
 
 class MathOperatorNode : public Node {
