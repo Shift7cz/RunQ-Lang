@@ -1,6 +1,6 @@
 # RunQ-Lang
 
-RunQ-Lang is an experimental, statically-typed programming language, inspired by C++ and Rust. The compiler is written in C++ that compiles directly to LLVM IR which compiles it down to x86 assembly, and an executable file.
+RunQ-Lang is an experimental, statically-typed programming language, inspired by C++ and Rust. The project is written in C++ and translates directly to LLVM IR which compiles it down to x86 assembly, and an executable file.
 
 > **Project Status:** Under active development. Language features, AST design, and internal implementations are evolving rapidly.
 
@@ -39,7 +39,7 @@ fn main() : i32 {
 | Package manager (using GitHub) | Multi function code | Literal typing (internal only, doesnt change syntax) | Variables loading and declaring |
 | Multiple file compatibility | Strings, arrays, vectors |  | Return statement |
 | Multi Threading | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
-|  | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
+| Bootstrapping | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128) |  |  |
 |  | Different return types |  |  |
 
