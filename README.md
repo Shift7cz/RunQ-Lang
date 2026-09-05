@@ -10,7 +10,7 @@ RunQ-Lang is an experimental, statically-typed programming language written in C
 
 * **Custom Lexer & Tokenizer:** Zero-copy string view tokenization with support for positions, identifiers, literals, and operators.
 * **Recursive-Descent Parser:** Converts source tokens into a strongly typed Abstract Syntax Tree (AST).
-* **LLVM Code Generator:** Custom C++ LLVM wrapper layer (`LlvmWrap`) generating clean, optimizable LLVM IR for target functions, variables, and math operations.
+* **LLVM Code Generator:** Custom C++ LLVM wrapper layer (`LlvmWrap`) generating clean, optimizable LLVM IR for target functions, variables, and math operations and can compile code to actual executables.
 * **Primitive Types:** Supports `i32` integer variables, basic arithmetic operations, and simple functions.
 
 ---
@@ -29,14 +29,14 @@ fn main() : i32 {
 ## Roadmap/Planed Features
 
 
-| Potential future features | Planned features  | Already implemented |
-| --------- | --------- | --------- |
-| C FFI | Control flow | Basic math functions |
-| Package manager (using GitHub) | Multi function code | Variables loading and declaring |
-| Multiple file compatibility | More data types (char, bool, i64, u64, i32, i8, u8, f64) | Return statement |
-|  | Strings, arrays, vectors | i32 Data type |
-|  | OOP (C++ style) |  |
-|  | Loops (while, for, loop all rust style) |  |
+| Potential future features | Planned features  | Currently in development | Already implemented |
+| --------- | --------- | --------- | --------- |
+| C FFI | Loops (while, for, loop all rust style) | Control flow | Basic math functions |
+| Package manager (using GitHub) | Multi function code | More data types (char, bool, i64, u64, i32, i8, u8, f64) | Variables loading and declaring |
+| Multiple file compatibility | Strings, arrays, vectors |  | Return statement |
+|  | OOP (C++ style) |  |  i32 Data type |
+|  | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
+
 
 ---
 

@@ -3,6 +3,13 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/Target/TargetMachine.h>
+#include <llvm/Support/FileSystem.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/MC/TargetRegistry.h>
+#include <llvm/Target/TargetOptions.h>
+#include <llvm/TargetParser/Host.h>
+#include <llvm/IR/LegacyPassManager.h>
 #include <memory>
 #include <string>
 
@@ -39,6 +46,10 @@ public:
 
     // output
     void print();
+
+    // compiling
+    void emitObjectFile(const std::string& filename);
+    void emitAssembly(const std::string& filename);
 };
 
 /*

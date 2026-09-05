@@ -8,7 +8,7 @@ int main() {
 
     std::string source = "fn main( ) : i32 { \n"
                          "  let i32 x = 12;\n"
-                         "  return 27 * x;\n"
+                         "  return 27 - x + 6;\n" // exit codes on linux are only 0 - 255
                          "} ";
 
     std::cout << "Using test source (RunQ project is in active development) ->\n" << source << "\n\nLexer out ->"<< std::endl;
@@ -35,7 +35,7 @@ int main() {
     std::cout << "\n\nLLVM IR out -> \n" << std::endl;
 
     CodeGen codegen;
-    codegen.generate(parser.ast);
+    codegen.compile(parser.ast);
 
     return 0;
 }

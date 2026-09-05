@@ -10,7 +10,20 @@ include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
 # links core llvm libs
-llvm_map_components_to_libnames(llvm_libs core support native)
+llvm_map_components_to_libnames(llvm_libs
+        core
+        support
+        irreader
+        codegen
+        mc
+        mcparser
+        object
+        target
+        x86codegen
+        x86asmparser
+        x86desc
+        x86info
+)
 
 add_executable(RunQ-Lang qlc/main.cpp
         qlc/Lexer.cpp
