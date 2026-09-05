@@ -11,10 +11,17 @@ enum class TokenType {
     Let,
 
     // literal (raw data)
-    I32Literal,
+    IntLiteral,
+    FloatLiteral,
+    BoolLiteral,
+    CharLiteral,
 
     // Types
-    I32, // i32
+    I32,
+    I8,
+    F64,
+    Bool,
+    Char,
 
     // math operators
     Plus, // '+'
@@ -49,8 +56,15 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::Return:      return "Return";
         case TokenType::Fn:          return "Fn";
         case TokenType::Let:         return "Let";
-        case TokenType::I32Literal:  return "I32Literal";
+        case TokenType::IntLiteral:  return "IntLiteral";
+        case TokenType::FloatLiteral: return "FloatLiteral";
+        case TokenType::BoolLiteral: return "BoolLiteral";
+        case TokenType::CharLiteral: return "CharLiteral";
         case TokenType::I32:         return "I32";
+        case TokenType::I8:          return "I8";
+        case TokenType::F64:         return "F64";
+        case TokenType::Bool:        return "Bool";
+        case TokenType::Char:        return "Char";
         case TokenType::Plus:        return "Plus";
         case TokenType::Dash:        return "Dash";
         case TokenType::Star:        return "Star";
@@ -69,7 +83,7 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
 }
 
 // Format the token output
-inline std::ostream& operator<<(std::ostream& os, const Token& token) { // helper for debuging, temporery
+inline std::ostream& operator<<(std::ostream& os, const Token& token) { // helper for debuting
     os << "[" << token.line << ":" << token.column << "] "
        << std::left << std::setw(15) << tokenTypeToString(token.type)
        << " -> '" << token.data << "'";

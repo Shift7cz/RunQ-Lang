@@ -80,7 +80,7 @@ llvm::Value * CodeGen::compileVarLoad(VarLoadNode *node) { // todo: look up actu
     return llvm.createLoad(llvm.i32Type(), symbolTable[std::string(node->identifier)]);
 }
 
-void CodeGen::compile(Ast& ast) {
+void CodeGen::compile(Ast& ast, bool generateCompiledFiles) {
     if (!ast.root) return;
 
     if (ast.root->type == NodeType::Func) {
@@ -89,6 +89,8 @@ void CodeGen::compile(Ast& ast) {
 
     std::cout << "\n--- LLVM IR Output ---\n";
     llvm.print();
+
+    if (!generateCompiledFiles) return;
 
     std::cout << "\n--- COMPILING ---\n";
     llvm.emitObjectFile("output.o");

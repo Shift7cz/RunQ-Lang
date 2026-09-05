@@ -18,5 +18,5 @@ private:
 
 public:
     CodeGen();
-    void compile(Ast& ast);
+    void compile(Ast& ast, bool generateCompiledFiles);
 };

@@ -151,7 +151,7 @@ std::unique_ptr<Node> Parser::parseVarLoad() {
 }
 
 std::unique_ptr<Node> Parser::parseI32Literal() {
-    if (expect(TokenType::I32Literal)) {
+    if (expect(TokenType::IntLiteral)) {
         auto i32Node = std::make_unique<I32LiteralNode>();
         i32Node->value = std::atoi(currentToken.data.data());
 
@@ -170,7 +170,7 @@ std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_pt
 
     advance();
 
-    if (expect(TokenType::I32Literal)) {
+    if (expect(TokenType::IntLiteral)) {
         std::unique_ptr<Node> operand2 = parseExpresion(); // todo: Longer math equations will translate, but they wont compile in the correct order. fix.
 
         mathOpNode->operand1 = std::move(operand1);
@@ -193,7 +193,7 @@ std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_pt
 
 
 std::unique_ptr<Node> Parser::parseExpresion() {
-    if (expect(TokenType::I32Literal)) {
+    if (expect(TokenType::IntLiteral)) {
         std::unique_ptr<Node> i32Node1 = parseI32Literal();
 
         if (expect(TokenType::Plus)) {

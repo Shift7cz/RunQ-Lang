@@ -73,11 +73,10 @@ Token Lexer::nextToken() {
 
         std::string_view nextToken = source.substr(startPos, pos - startPos);
 
-        // if (nextToken.contains('.')) { todo: to be implemented
-        //     return Token{DECIMAL_NUMBER, nextToken, line, column};
-        // }
-        return Token{TokenType::I32Literal, nextToken, line, column};
-
+        if (nextToken.contains('.')) {
+            return Token{TokenType::FloatLiteral, nextToken, line, column};
+        }
+        return Token{TokenType::IntLiteral, nextToken, line, column};
     }
 
     if (isalnum(peak()) || peak() == '_' || peak() == '"' || peak() == '\'') {
@@ -89,7 +88,7 @@ Token Lexer::nextToken() {
 
         std::string_view nextToken = source.substr(startPos, pos - startPos);
 
-        if (nextToken == "return") {
+        if (nextToken == "return") { // todo: sort them based on use to be faster?
             return Token{TokenType::Return, nextToken, line, column};
         }
         if (nextToken == "fn") {
@@ -100,6 +99,33 @@ Token Lexer::nextToken() {
         }
         if (nextToken == "i32") {
             return Token{TokenType::I32, "i32", line, column};
+        }
+        if (nextToken == "i8") {
+            return Token{TokenType::I8, "i8", line, column};
+        }
+        if (nextToken == "f64") {
+            return Token{TokenType::F64, "f64", line, column};
+        }
+        if (nextToken == "bool") {
+            return Token{TokenType::Bool, "bool", line, column};
+        }
+        if (nextToken == "char") {
+            return Token{TokenType::Char, "char", line, column};
+        }
+
+        if (nextToken == "true" || nextToken == "false") {
+            return Token{TokenType::BoolLiteral, nextToken, line, column};
+        }
+        if (nextToken[0] == '\'' && nextToken.back() == '\'') {
+            std::string_view data;
+            switch (nextToken.length()) {
+                case 3:
+                    data = nextToken.substr(1, 1);
+                    break;
+                case 4: // todo: test this actually works as intended (used for \n, \', etc.)
+                    data = nextToken.substr(1, 2);
+            }
+            return Token{TokenType::CharLiteral, data, line, column};
         }
 
         return Token{TokenType::Identifier, nextToken, line, column};
