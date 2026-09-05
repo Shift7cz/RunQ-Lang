@@ -3,12 +3,14 @@
 #include <iomanip>
 
 enum class TokenType {
-    Identifier, // eg "main"
+    Identifier, // eg "main" or "myVariable"
 
     // keyword
     Return,
     Fn,
     Let,
+    If,
+    Else,
 
     // literal (raw data)
     IntLiteral,
@@ -36,7 +38,7 @@ enum class TokenType {
     ClosedBrace, // '}'
     Semicolon, // ';'
     Colon, // ':'
-    Equals, // '='
+    Equals,
 
     // Special
     EndOfFile,
@@ -56,6 +58,8 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::Return:      return "Return";
         case TokenType::Fn:          return "Fn";
         case TokenType::Let:         return "Let";
+        case TokenType::If:          return "If";
+        case TokenType::Else:        return "Else";
         case TokenType::IntLiteral:  return "IntLiteral";
         case TokenType::FloatLiteral: return "FloatLiteral";
         case TokenType::BoolLiteral: return "BoolLiteral";

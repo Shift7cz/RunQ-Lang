@@ -112,6 +112,12 @@ Token Lexer::nextToken() {
         if (nextToken == "char") {
             return Token{TokenType::Char, "char", line, column};
         }
+        if (nextToken == "if") {
+            return Token{TokenType::If, "if", line, column};
+        }
+        if (nextToken == "else") {
+            return Token{TokenType::Else, "else", line, column};
+        }
 
         if (nextToken == "true" || nextToken == "false") {
             return Token{TokenType::BoolLiteral, nextToken, line, column};
