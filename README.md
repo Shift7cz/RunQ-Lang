@@ -20,7 +20,7 @@ RunQ-Lang is an experimental, statically-typed programming language, inspired by
 ```runq
 fn main() : i32 {
     let i32 x = 12;
-    return 27 * x;
+    return 27 + x - 6;
 }
 ```
 
@@ -29,12 +29,12 @@ fn main() : i32 {
 ## Roadmap/Planed Features
 
 
-| Potential future features | Planned features  | Currently in development | Already implemented |
+| Potential future features (not garanteed) | Planned features  | Currently in development | Already implemented |
 | --------- | --------- | --------- | --------- |
 | C FFI | Loops (while, for, loop all rust style) | Control flow | Basic math functions |
 | Package manager (using GitHub) | Multi function code | More data types (char, bool, i32, i8, f64) | Variables loading and declaring |
 | Multiple file compatibility | Strings, arrays, vectors |  | Return statement |
-|  | OOP (C++ style) |  |  i32 Data type |
+| Multi Threading | OOP (C++ style) |  |  i32 Data type |
 |  | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128 ) |  |  |
 
