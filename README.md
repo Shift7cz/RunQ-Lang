@@ -19,12 +19,19 @@ RunQ-Lang is an experimental, statically-typed programming language, inspired by
 
 ```runq
 fn main() : i32 {
+    
     let i32 x = 12;
     let i8 y = 128;
     let f64 pi = 3.141592;
     let char letter = 'q';
     let bool isSomething = true;
-    return 27 + x + 6;
+    
+    if false { 
+        return x + 27 + 6;
+    }
+    else {
+        return 27 + x + x;
+    }
 }
 ```
 
@@ -42,6 +49,7 @@ fn main() : i32 {
 | Bootstrapping | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128) |  | Basic if/else (doesnt accept expresions and can only end in return) |
 |  | Different return types |  |  |
+|  | Reading from file |  |  |
 
 
 ---
