@@ -31,7 +31,7 @@ enum class TokenType {
     Star, // '*'
     Slash, // '/'
 
-    // Symbols
+    // symbols
     OpenParen, // '('
     ClosedParen, // ')'
     OpenBrace, // '{'
@@ -39,6 +39,14 @@ enum class TokenType {
     Semicolon, // ';'
     Colon, // ':'
     Equals,
+
+    // compressions
+    IsEqualTo, // ==
+    NotEqualTo, // !=
+    LessThan, // <
+    GreaterThan, // >
+    LessOrEqual, // <=
+    GreaterOrEqual, // >=
 
     // Special
     EndOfFile,
@@ -80,6 +88,12 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::Semicolon:   return "Semicolon";
         case TokenType::Colon:       return "Colon";
         case TokenType::Equals:      return "Equals";
+        case TokenType::IsEqualTo:   return "IsEqualTo";
+        case TokenType::NotEqualTo:  return "NotEqualTo";
+        case TokenType::LessThan:    return "LessThan";
+        case TokenType::GreaterThan: return "GreaterThan";
+        case TokenType::LessOrEqual: return "LessOrEqual";
+        case TokenType::GreaterOrEqual: return "GreaterOrEqual";
         case TokenType::EndOfFile:   return "EndOfFile";
         case TokenType::Unknown:     return "Unknown";
     }

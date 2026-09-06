@@ -48,20 +48,41 @@ Token Lexer::nextToken() {
     while (skipWhiteSpace()) {}
 
     switch (peak()) {
-            // Symbols
+        // Symbols
         case '(': advance(); return Token{TokenType::OpenParen, "(", line, column};
         case ')': advance(); return Token{TokenType::ClosedParen, ")", line, column};
         case '{': advance(); return Token{TokenType::OpenBrace, "{", line, column};
         case '}': advance(); return Token{TokenType::ClosedBrace, "}", line, column};
         case ';': advance(); return Token{TokenType::Semicolon, ";", line, column};
         case ':': advance(); return Token{TokenType::Colon, ":", line, column};
-        case '=': advance(); return Token{TokenType::Equals, "=", line, column};
+            //case '=': advance(); return Token{TokenType::Equals, "=", line, column};
 
             // Math Operators
         case '+': advance(); return Token{TokenType::Plus, "+", line, column};
         case '-': advance(); return Token{TokenType::Dash, "-", line, column};
         case '*': advance(); return Token{TokenType::Star, "*", line, column};
         case '/': advance(); return Token{TokenType::Slash, "/", line, column};
+
+            // starting with the same character handling here
+        case '=':
+            advance();
+            if (peak() == '=') {
+                advance(); return Token{TokenType::IsEqualTo, "==", line, column};
+            }
+            return Token{TokenType::Equals, "=", line, column};
+        case '<':
+            advance();
+            if (peak() == '=') {
+                return Token{TokenType::LessOrEqual, "<=", line, column};
+            }
+            return Token{TokenType::Equals, "<", line, column};
+        case '>':
+            advance();
+            if (peak() == '=') {
+                return Token{TokenType::LessOrEqual, ">=", line, column};
+            }
+            return Token{TokenType::Equals, ">", line, column};
+        case '!': advance(); advance(); return Token{TokenType::NotEqualTo, "!=", line, column}; // todo: handling of the bitwise !boolValue operation same as with = < >
     }
 
     if (isdigit(peak()) || peak() == '.') {
@@ -88,36 +109,17 @@ Token Lexer::nextToken() {
 
         std::string_view nextToken = source.substr(startPos, pos - startPos);
 
-        if (nextToken == "return") { // todo: sort them based on use to be faster?
-            return Token{TokenType::Return, nextToken, line, column};
-        }
-        if (nextToken == "fn") {
-            return Token{TokenType::Fn, "fn", line, column};
-        }
-        if (nextToken == "let") {
-            return Token{TokenType::Let, "let", line, column};
-        }
-        if (nextToken == "i32") {
-            return Token{TokenType::I32, "i32", line, column};
-        }
-        if (nextToken == "i8") {
-            return Token{TokenType::I8, "i8", line, column};
-        }
-        if (nextToken == "f64") {
-            return Token{TokenType::F64, "f64", line, column};
-        }
-        if (nextToken == "bool") {
-            return Token{TokenType::Bool, "bool", line, column};
-        }
-        if (nextToken == "char") {
-            return Token{TokenType::Char, "char", line, column};
-        }
-        if (nextToken == "if") {
-            return Token{TokenType::If, "if", line, column};
-        }
-        if (nextToken == "else") {
-            return Token{TokenType::Else, "else", line, column};
-        }
+        // todo: sort them based on use to be faster?
+        if (nextToken == "return") return Token{TokenType::Return, nextToken, line, column};
+        if (nextToken == "fn") return Token{TokenType::Fn, "fn", line, column};
+        if (nextToken == "let") return Token{TokenType::Let, "let", line, column};
+        if (nextToken == "i32") return Token{TokenType::I32, "i32", line, column};
+        if (nextToken == "i8") return Token{TokenType::I8, "i8", line, column};
+        if (nextToken == "f64") return Token{TokenType::F64, "f64", line, column};
+        if (nextToken == "bool") return Token{TokenType::Bool, "bool", line, column};
+        if (nextToken == "char") return Token{TokenType::Char, "char", line, column};
+        if (nextToken == "if") return Token{TokenType::If, "if", line, column};
+        if (nextToken == "else") return Token{TokenType::Else, "else", line, column};
 
         if (nextToken == "true" || nextToken == "false") {
             return Token{TokenType::BoolLiteral, nextToken, line, column};
