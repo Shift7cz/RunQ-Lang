@@ -18,12 +18,12 @@ int main() {
                          "  let char letter = 'q';\n"
                          "  let bool isSomething = true;\n"
                          "  \n"
-                         // "  if false { \n"
+                         "  if false { \n"
                          "      return x + 27 + 6;\n" // 45 // exit codes on linux are only 0 - 255
-                         // "  }\n"
-                         // "  else { \n"
-                         // "      return 27 + x + x;\n" // 51
-                         // "  }\n"
+                         "  }\n"
+                         "  else { \n"
+                         "      return 27 + x + x;\n" // 51
+                         "  }\n"
                          "} ";
 
     std::cout << "Using test source (RunQ project is in active development) ->\n" << source << "\n\nLexer out ->"<< std::endl;

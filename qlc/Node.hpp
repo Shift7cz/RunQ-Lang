@@ -9,6 +9,7 @@ enum class NodeType {
 
     Func,
     Return,
+    If, // contains else as opional data
     VarDeclare,
     VarLoad,
     IntLiteral,
@@ -45,6 +46,16 @@ class ReturnNode : public Node {
 public:
     std::unique_ptr<Node> body;
     ReturnNode() : Node(NodeType::Return) {}
+};
+
+class IfNode : public Node {
+public:
+    std::unique_ptr<Node> condition;
+
+    std::vector<std::unique_ptr<Node>> ifBody;
+    std::vector<std::unique_ptr<Node>> elseBody;
+
+    IfNode() : Node(NodeType::If) {}
 };
 
 class VarDeclareNode : public Node {

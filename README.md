@@ -35,12 +35,12 @@ fn main() : i32 {
 
 | Potential future features (not garanteed) | Planned features  | Currently in development | Already implemented |
 | --------- | --------- | --------- | --------- |
-| C FFI | Loops (while, for, loop all rust style) | Control flow | Basic math functions |
+| C FFI | Loops (while, for, loop all rust style) | Finish all of if/else | Basic math functions |
 | Package manager (using GitHub) | Multi function code | Literal typing (internal only, doesnt change syntax) | Variables loading and declaring |
 | Multiple file compatibility | Strings, arrays, vectors |  | Return statement |
 | Multi Threading | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
 | Bootstrapping | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
-|  | More data types (i64, u64, u32, u8, f32, f128) |  |  |
+|  | More data types (i64, u64, u32, u8, f32, f128) |  | Basic if/else (doesnt accept expresions and can only end in return) |
 |  | Different return types |  |  |
 
 

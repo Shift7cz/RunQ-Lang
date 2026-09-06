@@ -7,18 +7,16 @@ CodeGen::CodeGen() : llvm("RunQ-Lang_Test") {
 }
 
 void CodeGen::compileFunction(FuncNode* node) {
-    llvm::Function* fn;
-
     switch (node->returnType) {
         case TokenType::I32:
-            fn = llvm.createFunc(std::string(node->identifier), llvm.i32Type());
+            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i32Type());
             break;
             // todo: other types here
         default:
             // todo: error handling
             return;
     }
-    llvm.createBlock("entry", fn);
+    llvm.createBlock("entry", currentFunction);
 
     for (const auto& statement : node->body) {
         compileExpression(statement.get());
@@ -29,6 +27,9 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
     if (!node) return nullptr;
 
     switch (node->type) {
+        case NodeType::If: {
+            return compileIf(static_cast<IfNode*>(node));
+        }
         case NodeType::Return: {
             return compileReturn(static_cast<ReturnNode*>(node));
         }
@@ -105,8 +106,39 @@ llvm::Value * CodeGen::compileVarDeclare(VarDeclareNode *node) {
 }
 
 llvm::Value * CodeGen::compileVarLoad(VarLoadNode *node) { // todo: look up actual type from symbol table when checker is implemented
-    auto* varLoadNode = static_cast<VarLoadNode*>(node);
     return llvm.createLoad(llvm.i32Type(), symbolTable[std::string(node->identifier)]);
+}
+
+llvm::Value * CodeGen::compileIf(IfNode *node) {
+    llvm::Value* condition = compileExpression(node->condition.get());
+
+    bool doesElseExist = !node->elseBody.empty();
+
+    llvm::BasicBlock* ifBlock = llvm.createBlockNoInsert("if", currentFunction);
+    llvm::BasicBlock* elseBlock;
+
+    if (doesElseExist) {
+        elseBlock = llvm.createBlockNoInsert("else", currentFunction);
+
+        llvm.createCondBranch(condition, ifBlock, elseBlock);
+    }
+    else {
+        // todo: handle creation fo only one block
+    }
+
+    llvm.setInsertPoint(ifBlock);
+    for (const auto& statement : node->ifBody) {
+        compileExpression(statement.get());
+    }
+
+    if (doesElseExist) {
+        llvm.setInsertPoint(elseBlock);
+        for (const auto& statement : node->elseBody) {
+            compileExpression(statement.get());
+        }
+    }
+
+    return nullptr;
 }
 
 void CodeGen::compile(Ast& ast, bool generateCompiledFiles) {

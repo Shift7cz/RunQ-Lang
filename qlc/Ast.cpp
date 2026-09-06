@@ -44,6 +44,26 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             printNode(ret->body.get(), indent + 1);
             break;
         }
+        case NodeType::If: {
+            auto ifNode = static_cast<IfNode*>(node);
+            std::cout << spaces << "[[IF STATEMENT]] [Condition] \n";
+
+            printNode(ifNode->condition.get(), indent + 1);
+
+            std::cout << spaces << "[[IF STATEMENT]] [If Block] \n";
+            for (const auto& child : ifNode->ifBody) {
+                printNode(child.get(), indent + 1);
+            }
+
+            if (!ifNode->elseBody.empty()) {
+
+                std::cout << spaces << "[[IF STATEMENT]] [Else Block] \n";
+                for (const auto& child : ifNode->elseBody) {
+                    printNode(child.get(), indent + 1);
+                }
+            }
+            break;
+        }
         case NodeType::VarDeclare: {
             auto var = static_cast<VarDeclareNode*>(node);
             switch (var->valueType) {

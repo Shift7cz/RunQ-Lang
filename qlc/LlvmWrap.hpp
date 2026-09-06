@@ -32,6 +32,8 @@ public:
     // structure
     llvm::Function* createFunc(const std::string& name, llvm::Type* retType);
     llvm::BasicBlock* createBlock(const std::string& name, llvm::Function* fn);
+    llvm::BasicBlock *createBlockNoInsert(const std::string &name, llvm::Function *fn);
+    void setInsertPoint(llvm::BasicBlock *block);
 
     // instructions
     llvm::Value* createReturn(llvm::Value* value);
@@ -48,6 +50,10 @@ public:
     llvm::Value *createAlloca(const std::string &name, llvm::Type *type);
     llvm::Value *createStore(llvm::Value *value, llvm::Value *pointer);
     llvm::Value *createLoad(llvm::Type *type, llvm::Value *pointer);
+
+    // control flow
+    llvm::Value *createCondBranch(llvm::Value *condition, llvm::BasicBlock *thenBlock, llvm::BasicBlock *elseBlock);
+    llvm::Value *createBranch(llvm::BasicBlock *block);
 
     // output
     void print();

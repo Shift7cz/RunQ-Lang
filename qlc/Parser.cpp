@@ -83,6 +83,10 @@ std::unique_ptr<Node> Parser::parseFn() {
             std::unique_ptr<Node> varNode = parseVarDeclare();
             funcNode->body.push_back(std::move(varNode));
         }
+        else if (currentToken.type == TokenType::If) {
+            std::unique_ptr<Node> ifNode = parseIf();
+            funcNode->body.push_back(std::move(ifNode));
+        }
         // Todo: other statements
         else {
         advance();
@@ -104,6 +108,63 @@ std::unique_ptr<Node> Parser::parseRet() {
     if (!expectAndConsume(TokenType::Semicolon)) return nullptr;
 
     return retNode;
+}
+
+std::unique_ptr<Node> Parser::parseIf() {
+    if (!expectAndConsume(TokenType::If)) return nullptr; // todo: error handling
+    auto ifNode = std::make_unique<IfNode>();
+
+    if (!expect(TokenType::BoolLiteral)) return nullptr; // todo: make boolean math compatible or something like that
+    ifNode->condition = parseBoolLiteral();
+
+    if (!expectAndConsume(TokenType::OpenBrace)) return nullptr;
+
+    // todo: figure out a way to remove recursive code here
+    while (!expect(TokenType::ClosedBrace) && currentToken.type != TokenType::EndOfFile) { // todo: error handling for end of file
+        if (currentToken.type == TokenType::Return) {
+            std::unique_ptr<Node> retNode = parseRet();
+            ifNode->ifBody.push_back(std::move(retNode));
+        }
+        else if (currentToken.type == TokenType::Let) {
+            std::unique_ptr<Node> varNode = parseVarDeclare();
+            ifNode->ifBody.push_back(std::move(varNode));
+        }
+        else if (currentToken.type == TokenType::If) {
+            std::unique_ptr<Node> newIfNode = parseIf();
+            ifNode->ifBody.push_back(std::move(newIfNode));
+        }
+        // Todo: other statements
+        else {
+            advance();
+        }
+    }
+    advance();
+
+    if (expectAndConsume(TokenType::Else)) {
+        if (!expectAndConsume(TokenType::OpenBrace)) return nullptr; // todo: make this work with else if and the 'if (something) doCode;'
+
+        while (!expect(TokenType::ClosedBrace) && currentToken.type != TokenType::EndOfFile) {
+            if (currentToken.type == TokenType::Return) {
+                std::unique_ptr<Node> retNode = parseRet();
+                ifNode->elseBody.push_back(std::move(retNode));
+            }
+            else if (currentToken.type == TokenType::Let) {
+                std::unique_ptr<Node> varNode = parseVarDeclare();
+                ifNode->elseBody.push_back(std::move(varNode));
+            }
+            else if (currentToken.type == TokenType::If) {
+                std::unique_ptr<Node> newIfNode = parseIf();
+                ifNode->elseBody.push_back(std::move(newIfNode));
+            }
+            // Todo: other statements
+            else {
+                advance();
+            }
+        }
+        if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
+    }
+
+    return ifNode;
 }
 
 std::unique_ptr<Node> Parser::parseVarDeclare() {
@@ -234,7 +295,7 @@ std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_pt
 }
 
 
-std::unique_ptr<Node> Parser::parseExpresion() {
+std::unique_ptr<Node> Parser::parseExpresion() { // todo: just rebuild this function
     if (expect(TokenType::IntLiteral)) {
         std::unique_ptr<Node> intNode1 = parseIntLiteral();
 

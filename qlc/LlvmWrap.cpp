@@ -43,6 +43,14 @@ llvm::BasicBlock* LlvmWrap::createBlock(const std::string& name, llvm::Function*
     return block;
 }
 
+llvm::BasicBlock* LlvmWrap::createBlockNoInsert(const std::string& name, llvm::Function* fn) {
+    return llvm::BasicBlock::Create(*context, name, fn);
+}
+
+void LlvmWrap::setInsertPoint(llvm::BasicBlock* block) {
+    builder->SetInsertPoint(block);
+}
+
 llvm::Value* LlvmWrap::createReturn(llvm::Value* value) {
     return builder->CreateRet(value);
 }
@@ -81,6 +89,14 @@ llvm::Value* LlvmWrap::createStore(llvm::Value* value, llvm::Value* pointer) {
 
 llvm::Value* LlvmWrap::createLoad(llvm::Type* type, llvm::Value* pointer) {
     return builder->CreateLoad(type, pointer, "loadtmp");
+}
+
+llvm::Value* LlvmWrap::createCondBranch(llvm::Value* condition, llvm::BasicBlock* ifBlock, llvm::BasicBlock* elseBlock) {
+    return builder->CreateCondBr(condition, ifBlock, elseBlock);
+}
+
+llvm::Value* LlvmWrap::createBranch(llvm::BasicBlock* block) {
+    return builder->CreateBr(block);
 }
 
 void LlvmWrap::print() {

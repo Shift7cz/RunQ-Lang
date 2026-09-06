@@ -19,9 +19,10 @@ public:
 
     void parse(); // main parse
 
-    // helper parse for each type of statement.
+    // helper parse for each type of statement.;
     std::unique_ptr<Node> parseFn();
     std::unique_ptr<Node> parseRet();
+    std::unique_ptr<Node> parseIf();
     std::unique_ptr<Node> parseVarDeclare();
     std::unique_ptr<Node> parseVarLoad();
     std::unique_ptr<Node> parseIntLiteral();
