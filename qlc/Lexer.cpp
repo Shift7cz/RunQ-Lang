@@ -79,7 +79,7 @@ Token Lexer::nextToken() {
         case '>':
             advance();
             if (peak() == '=') {
-                advance(); return Token{TokenType::LessOrEqual, ">=", line, column};
+                advance(); return Token{TokenType::GreaterOrEqual, ">=", line, column};
             }
             advance(); return Token{TokenType::Equals, ">", line, column};
         case '!': advance(); advance(); return Token{TokenType::NotEqualTo, "!=", line, column}; // todo: handling of the bitwise !boolValue operation same as with = < >

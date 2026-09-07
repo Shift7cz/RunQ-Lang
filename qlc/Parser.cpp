@@ -301,10 +301,10 @@ std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floa
         return boolNode;
     }
 
-    if (expect(TokenType::Identifier)) {
-        auto varNode = parseVarLoad();
-        return varNode;
-    }
+    // if (expect(TokenType::Identifier)) {
+    //     auto varNode = parseVarLoad();
+    //     return varNode;
+    // }
 
     auto compareNode = std::make_unique<CompareNode>();
 
@@ -312,10 +312,11 @@ std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floa
         std::unique_ptr<Node> operand1 = parseExpresion();
         compareNode->operand1 = std::move(operand1);
     }
-    if (expect(TokenType::Identifier)) {
+    else if (expect(TokenType::Identifier)) {
         std::unique_ptr<Node> operand1 = parseExpresion();
         compareNode->operand1 = std::move(operand1);
     }
+    else return nullptr; // todo: error handling
 
     if (expect(TokenType::IsEqualTo)) compareNode->compareType = currentToken.type;
     else if (expect(TokenType::NotEqualTo)) compareNode->compareType = currentToken.type;
@@ -323,6 +324,9 @@ std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floa
     else if (expect(TokenType::GreaterThan)) compareNode->compareType = currentToken.type;
     else if (expect(TokenType::LessOrEqual)) compareNode->compareType = currentToken.type;
     else if (expect(TokenType::GreaterOrEqual)) compareNode->compareType = currentToken.type;
+    else {
+        return std::move(compareNode->operand1);
+    }
 
     advance();
 

@@ -13,6 +13,8 @@
 #include <memory>
 #include <string>
 
+#include "Token.hpp"
+
 class LlvmWrap {
 private:
     std::unique_ptr<llvm::LLVMContext> context;
@@ -54,6 +56,8 @@ public:
     // control flow
     llvm::Value *createCondBranch(llvm::Value *condition, llvm::BasicBlock *thenBlock, llvm::BasicBlock *elseBlock);
     llvm::Value *createBranch(llvm::BasicBlock *block);
+
+    llvm::Value *createCompare(TokenType op, llvm::Value *operand1, llvm::Value *operand2);
 
     // output
     void print();

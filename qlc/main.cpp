@@ -14,7 +14,10 @@ int main() {
                          "  \n"
                          "  let i32 x = 12;\n"
                          "  let i32 y = 64;\n"
-                         "  let bool isSomething = false;\n"
+                         "  let i8 z = 144;\n"
+                         "  let f64 pi = 3.141592;\n"
+                         "  let char letter = 'q';\n"
+                         "  let bool isSomething = true;\n"
                          "  \n"
                          "  if isSomething { \n"
                          "      return x + 27 + 6;\n" // 45 // exit codes on linux are only 0 - 255

@@ -62,6 +62,12 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
                 default: return nullptr;
             }
         }
+        case NodeType::Compare: {
+            auto* cmp = static_cast<CompareNode*>(node);
+            llvm::Value* operand1 = compileExpression(cmp->operand1.get());
+            llvm::Value* operand2 = compileExpression(cmp->operand2.get());
+            return llvm.createCompare(cmp->compareType , operand1, operand2);
+        }
         case NodeType::VarDeclare: {
             return compileVarDeclare(static_cast<VarDeclareNode*>(node));
         }

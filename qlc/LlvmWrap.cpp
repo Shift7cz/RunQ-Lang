@@ -10,6 +10,8 @@
 #include <llvm/TargetParser/Host.h>
 #include <llvm/IR/LegacyPassManager.h>
 
+#include "Token.hpp"
+
 LlvmWrap::LlvmWrap(const std::string& moduleName) { // initilises llvm
     context = std::make_unique<llvm::LLVMContext>();
     module = std::make_unique<llvm::Module>(moduleName, *context);
@@ -97,6 +99,18 @@ llvm::Value* LlvmWrap::createCondBranch(llvm::Value* condition, llvm::BasicBlock
 
 llvm::Value* LlvmWrap::createBranch(llvm::BasicBlock* block) {
     return builder->CreateBr(block);
+}
+
+llvm::Value* LlvmWrap::createCompare(TokenType op, llvm::Value* operand1, llvm::Value* operand2) {
+    switch (op) {
+        case TokenType::IsEqualTo:    return builder->CreateICmpEQ(operand1, operand2, "cmptmp");
+        case TokenType::NotEqualTo:   return builder->CreateICmpNE(operand1, operand2, "cmptmp");
+        case TokenType::LessThan:     return builder->CreateICmpSLT(operand1, operand2, "cmptmp");
+        case TokenType::GreaterThan:  return builder->CreateICmpSGT(operand1, operand2, "cmptmp");
+        case TokenType::LessOrEqual:  return builder->CreateICmpSLE(operand1, operand2, "cmptmp");
+        case TokenType::GreaterOrEqual: return builder->CreateICmpSGE(operand1, operand2, "cmptmp");
+        default: return nullptr;
+    }
 }
 
 void LlvmWrap::print() {
