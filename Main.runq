@@ -1,0 +1,16 @@
+fn main() : i32 {
+
+    let i32 x = 12;
+    let i32 y = 64;
+    let i8 z = 144;
+    let f64 pi = 3.141592;
+    let char letter = 'q';
+    let bool isSomething = true;
+
+    if x >= y {
+        return x + 27 + 6;
+    }
+    else {
+        return 27 + x + x;
+    }
+}
