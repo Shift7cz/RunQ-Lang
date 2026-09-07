@@ -140,5 +140,34 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
 
             break;
         }
+        case NodeType::Compare: {
+            auto comp = static_cast<CompareNode*>(node);
+            std::string_view compType;
+            switch (comp->compareType) {
+                case TokenType::IsEqualTo:
+                    compType = "==";
+                    break;
+                case TokenType::NotEqualTo:
+                    compType = "!=";
+                    break;
+                case TokenType::LessThan:
+                    compType = "<";
+                    break;
+                case TokenType::GreaterThan:
+                    compType = ">";
+                    break;
+                case TokenType::LessOrEqual:
+                    compType = "<=";
+                    break;
+                case TokenType::GreaterOrEqual:
+                    compType = ">=";
+            }
+            std::cout << spaces << "[Compare] -> Type: '" << compType << "'\n";
+
+            printNode(comp->operand1.get(), indent + 1);
+            printNode(comp->operand2.get(), indent + 1);
+
+            break;
+        }
     }
 }

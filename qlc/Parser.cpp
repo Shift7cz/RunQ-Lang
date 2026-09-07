@@ -114,8 +114,9 @@ std::unique_ptr<Node> Parser::parseIf() {
     if (!expectAndConsume(TokenType::If)) return nullptr; // todo: error handling
     auto ifNode = std::make_unique<IfNode>();
 
-    if (!expect(TokenType::BoolLiteral)) return nullptr; // todo: make boolean math compatible or something like that
-    ifNode->condition = parseBoolLiteral();
+    //if (!expect(TokenType::BoolLiteral)) return nullptr;
+    //ifNode->condition = parseBoolLiteral();
+    ifNode->condition = parseComparison();
 
     if (!expectAndConsume(TokenType::OpenBrace)) return nullptr;
 
@@ -267,7 +268,7 @@ std::unique_ptr<Node> Parser::parseCharLiteral() {
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_ptr<Node> operand1) {
+std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_ptr<Node> operand1) { // todo: math operations with floats
     auto mathOpNode = std::make_unique<MathOperatorNode>();
     mathOpNode->operatorType = opType;
 
@@ -288,6 +289,52 @@ std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_pt
         mathOpNode->operand2 = std::move(operand2);
 
         return mathOpNode;
+    }
+
+    // todo: error handling
+    return nullptr;
+}
+
+std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floats
+    if (expect(TokenType::BoolLiteral)) {
+        auto boolNode = parseBoolLiteral();
+        return boolNode;
+    }
+
+    if (expect(TokenType::Identifier)) {
+        auto varNode = parseVarLoad();
+        return varNode;
+    }
+
+    auto compareNode = std::make_unique<CompareNode>();
+
+    if (expect(TokenType::IntLiteral)) {
+        std::unique_ptr<Node> operand1 = parseExpresion();
+        compareNode->operand1 = std::move(operand1);
+    }
+    if (expect(TokenType::Identifier)) {
+        std::unique_ptr<Node> operand1 = parseExpresion();
+        compareNode->operand1 = std::move(operand1);
+    }
+
+    if (expect(TokenType::IsEqualTo)) compareNode->compareType = currentToken.type;
+    else if (expect(TokenType::NotEqualTo)) compareNode->compareType = currentToken.type;
+    else if (expect(TokenType::LessThan)) compareNode->compareType = currentToken.type;
+    else if (expect(TokenType::GreaterThan)) compareNode->compareType = currentToken.type;
+    else if (expect(TokenType::LessOrEqual)) compareNode->compareType = currentToken.type;
+    else if (expect(TokenType::GreaterOrEqual)) compareNode->compareType = currentToken.type;
+
+    advance();
+
+    if (expect(TokenType::IntLiteral)) {
+        std::unique_ptr<Node> operand2 = parseExpresion();
+        compareNode->operand2 = std::move(operand2);
+        return compareNode;
+    }
+    if (expect(TokenType::Identifier)) {
+        std::unique_ptr<Node> operand2 = parseExpresion();
+        compareNode->operand2 = std::move(operand2);
+        return compareNode;
     }
 
     // todo: error handling

@@ -16,7 +16,8 @@ enum class NodeType {
     FloatLiteral,
     BoolLiteral,
     CharLiteral,
-    MathOperator
+    MathOperator,
+    Compare,
 };
 
 class Node {
@@ -105,4 +106,13 @@ public:
     std::unique_ptr<Node> operand2;
 
     MathOperatorNode() : Node(NodeType::MathOperator) {}
+};
+
+class CompareNode : public Node {
+public:
+    TokenType compareType; // only section compressions allowed
+    std::unique_ptr<Node> operand1;
+    std::unique_ptr<Node> operand2;
+
+    CompareNode() : Node(NodeType::Compare) {}
 };

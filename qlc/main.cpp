@@ -14,10 +14,9 @@ int main() {
                          "  \n"
                          "  let i32 x = 12;\n"
                          "  let i32 y = 64;\n"
-                         "  let bool isSomething = true;\n"
+                         "  let bool isSomething = false;\n"
                          "  \n"
-                         "  if false { \n"
-                         // "  if x >= y { \n"
+                         "  if isSomething { \n"
                          "      return x + 27 + 6;\n" // 45 // exit codes on linux are only 0 - 255
                          "  }\n"
                          "  else { \n"

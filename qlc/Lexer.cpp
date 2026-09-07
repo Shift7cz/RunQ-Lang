@@ -69,19 +69,19 @@ Token Lexer::nextToken() {
             if (peak() == '=') {
                 advance(); return Token{TokenType::IsEqualTo, "==", line, column};
             }
-            return Token{TokenType::Equals, "=", line, column};
+            advance(); return Token{TokenType::Equals, "=", line, column};
         case '<':
             advance();
             if (peak() == '=') {
-                return Token{TokenType::LessOrEqual, "<=", line, column};
+                advance(); return Token{TokenType::LessOrEqual, "<=", line, column};
             }
-            return Token{TokenType::Equals, "<", line, column};
+            advance(); return Token{TokenType::Equals, "<", line, column};
         case '>':
             advance();
             if (peak() == '=') {
-                return Token{TokenType::LessOrEqual, ">=", line, column};
+                advance(); return Token{TokenType::LessOrEqual, ">=", line, column};
             }
-            return Token{TokenType::Equals, ">", line, column};
+            advance(); return Token{TokenType::Equals, ">", line, column};
         case '!': advance(); advance(); return Token{TokenType::NotEqualTo, "!=", line, column}; // todo: handling of the bitwise !boolValue operation same as with = < >
     }
 
