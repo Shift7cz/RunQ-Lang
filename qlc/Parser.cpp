@@ -216,6 +216,12 @@ std::unique_ptr<Node> Parser::parseIntLiteral() {
         intNode->value = std::atoi(currentToken.data.data());
 
         advance();
+        if (expect(TokenType::I8)) {
+            intNode->type = currentToken.type;
+            advance();
+        }
+        // todo: other int types
+        else intNode->type = TokenType::I32;
 
         return intNode;
     }

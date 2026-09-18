@@ -8,7 +8,7 @@
 class CodeGen {
 private:
     LlvmWrap llvm;
-    std::map<std::string, llvm::Value*> symbolTable;
+    std::map<std::string, std::pair<llvm::Value*, llvm::Type*>> symbolTable;
     llvm::Function* currentFunction = nullptr;
 
     void compileFunction(FuncNode* node);

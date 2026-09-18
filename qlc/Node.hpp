@@ -78,10 +78,11 @@ public:
 class IntLiteralNode : public Node {
 public:
     int value;
+    TokenType type; // only Types section allowed
     IntLiteralNode() : Node(NodeType::IntLiteral) {}
 };
 
-class FloatLiteralNode : public Node {
+class FloatLiteralNode : public Node { // todo: add typing when f32 is a thing as in int
 public:
     double value;
     FloatLiteralNode() : Node(NodeType::FloatLiteral) {}

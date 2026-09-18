@@ -35,7 +35,17 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
         }
         case NodeType::IntLiteral: {
             auto* literal = static_cast<IntLiteralNode*>(node);
-            return llvm.createIntLiteral(literal->value, 32);
+            switch (literal->type) {
+                case TokenType::I32:
+                    return llvm.createIntLiteral(literal->value, 32);
+                    break;
+                case TokenType::I8:
+                    return llvm.createIntLiteral(literal->value, 8);
+                    break;
+                default:
+                    std::cout << "Unknown var type in Codegen" << std::endl;
+                    break;
+            }
         }
         case NodeType::FloatLiteral: {
             auto* literal = static_cast<FloatLiteralNode*>(node);
@@ -87,32 +97,39 @@ llvm::Value* CodeGen::compileReturn(ReturnNode* node) {
 
 llvm::Value * CodeGen::compileVarDeclare(VarDeclareNode *node) {
     llvm::Value* pointer;
+    llvm::Type* type;
     switch (node->valueType) {
         case TokenType::I32:
             pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i32Type());
+            type = llvm.i32Type();
             break;
         case TokenType::I8:
-            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i32Type()); // todo: change when literal typing is added
+            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i8Type());
+            type = llvm.i8Type();
             break;
         case TokenType::F64:
             pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.f64Type());
+            type = llvm.f64Type();
             break;
         case TokenType::Bool:
             pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.boolType());
+            type = llvm.boolType();
             break;
         case TokenType::Char:
             pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i8Type());
+            type = llvm.i8Type();
             break;
     }
 
-    symbolTable[std::string(node->identifier)] = pointer;
+    symbolTable[std::string(node->identifier)] = {pointer, type};
 
     llvm::Value* val = compileExpression(node->body.get());
     return llvm.createStore(val, pointer);
 }
 
-llvm::Value * CodeGen::compileVarLoad(VarLoadNode *node) { // todo: look up actual type from symbol table when checker is implemented
-    return llvm.createLoad(llvm.i32Type(), symbolTable[std::string(node->identifier)]);
+llvm::Value * CodeGen::compileVarLoad(VarLoadNode *node) {
+    auto& [pointer, type] = symbolTable[std::string(node->identifier)];
+    return llvm.createLoad(type, pointer);
 }
 
 llvm::Value * CodeGen::compileIf(IfNode *node) {

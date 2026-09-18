@@ -98,7 +98,16 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
         }
         case NodeType::IntLiteral: {
             auto intl = static_cast<IntLiteralNode*>(node);
-            std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'\n";
+            switch (intl->type) {
+                case TokenType::I32:
+                    std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'; [Type] -> 'i32'\n";
+                    break;
+                case TokenType::I8:
+                    std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'; [Type] -> 'i8'\n";
+                    break;
+                default:
+                    std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'; [Type] -> 'ERROR in Ast'\n";
+            }
             break;
         }
         case NodeType::FloatLiteral: {
