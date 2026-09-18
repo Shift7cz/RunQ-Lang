@@ -49,6 +49,7 @@ public:
     llvm::Value* createDevide(llvm::Value* operand1, llvm::Value* operand2);
 
     // variable operations
+    llvm::Value *createRegister();
     llvm::Value *createAlloca(const std::string &name, llvm::Type *type);
     llvm::Value *createStore(llvm::Value *value, llvm::Value *pointer);
     llvm::Value *createLoad(llvm::Type *type, llvm::Value *pointer);

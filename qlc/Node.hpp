@@ -9,9 +9,10 @@ enum class NodeType {
 
     Func,
     Return,
-    If, // contains else as opional data
+    If, // contains else as optional data
     VarDeclare,
     VarLoad,
+    VarMod,
     IntLiteral,
     FloatLiteral,
     BoolLiteral,
@@ -63,6 +64,7 @@ class VarDeclareNode : public Node {
 public:
     std::unique_ptr<Node> body;
     std::string_view identifier;
+    bool isMutable;
     TokenType valueType; // the type of the variable, only types allowed
 
     VarDeclareNode() : Node(NodeType::VarDeclare) {}
@@ -73,6 +75,14 @@ public:
     std::string_view identifier;
 
     VarLoadNode() : Node(NodeType::VarLoad) {}
+};
+
+class VarModNode : public Node {
+public:
+    std::string_view identifier;
+    std::unique_ptr<Node> body;
+
+    VarModNode() : Node(NodeType::VarMod) {}
 };
 
 class IntLiteralNode : public Node {

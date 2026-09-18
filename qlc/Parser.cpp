@@ -91,6 +91,10 @@ std::unique_ptr<Node> Parser::parseFn() {
             std::unique_ptr<Node> ifNode = parseIf();
             funcNode->body.push_back(std::move(ifNode));
         }
+        else if (currentToken.type == TokenType::Identifier) {
+            std::unique_ptr<Node> varNode = parseVarMod();
+            funcNode->body.push_back(std::move(varNode));
+        }
         // Todo: other statements
         else {
         advance();
@@ -138,6 +142,10 @@ std::unique_ptr<Node> Parser::parseIf() {
             std::unique_ptr<Node> newIfNode = parseIf();
             ifNode->ifBody.push_back(std::move(newIfNode));
         }
+        else if (currentToken.type == TokenType::Identifier) {
+            std::unique_ptr<Node> varNode = parseVarMod();
+            ifNode->ifBody.push_back(std::move(varNode));
+        }
         // Todo: other statements
         else {
             advance();
@@ -161,6 +169,10 @@ std::unique_ptr<Node> Parser::parseIf() {
                 std::unique_ptr<Node> newIfNode = parseIf();
                 ifNode->elseBody.push_back(std::move(newIfNode));
             }
+            else if (currentToken.type == TokenType::Identifier) {
+                std::unique_ptr<Node> varNode = parseVarMod();
+                ifNode->elseBody.push_back(std::move(varNode));
+            }
             // Todo: other statements
             else {
                 advance();
@@ -175,7 +187,11 @@ std::unique_ptr<Node> Parser::parseIf() {
 std::unique_ptr<Node> Parser::parseVarDeclare() {
     if (!expectAndConsume(TokenType::Let)) return nullptr;
 
+    bool isMutable = false;
+    if (expectAndConsume(TokenType::Tilde)) isMutable = true;
+
     auto varNode = std::make_unique<VarDeclareNode>();
+    varNode->isMutable = isMutable;
 
     if (expect(TokenType::I32) || expect(TokenType::I8) || expect(TokenType::F64) || expect(TokenType::Bool) || expect(TokenType::Char)) {
         varNode->valueType = currentToken.type;
@@ -212,6 +228,20 @@ std::unique_ptr<Node> Parser::parseVarLoad() {
 
     // todo: error handling
     return nullptr;
+}
+
+std::unique_ptr<Node> Parser::parseVarMod() {
+    if (!expect(TokenType::Identifier)) return nullptr; // todo: error handling
+
+    auto varNode = std::make_unique<VarModNode>();
+    varNode->identifier = currentToken.data;
+    advance();
+
+    if (!expectAndConsume(TokenType::Equals)) return nullptr;
+
+    varNode->body = parseExpresion();
+
+    return varNode;
 }
 
 std::unique_ptr<Node> Parser::parseIntLiteral() {

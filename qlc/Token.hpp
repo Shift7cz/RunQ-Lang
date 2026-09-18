@@ -38,6 +38,7 @@ enum class TokenType {
     ClosedBrace, // '}'
     Semicolon, // ';'
     Colon, // ':'
+    Tilde, // ~
     Equals,
 
     // compressions
@@ -87,6 +88,7 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::ClosedBrace: return "ClosedBrace";
         case TokenType::Semicolon:   return "Semicolon";
         case TokenType::Colon:       return "Colon";
+        case TokenType::Tilde:       return "Tilde";
         case TokenType::Equals:      return "Equals";
         case TokenType::IsEqualTo:   return "IsEqualTo";
         case TokenType::NotEqualTo:  return "NotEqualTo";

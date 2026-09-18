@@ -4,7 +4,8 @@ fn main() : i32 {
     let i32 y = 8 * 8;
 
     let f64 pi = 3.141592;
-    let f64 pi2 = pi;
+    let~ f64 otherDouble = pi;
+    otherDouble = 123.4567;
 
     let i8 z = 58i8;
     let i8 w = z + 9i8;

@@ -79,19 +79,19 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             auto var = static_cast<VarDeclareNode*>(node);
             switch (var->valueType) {
                 case TokenType::I32:
-                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'i32'\n";
+                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'i32'; [Mutable] -> '" << var -> isMutable << "'\n";
                     break;
                 case TokenType::I8:
-                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'i8'\n";
+                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'i8'; [Mutable] -> '" << var -> isMutable << "'\n";
                     break;
                 case TokenType::F64:
-                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'f64'\n";
+                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'f64'; [Mutable] -> '" << var -> isMutable << "'\n";
                     break;
                 case TokenType::Bool:
-                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'bool'\n";
+                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'bool'; [Mutable] -> '" << var -> isMutable << "'\n";
                     break;
                 case TokenType::Char:
-                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'char'\n";
+                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'char'; [Mutable] -> '" << var -> isMutable << "'\n";
                     break;
                     // todo: Other return types printing here
                 default:
@@ -105,6 +105,13 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
         case NodeType::VarLoad: {
             auto var = static_cast<VarLoadNode*>(node);
             std::cout << spaces << "[VarLoad] -> Name: '" << var->identifier << "'\n";
+            break;
+        }
+        case NodeType::VarMod: {
+            auto var = static_cast<VarModNode*>(node);
+            std::cout << spaces << "[VarMod] -> Name: '" << var->identifier << "'\n";
+
+            printNode(var->body.get(), indent + 1);
             break;
         }
         case NodeType::IntLiteral: {

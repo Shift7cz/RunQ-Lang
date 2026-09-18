@@ -25,6 +25,7 @@ public:
     std::unique_ptr<Node> parseIf();
     std::unique_ptr<Node> parseVarDeclare();
     std::unique_ptr<Node> parseVarLoad();
+    std::unique_ptr<Node> parseVarMod();
     std::unique_ptr<Node> parseIntLiteral();
     std::unique_ptr<Node> parseFloatLiteral();
     std::unique_ptr<Node> parseBoolLiteral();

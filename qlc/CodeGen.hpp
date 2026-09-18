@@ -16,6 +16,7 @@ private:
     llvm::Value* compileReturn(ReturnNode* node);
     llvm::Value* compileVarDeclare(VarDeclareNode* node);
     llvm::Value* compileVarLoad(VarLoadNode* node);
+    llvm::Value* compileVarMod(VarModNode* node);
     llvm::Value* compileIf(IfNode* node);
 
 public:

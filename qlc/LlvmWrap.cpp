@@ -81,6 +81,10 @@ llvm::Value * LlvmWrap::createDevide(llvm::Value *operand1, llvm::Value *operand
     return builder->CreateSDiv(operand1, operand2, "sdivtmp");  // S = signed, matches i32
 }
 
+llvm::Value * LlvmWrap::createRegister() {
+    return nullptr; // todo: add
+}
+
 llvm::Value* LlvmWrap::createAlloca(const std::string& name, llvm::Type* type) {
     return builder->CreateAlloca(type, nullptr, name);
 }
