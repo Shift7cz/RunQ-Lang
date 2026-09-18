@@ -58,7 +58,11 @@ std::unique_ptr<Node> Parser::parseFn() {
     TokenType retType = TokenType::Unknown;
     if (expectAndConsume(TokenType::Colon)) {
         // moves into return type if return type is available
-        if (expect(TokenType::I32)) { // todo: dont forget other return types
+        if (expect(TokenType::I32)
+            || expect(TokenType::I8)
+            || expect(TokenType::F64)
+            || expect(TokenType::Bool)
+            || expect(TokenType::Char)) {
             retType = currentToken.type;
             advance();
         }

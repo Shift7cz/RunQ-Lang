@@ -25,7 +25,18 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
                 case TokenType::I32:
                     std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'i32'\n";
                     break;
-                    // todo: Other return types printing here
+                case TokenType::I8:
+                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'i8'\n";
+                    break;
+                case TokenType::F64:
+                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'f64'\n";
+                    break;
+                case TokenType::Bool:
+                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'bool'\n";
+                    break;
+                case TokenType::Char:
+                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'char'\n";
+                    break;
                 default:
                     std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'ERROR in Ast'\n";
                     break;

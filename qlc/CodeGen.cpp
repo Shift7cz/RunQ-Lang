@@ -11,7 +11,18 @@ void CodeGen::compileFunction(FuncNode* node) {
         case TokenType::I32:
             currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i32Type());
             break;
-            // todo: other types here
+        case TokenType::I8:
+            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i8Type());
+            break;
+        case TokenType::F64:
+            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.f64Type());
+            break;
+        case TokenType::Bool:
+            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.boolType());
+            break;
+        case TokenType::Char:
+            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i8Type());
+            break;
         default:
             // todo: error handling
             return;
@@ -91,7 +102,7 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
     return nullptr;
 }
 
-llvm::Value* CodeGen::compileReturn(ReturnNode* node) {
+llvm::Value* CodeGen::compileReturn(ReturnNode* node) { // todo: return statement typing
     llvm::Value* val = compileExpression(node->body.get());
     return llvm.createReturn(val);
 }
