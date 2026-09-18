@@ -88,6 +88,7 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
             std::cerr << "Unknown node type in CodeGen" << std::endl;
             return nullptr;
     }
+    return nullptr;
 }
 
 llvm::Value* CodeGen::compileReturn(ReturnNode* node) {

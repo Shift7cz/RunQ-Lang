@@ -26,13 +26,13 @@ RunQ-Lang is an experimental, statically-typed programming language, inspired by
 fn main() : i32 {
 
     let i32 x = 12;
-    let i32 y = 64;
+    let i32 y = 8 * 8;
 
     let f64 pi = 3.141592;
     let f64 pi2 = pi;
 
-    let i8 z = 126i8;
-    let i8 w = z;
+    let i8 z = 58i8;
+    let i8 w = z + 9i8;
 
     let char letter = 'q';
     let bool isSomething = true;
@@ -54,14 +54,13 @@ fn main() : i32 {
 | Potential future features (not garanteed) | Planned features  | Currently in development | Already implemented |
 | --------- | --------- | --------- | --------- |
 | C FFI | Loops (while, for, loop all rust style) | Bool operations | Basic math functions |
-| Package manager (using GitHub) | Multi function code |  | Variables loading and declaring |
+| Package manager (using GitHub) | Multi function code | Different return types  | Variables loading and declaring |
 | Multiple file compatibility | Strings, arrays, vectors |  | Return statement |
 | Multi Threading | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
 | Bootstrapping | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128) |  | Basic if/else (accepts variables and comapre expresions) |
-|  | Different return types |  | Reading from file |
-|  | Longer math expresions working properly |  |  |
-|  | Autmomatic typing in some situations based on context |  |  |
+|  | Autmomatic typing in some situations based on context |  | Reading from file |
+|  | Longer math expresions working properly |  |  |    
 
 
 ---
