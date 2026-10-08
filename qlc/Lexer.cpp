@@ -109,7 +109,7 @@ Token Lexer::nextToken() {
 
         std::string_view nextToken = source.substr(startPos, pos - startPos);
 
-        // todo: sort them based on use to be faster? and make it a switch
+        // todo: sort them based on use to be faster? and make it a switch?
         if (nextToken == "return") return Token{TokenType::Return, nextToken, line, column};
         if (nextToken == "fn") return Token{TokenType::Fn, "fn", line, column};
         if (nextToken == "let") return Token{TokenType::Let, "let", line, column};

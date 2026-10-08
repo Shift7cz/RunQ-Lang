@@ -81,8 +81,16 @@ llvm::Value * LlvmWrap::createDevide(llvm::Value *operand1, llvm::Value *operand
     return builder->CreateSDiv(operand1, operand2, "sdivtmp");  // S = signed, matches i32
 }
 
-llvm::Value * LlvmWrap::createRegister() {
-    return nullptr; // todo: add
+llvm::Value * LlvmWrap::createRegister(llvm::Value *value, TokenType type, std::string_view name) {
+    llvm::Value* zeroVal;
+    switch (type) {
+        case TokenType::I32: zeroVal = llvm::ConstantInt::get(i32Type(), 0); break;
+        case TokenType::I8: zeroVal = llvm::ConstantInt::get(i8Type(), 0); break;
+        case TokenType::F64: zeroVal = llvm::ConstantInt::get(f64Type(), 0); break;
+        case TokenType::Bool: zeroVal = llvm::ConstantInt::get(boolType(), 0); break;
+        case TokenType::Char: zeroVal = llvm::ConstantInt::get(i8Type(), 0); break;
+    }
+    return builder->CreateAdd(value, zeroVal, name);
 }
 
 llvm::Value* LlvmWrap::createAlloca(const std::string& name, llvm::Type* type) {

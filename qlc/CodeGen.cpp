@@ -111,6 +111,13 @@ llvm::Value* CodeGen::compileReturn(ReturnNode* node) { // todo: return statemen
 }
 
 llvm::Value * CodeGen::compileVarDeclare(VarDeclareNode *node) {
+    if (node->isMutable) {
+        llvm::Value* val = compileExpression(node->body.get());
+        return llvm.createRegister(val, node->valueType, node->identifier);
+
+        // symbolTable[std::string(node->identifier)] = {pointer, type}; todo: fix symbol table in this case
+    }
+
     llvm::Value* pointer;
     llvm::Type* type;
     switch (node->valueType) {
