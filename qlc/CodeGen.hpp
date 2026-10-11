@@ -7,13 +7,23 @@
 
 class CodeGen {
 private:
+    struct VarEntry {
+        bool isMutable;
+        llvm::Value* value;
+        llvm::Type* type;
+    };
+
+    std::map<std::string, VarEntry> symbolTable;
+
     LlvmWrap llvm;
-    std::map<std::string, std::pair<llvm::Value*, llvm::Type*>> symbolTable;
     llvm::Function* currentFunction = nullptr;
 
     void compileFunction(FuncNode* node);
     llvm::Value* compileExpression(Node* node);
     llvm::Value* compileReturn(ReturnNode* node);
+
+    llvm::Type *llvmTypeFromToken(TokenType type);
+
     llvm::Value* compileVarDeclare(VarDeclareNode* node);
     llvm::Value* compileVarLoad(VarLoadNode* node);
     llvm::Value* compileVarMod(VarModNode* node);

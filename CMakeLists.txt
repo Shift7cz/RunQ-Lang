@@ -3,6 +3,8 @@ project(RunQ-Lang)
 
 set(CMAKE_CXX_STANDARD 23)
 
+set(LLVM_DIR "/usr/lib/llvm/21/lib/cmake/llvm")
+
 find_package(LLVM REQUIRED CONFIG)
 
 message(STATUS "Found LLVM ${LLVM_VERSION}")

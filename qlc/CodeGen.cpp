@@ -110,52 +110,71 @@ llvm::Value* CodeGen::compileReturn(ReturnNode* node) { // todo: return statemen
     return llvm.createReturn(val);
 }
 
-llvm::Value * CodeGen::compileVarDeclare(VarDeclareNode *node) {
-    if (node->isMutable) {
-        llvm::Value* val = compileExpression(node->body.get());
-        return llvm.createRegister(val, node->valueType, node->identifier);
+llvm::Type* CodeGen::llvmTypeFromToken(TokenType type) {
+    switch (type) {
+        case TokenType::I32:  return llvm.i32Type();
+        case TokenType::I8:   return llvm.i8Type();
+        case TokenType::F64:  return llvm.f64Type();
+        case TokenType::Bool: return llvm.boolType();
+        case TokenType::Char: return llvm.i8Type();
+        default: return nullptr;
+    }
+}
 
-        // symbolTable[std::string(node->identifier)] = {pointer, type}; todo: fix symbol table in this case
+llvm::Value* CodeGen::compileVarDeclare(VarDeclareNode* node) {
+    if (!node->isMutable) {
+        // immutable - SSA value, no alloca needed
+        llvm::Value* val = compileExpression(node->body.get());
+        llvm::Type* type = llvmTypeFromToken(node->valueType);
+        symbolTable[std::string(node->identifier)] = {false, val, type};
+        return val;
     }
 
+    // mutable - alloca/store/load
     llvm::Value* pointer;
     llvm::Type* type;
     switch (node->valueType) {
         case TokenType::I32:
-            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i32Type());
+            pointer = llvm.createAlloca(std::string(node->identifier), llvm.i32Type());
             type = llvm.i32Type();
             break;
         case TokenType::I8:
-            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i8Type());
+            pointer = llvm.createAlloca(std::string(node->identifier), llvm.i8Type());
             type = llvm.i8Type();
             break;
         case TokenType::F64:
-            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.f64Type());
+            pointer = llvm.createAlloca(std::string(node->identifier), llvm.f64Type());
             type = llvm.f64Type();
             break;
         case TokenType::Bool:
-            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.boolType());
+            pointer = llvm.createAlloca(std::string(node->identifier), llvm.boolType());
             type = llvm.boolType();
             break;
         case TokenType::Char:
-            pointer = llvm.createAlloca(static_cast<std::string>(node->identifier), llvm.i8Type());
+            pointer = llvm.createAlloca(std::string(node->identifier), llvm.i8Type());
             type = llvm.i8Type();
             break;
+        default:
+            return nullptr;
     }
 
-    symbolTable[std::string(node->identifier)] = {pointer, type};
-
+    symbolTable[std::string(node->identifier)] = {true, pointer, type};
     llvm::Value* val = compileExpression(node->body.get());
     return llvm.createStore(val, pointer);
 }
 
 llvm::Value * CodeGen::compileVarLoad(VarLoadNode *node) {
-    auto& [pointer, type] = symbolTable[std::string(node->identifier)];
-    return llvm.createLoad(type, pointer);
+    auto& entry = symbolTable[std::string(node->identifier)];
+    if (entry.isMutable) {
+        return llvm.createLoad(entry.type, entry.value); // value is pointer
+    }
+    return entry.value; // value is direct SSA value
 }
 
 llvm::Value * CodeGen::compileVarMod(VarModNode *node) {
-    return nullptr; // todo: implement
+    auto& entry = symbolTable[std::string(node->identifier)];
+    llvm::Value* val = compileExpression(node->body.get());
+    return llvm.createStore(val, entry.value); // entry.value is the pointer
 }
 
 llvm::Value * CodeGen::compileIf(IfNode *node) {

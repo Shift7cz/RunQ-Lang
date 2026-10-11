@@ -1,7 +1,8 @@
 fn main() : i32 {
 
     let i32 x = 12;
-    let i32 y = 8 * 8;
+    let~ i32 y = 8 * x;
+    y = x - 4
 
     let f64 pi = 3.141592;
     let~ f64 otherDouble = pi;
@@ -14,9 +15,9 @@ fn main() : i32 {
     let bool isSomething = true;
 
     if x >= y {
-        return x + 27 + 6;
+        return x + 27 + 6 + 4;
     }
     else {
-        return 27 + x + x;
+        return 27 + x + y;
     }
 }
