@@ -35,6 +35,8 @@ public:
     llvm::Function* createFunc(const std::string& name, llvm::Type* retType);
     llvm::BasicBlock* createBlock(const std::string& name, llvm::Function* fn);
     llvm::BasicBlock *createBlockNoInsert(const std::string &name, llvm::Function *fn);
+
+    bool currentBlockHasTerminator();
     void setInsertPoint(llvm::BasicBlock *block);
 
     // instructions

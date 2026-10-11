@@ -1,8 +1,8 @@
 fn main() : i32 { // this is a comment
 
     let i32 x = 12; // declare immutable variable
-    let~ i32 y = 8 * x;
-    y = x - 4 // mod variable
+    let~ i32 y = 2 * x;
+    y = y - 4; // mod variable
 
     let f64 pi = 3.141592;
     let~ f64 otherDouble = pi; // declare mutable variable
@@ -14,10 +14,13 @@ fn main() : i32 { // this is a comment
     let char letter = 'q';
     let bool isSomething = true;
 
+    let~ i32 returnValue = 0;
     if x >= y { // If statements
-        return x + 27 + 6 + 4; // math
+        returnValue = x + 27 + 6 + 4; // math
     }
     else {
-        return 27 + x + y; // return
+        returnValue = 27 + x + y;
     }
+
+    return returnValue + 2; // return
 }

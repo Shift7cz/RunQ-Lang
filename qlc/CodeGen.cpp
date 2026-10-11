@@ -177,35 +177,41 @@ llvm::Value * CodeGen::compileVarMod(VarModNode *node) {
     return llvm.createStore(val, entry.value); // entry.value is the pointer
 }
 
-llvm::Value * CodeGen::compileIf(IfNode *node) {
+llvm::Value* CodeGen::compileIf(IfNode* node) {
     llvm::Value* condition = compileExpression(node->condition.get());
-
     bool doesElseExist = !node->elseBody.empty();
 
+    // create all blocks first
     llvm::BasicBlock* ifBlock = llvm.createBlockNoInsert("if", currentFunction);
-    llvm::BasicBlock* elseBlock;
+    llvm::BasicBlock* elseBlock = doesElseExist ? llvm.createBlockNoInsert("else", currentFunction) : nullptr;
+    llvm::BasicBlock* mergeBlock = llvm.createBlockNoInsert("merge", currentFunction);
 
+    // now branch — all pointers are valid
     if (doesElseExist) {
-        elseBlock = llvm.createBlockNoInsert("else", currentFunction);
-
         llvm.createCondBranch(condition, ifBlock, elseBlock);
     }
-    else {
-        // todo: handle creation fo only one block
-    }
 
+    // if block
     llvm.setInsertPoint(ifBlock);
     for (const auto& statement : node->ifBody) {
         compileExpression(statement.get());
     }
+    if (!llvm.currentBlockHasTerminator()) {
+        llvm.createBranch(mergeBlock);
+    }
 
+    // else block
     if (doesElseExist) {
         llvm.setInsertPoint(elseBlock);
         for (const auto& statement : node->elseBody) {
             compileExpression(statement.get());
         }
+        if (!llvm.currentBlockHasTerminator()) {
+            llvm.createBranch(mergeBlock);
+        }
     }
 
+    llvm.setInsertPoint(mergeBlock);
     return nullptr;
 }
 

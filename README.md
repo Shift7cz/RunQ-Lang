@@ -26,8 +26,8 @@ RunQ-Lang is an experimental, statically-typed programming language, inspired by
 fn main() : i32 { // this is a comment
 
     let i32 x = 12; // declare immutable variable
-    let~ i32 y = 8 * x;
-    y = x - 4 // mod variable
+    let~ i32 y = 2 * x;
+    y = y - 4; // mod variable
 
     let f64 pi = 3.141592;
     let~ f64 otherDouble = pi; // declare mutable variable
@@ -39,12 +39,15 @@ fn main() : i32 { // this is a comment
     let char letter = 'q';
     let bool isSomething = true;
 
+    let~ i32 returnValue = 0;
     if x >= y { // If statements
-        return x + 27 + 6 + 4; // math
+        returnValue = x + 27 + 6 + 4; // math
     }
     else {
-        return 27 + x + y; // return
+        returnValue = 27 + x + y;
     }
+
+    return returnValue + 2; // return
 }
 ```
 
@@ -55,14 +58,14 @@ fn main() : i32 { // this is a comment
 
 | Potential future features (not garanteed) | Planned features  | Currently in development | Already implemented |
 | --------- | --------- | --------- | --------- |
-| C FFI | Loops (while, for, loop all rust style) | Bool operations | Basic math functions |
+| C FFI | Longer math expresions working properly | Bool operations | Basic math functions |
 | Package manager (using GitHub) | Multi function code | Different return types (return statement typing)  | Variables loading and declaring |
-| Multiple file compatibility | Strings, arrays, vectors | If/else joining (doesnt have to end in return) | Return statement |
+| Multiple file compatibility | Strings, arrays, vectors | Loops (while, for, loop all rust style) | Return statement |
 | Multi Threading | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
 | Bootstrapping | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128) |  | Basic if/else (accepts variables and comapre expresions) |
 |  | Autmomatic typing in some situations based on context |  | Reading from file |
-|  | Longer math expresions working properly |  | Mutable/Imutable variables (let/let~) |   
+|  |  |  | Mutable/Imutable variables (let/let~) |   
 | | | | Comments|
 
 

@@ -49,6 +49,10 @@ llvm::BasicBlock* LlvmWrap::createBlockNoInsert(const std::string& name, llvm::F
     return llvm::BasicBlock::Create(*context, name, fn);
 }
 
+bool LlvmWrap::currentBlockHasTerminator() {
+    return builder->GetInsertBlock()->getTerminator() != nullptr;
+}
+
 void LlvmWrap::setInsertPoint(llvm::BasicBlock* block) {
     builder->SetInsertPoint(block);
 }
