@@ -1,23 +1,23 @@
-fn main() : i32 {
+fn main() : i32 { // this is a comment
 
-    let i32 x = 12;
+    let i32 x = 12; // declare immutable variable
     let~ i32 y = 8 * x;
-    y = x - 4
+    y = x - 4 // mod variable
 
     let f64 pi = 3.141592;
-    let~ f64 otherDouble = pi;
+    let~ f64 otherDouble = pi; // declare mutable variable
     otherDouble = 123.4567;
 
-    let i8 z = 58i8;
+    let i8 z = 58i8; // these will not be in LLVM IR because of compiler optimisations
     let i8 w = z + 9i8;
 
     let char letter = 'q';
     let bool isSomething = true;
 
-    if x >= y {
-        return x + 27 + 6 + 4;
+    if x >= y { // If statements
+        return x + 27 + 6 + 4; // math
     }
     else {
-        return 27 + x + y;
+        return 27 + x + y; // return
     }
 }

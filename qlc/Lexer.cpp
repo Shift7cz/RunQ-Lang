@@ -61,7 +61,7 @@ Token Lexer::nextToken() {
         case '+': advance(); return Token{TokenType::Plus, "+", line, column};
         case '-': advance(); return Token{TokenType::Dash, "-", line, column};
         case '*': advance(); return Token{TokenType::Star, "*", line, column};
-        case '/': advance(); return Token{TokenType::Slash, "/", line, column};
+        //case '/': advance(); return Token{TokenType::Slash, "/", line, column};
 
             // starting with the same character handling here
         case '=':
@@ -82,6 +82,18 @@ Token Lexer::nextToken() {
                 advance(); return Token{TokenType::GreaterOrEqual, ">=", line, column};
             }
             advance(); return Token{TokenType::Equals, ">", line, column};
+
+        case '/':
+            advance();
+            if (peak() == '/') {
+               // its a comment
+                while (peak() != '\n') {
+                    advance();
+                }
+                return Token{TokenType::Comment, "", line, column};
+            }\
+            advance(); return Token{TokenType::Slash, "/", line, column};
+
         case '!': advance(); advance(); return Token{TokenType::NotEqualTo, "!=", line, column}; // todo: handling of the bitwise !boolValue operation same as with = < >
     }
 

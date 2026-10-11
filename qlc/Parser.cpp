@@ -4,6 +4,9 @@
 
 void Parser::advance() {
     currentToken = lexer.nextToken();
+    while (currentToken.type == TokenType::Comment) {
+        currentToken = lexer.nextToken();
+    }
 }
 
 bool Parser::expect(TokenType expected) {

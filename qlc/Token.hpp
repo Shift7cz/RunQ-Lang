@@ -51,6 +51,7 @@ enum class TokenType {
 
     // Special
     EndOfFile,
+    Comment,
     Unknown // for unknown
 };
 
@@ -97,6 +98,7 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::LessOrEqual: return "LessOrEqual";
         case TokenType::GreaterOrEqual: return "GreaterOrEqual";
         case TokenType::EndOfFile:   return "EndOfFile";
+        case TokenType::Comment:     return "Comment";
         case TokenType::Unknown:     return "Unknown";
     }
     return "InvalidType"; // Fallback safety

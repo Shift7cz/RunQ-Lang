@@ -23,27 +23,27 @@ RunQ-Lang is an experimental, statically-typed programming language, inspired by
 ## Code Example
 
 ```runq
-fn main() : i32 {
+fn main() : i32 { // this is a comment
 
-    let i32 x = 12;
+    let i32 x = 12; // declare immutable variable
     let~ i32 y = 8 * x;
-    y = x - 4
+    y = x - 4 // mod variable
 
     let f64 pi = 3.141592;
-    let~ f64 otherDouble = pi;
+    let~ f64 otherDouble = pi; // declare mutable variable
     otherDouble = 123.4567;
 
-    let i8 z = 58i8;
+    let i8 z = 58i8; // these will not be in LLVM IR because of compiler optimisations
     let i8 w = z + 9i8;
 
     let char letter = 'q';
     let bool isSomething = true;
 
-    if x >= y {
-        return x + 27 + 6 + 4;
+    if x >= y { // If statements
+        return x + 27 + 6 + 4; // math
     }
     else {
-        return 27 + x + y;
+        return 27 + x + y; // return
     }
 }
 ```
@@ -57,12 +57,13 @@ fn main() : i32 {
 | --------- | --------- | --------- | --------- |
 | C FFI | Loops (while, for, loop all rust style) | Bool operations | Basic math functions |
 | Package manager (using GitHub) | Multi function code | Different return types (return statement typing)  | Variables loading and declaring |
-| Multiple file compatibility | Strings, arrays, vectors | Comments | Return statement |
-| Multi Threading | OOP (C++ style) | If/else joining (doesnt have to end in return) |  i32, i8, f64, bool and char data types |
+| Multiple file compatibility | Strings, arrays, vectors | If/else joining (doesnt have to end in return) | Return statement |
+| Multi Threading | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
 | Bootstrapping | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128) |  | Basic if/else (accepts variables and comapre expresions) |
 |  | Autmomatic typing in some situations based on context |  | Reading from file |
-|  | Longer math expresions working properly |  | Mutable/Imutable variables (let/let~) |    
+|  | Longer math expresions working properly |  | Mutable/Imutable variables (let/let~) |   
+| | | | Comments|
 
 
 ---
