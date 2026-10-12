@@ -1,4 +1,4 @@
-fn main() : i32 { // function main
+fn main() : i32 { // this is a comment
 
     let i32 x = 12; // declare immutable variable
     let~ i32 y = 2 * x;
@@ -27,5 +27,11 @@ fn main() : i32 { // function main
         i = i + 1
     }
 
-    return returnValue + i; // return
+    let~ i32 a = 2 + 2; // 4
+    let~ i32 b = 4 - 2; // 2
+    let~ i32 c = 3 * 3; // 9
+    let~ i32 d = 9 / 3; // 3
+    let i32 mathTst = a + b * c - d; // 19
+
+    return returnValue + i + mathTst; // return
 }

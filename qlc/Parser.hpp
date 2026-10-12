@@ -31,7 +31,11 @@ public:
     std::unique_ptr<Node> parseFloatLiteral();
     std::unique_ptr<Node> parseBoolLiteral();
     std::unique_ptr<Node> parseCharLiteral();
-    std::unique_ptr<Node> parseMathOperator(TokenType opType, std::unique_ptr<Node> operand1);
+
+    std::unique_ptr<Node> parsePrimary();
+
+    std::unique_ptr<Node> parseMultiplicative();
+
     std::unique_ptr<Node> parseComparison();
     std::unique_ptr<Node> parseExpresion();
 };

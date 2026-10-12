@@ -52,7 +52,13 @@ fn main() : i32 { // this is a comment
         i = i + 1
     }
 
-    return returnValue + i; // return
+    let~ i32 a = 2 + 2; // 4
+    let~ i32 b = 4 - 2; // 2
+    let~ i32 c = 3 * 3; // 9
+    let~ i32 d = 9 / 3; // 3
+    let i32 mathTst = a + b * c - d; // 19
+
+    return returnValue + i + mathTst; // return
 }
 ```
 
@@ -66,7 +72,7 @@ fn main() : i32 { // this is a comment
 | C FFI | Autmomatic typing in some situations based on context | Bool operations | Basic math functions |
 | Package manager (using GitHub) | Multi function code | Different return types (return statement typing)  | Variables loading and declaring |
 | Multiple file compatibility | Strings, arrays, vectors | Loops (for, loop all rust style) | Return statement |
-| Multi Threading | OOP (C++ style) | Math overhoul (Longer math expresions working properly) |  i32, i8, f64, bool and char data types |
+| Multi Threading | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
 | Bootstrapping | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128) |  | Basic if/else (accepts variables and comapre expresions) |
 |  |  |  | Reading from file |

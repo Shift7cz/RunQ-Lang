@@ -365,31 +365,28 @@ std::unique_ptr<Node> Parser::parseCharLiteral() {
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::parseMathOperator(TokenType opType, std::unique_ptr<Node> operand1) { // todo: math operations with floats
-    auto mathOpNode = std::make_unique<MathOperatorNode>();
-    mathOpNode->operatorType = opType;
-
-    advance();
-
-    if (expect(TokenType::IntLiteral)) {
-        std::unique_ptr<Node> operand2 = parseExpresion(); // todo: Longer math equations will translate, but they wont compile in the correct order. fix.
-
-        mathOpNode->operand1 = std::move(operand1);
-        mathOpNode->operand2 = std::move(operand2);
-
-        return mathOpNode;
-    }
-    if (expect(TokenType::Identifier)) {
-        std::unique_ptr<Node> operand2 = parseExpresion();
-
-        mathOpNode->operand1 = std::move(operand1);
-        mathOpNode->operand2 = std::move(operand2);
-
-        return mathOpNode;
-    }
-
-    // todo: error handling
+std::unique_ptr<Node> Parser::parsePrimary() {
+    if (expect(TokenType::IntLiteral))   return parseIntLiteral();
+    if (expect(TokenType::FloatLiteral)) return parseFloatLiteral();
+    if (expect(TokenType::BoolLiteral))  return parseBoolLiteral();
+    if (expect(TokenType::CharLiteral))  return parseCharLiteral();
+    if (expect(TokenType::Identifier))   return parseVarLoad();
     return nullptr;
+}
+
+std::unique_ptr<Node> Parser::parseMultiplicative() {
+    auto left = parsePrimary();
+    while (expect(TokenType::Star) || expect(TokenType::Slash)) {
+        TokenType op = currentToken.type;
+        advance();
+        auto right = parsePrimary();
+        auto node = std::make_unique<MathOperatorNode>();
+        node->operatorType = op;
+        node->operand1 = std::move(left);
+        node->operand2 = std::move(right);
+        left = std::move(node);
+    }
+    return left;
 }
 
 std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floats
@@ -442,99 +439,17 @@ std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floa
     return nullptr;
 }
 
-
-std::unique_ptr<Node> Parser::parseExpresion() { // todo: just rebuild this function
-    if (expect(TokenType::IntLiteral)) {
-        std::unique_ptr<Node> intNode1 = parseIntLiteral();
-
-        if (expect(TokenType::Plus)) {
-            return parseMathOperator(TokenType::Plus, std::move(intNode1));
-        }
-        if (expect(TokenType::Dash)) {
-            return parseMathOperator(TokenType::Dash, std::move(intNode1));
-        }
-        if (expect(TokenType::Star)) {
-            return parseMathOperator(TokenType::Star, std::move(intNode1));
-        }
-        if (expect(TokenType::Slash)) {
-            return parseMathOperator(TokenType::Slash, std::move(intNode1));
-        }
-
-        return intNode1;
+std::unique_ptr<Node> Parser::parseExpresion() {
+    auto left = parseMultiplicative();
+    while (expect(TokenType::Plus) || expect(TokenType::Dash)) {
+        TokenType op = currentToken.type;
+        advance();
+        auto right = parseMultiplicative();
+        auto node = std::make_unique<MathOperatorNode>();
+        node->operatorType = op;
+        node->operand1 = std::move(left);
+        node->operand2 = std::move(right);
+        left = std::move(node);
     }
-    if (expect(TokenType::Identifier)) {
-        std::unique_ptr<Node> varLoadNode1 = parseVarLoad();
-
-        if (expect(TokenType::Plus)) {
-            return parseMathOperator(TokenType::Plus, std::move(varLoadNode1));
-        }
-        if (expect(TokenType::Dash)) {
-            return parseMathOperator(TokenType::Dash, std::move(varLoadNode1));
-        }
-        if (expect(TokenType::Star)) {
-            return parseMathOperator(TokenType::Star, std::move(varLoadNode1));
-        }
-        if (expect(TokenType::Slash)) {
-            return parseMathOperator(TokenType::Slash, std::move(varLoadNode1));
-        }
-
-        return varLoadNode1;
-    }
-    if (expect(TokenType::FloatLiteral)) {
-        std::unique_ptr<Node> floatNode1 = parseFloatLiteral();
-
-        if (expect(TokenType::Plus)) {
-            return parseMathOperator(TokenType::Plus, std::move(floatNode1));
-        }
-        if (expect(TokenType::Dash)) {
-            return parseMathOperator(TokenType::Dash, std::move(floatNode1));
-        }
-        if (expect(TokenType::Star)) {
-            return parseMathOperator(TokenType::Star, std::move(floatNode1));
-        }
-        if (expect(TokenType::Slash)) {
-            return parseMathOperator(TokenType::Slash, std::move(floatNode1));
-        }
-
-        return floatNode1;
-    }
-    if (expect(TokenType::BoolLiteral)) { // todo: bool operations here?
-        std::unique_ptr<Node> boolNode1 = parseBoolLiteral();
-
-        if (expect(TokenType::Plus)) {
-            return parseMathOperator(TokenType::Plus, std::move(boolNode1));
-        }
-        if (expect(TokenType::Dash)) {
-            return parseMathOperator(TokenType::Dash, std::move(boolNode1));
-        }
-        if (expect(TokenType::Star)) {
-            return parseMathOperator(TokenType::Star, std::move(boolNode1));
-        }
-        if (expect(TokenType::Slash)) {
-            return parseMathOperator(TokenType::Slash, std::move(boolNode1));
-        }
-
-        return boolNode1;
-    }
-    if (expect(TokenType::CharLiteral)) {
-        std::unique_ptr<Node> charNode1 = parseCharLiteral(); // todo: char operations? here?
-
-        if (expect(TokenType::Plus)) {
-            return parseMathOperator(TokenType::Plus, std::move(charNode1));
-        }
-        if (expect(TokenType::Dash)) {
-            return parseMathOperator(TokenType::Dash, std::move(charNode1));
-        }
-        if (expect(TokenType::Star)) {
-            return parseMathOperator(TokenType::Star, std::move(charNode1));
-        }
-        if (expect(TokenType::Slash)) {
-            return parseMathOperator(TokenType::Slash, std::move(charNode1));
-        }
-
-        return charNode1;
-    }
-
-    // todo: error handling
-    return nullptr;
+    return left;
 }
