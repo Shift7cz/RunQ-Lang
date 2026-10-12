@@ -49,13 +49,11 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
             switch (literal->type) {
                 case TokenType::I32:
                     return llvm.createIntLiteral(literal->value, 32);
-                    break;
                 case TokenType::I8:
                     return llvm.createIntLiteral(literal->value, 8);
-                    break;
                 default:
                     std::cout << "Unknown var type in Codegen" << std::endl;
-                    break;
+                    return nullptr;
             }
         }
         case NodeType::FloatLiteral: {
@@ -97,6 +95,9 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
         }
         case NodeType::VarMod: {
             return compileVarMod(static_cast<VarModNode*>(node));
+        }
+        case NodeType::While: {
+            return compileWhile(static_cast<WhileNode*>(node));
         }
         default:
             std::cerr << "Unknown node type in CodeGen" << std::endl;
@@ -181,15 +182,13 @@ llvm::Value* CodeGen::compileIf(IfNode* node) {
     llvm::Value* condition = compileExpression(node->condition.get());
     bool doesElseExist = !node->elseBody.empty();
 
-    // create all blocks first
+    // create all blocks
     llvm::BasicBlock* ifBlock = llvm.createBlockNoInsert("if", currentFunction);
-    llvm::BasicBlock* elseBlock = doesElseExist ? llvm.createBlockNoInsert("else", currentFunction) : nullptr;
-    llvm::BasicBlock* mergeBlock = llvm.createBlockNoInsert("merge", currentFunction);
+    llvm::BasicBlock* elseBlock = llvm.createBlockNoInsert("else", currentFunction);
+    llvm::BasicBlock* mergeBlock = llvm.createBlockNoInsert("ifMerge", currentFunction);
 
-    // now branch — all pointers are valid
-    if (doesElseExist) {
-        llvm.createCondBranch(condition, ifBlock, elseBlock);
-    }
+    // branch
+    llvm.createCondBranch(condition, ifBlock, elseBlock);
 
     // if block
     llvm.setInsertPoint(ifBlock);
@@ -201,8 +200,8 @@ llvm::Value* CodeGen::compileIf(IfNode* node) {
     }
 
     // else block
+    llvm.setInsertPoint(elseBlock);
     if (doesElseExist) {
-        llvm.setInsertPoint(elseBlock);
         for (const auto& statement : node->elseBody) {
             compileExpression(statement.get());
         }
@@ -210,8 +209,32 @@ llvm::Value* CodeGen::compileIf(IfNode* node) {
             llvm.createBranch(mergeBlock);
         }
     }
+    else {
+        llvm.createBranch(mergeBlock);
+    }
 
     llvm.setInsertPoint(mergeBlock);
+    return nullptr;
+}
+
+llvm::Value * CodeGen::compileWhile(WhileNode *node) {
+    llvm::BasicBlock* conditionBlock = llvm.createBlockNoInsert("whileCondition", currentFunction);
+    llvm::BasicBlock* bodyBlock = llvm.createBlockNoInsert("whileBody", currentFunction);
+    llvm::BasicBlock* mergeBlock = llvm.createBlockNoInsert("whileMerge", currentFunction);
+
+    llvm.createBranch(conditionBlock);
+    llvm.setInsertPoint(conditionBlock);
+
+    llvm::Value* condition = compileExpression(node->condition.get());
+    llvm.createCondBranch(condition, bodyBlock, mergeBlock);
+
+    llvm.setInsertPoint(bodyBlock);
+    for (const auto& statement : node->body) {
+        compileExpression(statement.get());
+    }
+    llvm.createBranch(conditionBlock);
+    llvm.setInsertPoint(mergeBlock);
+
     return nullptr;
 }
 

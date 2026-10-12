@@ -10,6 +10,7 @@ enum class NodeType {
     Func,
     Return,
     If, // contains else as optional data
+    While,
     VarDeclare,
     VarLoad,
     VarMod,
@@ -58,6 +59,15 @@ public:
     std::vector<std::unique_ptr<Node>> elseBody;
 
     IfNode() : Node(NodeType::If) {}
+};
+
+class WhileNode : public Node {
+public:
+    std::unique_ptr<Node> condition;
+
+    std::vector<std::unique_ptr<Node>> body;
+
+    WhileNode() : Node(NodeType::While) {}
 };
 
 class VarDeclareNode : public Node {

@@ -75,13 +75,13 @@ Token Lexer::nextToken() {
             if (peak() == '=') {
                 advance(); return Token{TokenType::LessOrEqual, "<=", line, column};
             }
-            advance(); return Token{TokenType::Equals, "<", line, column};
+            advance(); return Token{TokenType::LessThan, "<", line, column};
         case '>':
             advance();
             if (peak() == '=') {
                 advance(); return Token{TokenType::GreaterOrEqual, ">=", line, column};
             }
-            advance(); return Token{TokenType::Equals, ">", line, column};
+            advance(); return Token{TokenType::GreaterThan, ">", line, column};
 
         case '/':
             advance();
@@ -132,6 +132,7 @@ Token Lexer::nextToken() {
         if (nextToken == "char") return Token{TokenType::Char, "char", line, column};
         if (nextToken == "if") return Token{TokenType::If, "if", line, column};
         if (nextToken == "else") return Token{TokenType::Else, "else", line, column};
+        if (nextToken == "while") return Token{TokenType::While, "while", line, column};
 
         if (nextToken == "true" || nextToken == "false") {
             return Token{TokenType::BoolLiteral, nextToken, line, column};

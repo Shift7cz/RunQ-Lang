@@ -75,6 +75,18 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             }
             break;
         }
+        case NodeType::While: {
+            auto whileNode = static_cast<WhileNode*>(node);
+            std::cout << spaces << "[[While]] [Condition] \n";
+
+            printNode(whileNode->condition.get(), indent + 1);
+
+            std::cout << spaces << "[[While]] [Block] \n";
+            for (const auto& child : whileNode->body) {
+                printNode(child.get(), indent + 1);
+            }
+            break;
+        }
         case NodeType::VarDeclare: {
             auto var = static_cast<VarDeclareNode*>(node);
             switch (var->valueType) {

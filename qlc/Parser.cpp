@@ -98,6 +98,10 @@ std::unique_ptr<Node> Parser::parseFn() {
             std::unique_ptr<Node> varNode = parseVarMod();
             funcNode->body.push_back(std::move(varNode));
         }
+        else if (currentToken.type == TokenType::While) {
+            std::unique_ptr<Node> whileNode = parseWhile();
+            funcNode->body.push_back(std::move(whileNode));
+        }
         // Todo: other statements
         else {
         advance();
@@ -149,6 +153,10 @@ std::unique_ptr<Node> Parser::parseIf() {
             std::unique_ptr<Node> varNode = parseVarMod();
             ifNode->ifBody.push_back(std::move(varNode));
         }
+        else if (currentToken.type == TokenType::While) {
+            std::unique_ptr<Node> whileNode = parseWhile();
+            ifNode->ifBody.push_back(std::move(whileNode));
+        }
         // Todo: other statements
         else {
             advance();
@@ -176,6 +184,10 @@ std::unique_ptr<Node> Parser::parseIf() {
                 std::unique_ptr<Node> varNode = parseVarMod();
                 ifNode->elseBody.push_back(std::move(varNode));
             }
+            else if (currentToken.type == TokenType::While) {
+                std::unique_ptr<Node> whileNode = parseWhile();
+                ifNode->elseBody.push_back(std::move(whileNode));
+            }
             // Todo: other statements
             else {
                 advance();
@@ -185,6 +197,48 @@ std::unique_ptr<Node> Parser::parseIf() {
     }
 
     return ifNode;
+}
+
+std::unique_ptr<Node> Parser::parseWhile() {
+    //std::cout << "entered while\n";
+    if (!expectAndConsume(TokenType::While)) return nullptr; // todo: error handling
+    auto whileNode = std::make_unique<WhileNode>();
+
+    //std::cout << "entered condition\n";
+    whileNode->condition = parseComparison();
+
+    if (!expectAndConsume(TokenType::OpenBrace)) return nullptr; // todo: error handling
+    //std::cout << "entered body\n";
+    // todo: figure out a way to remove recursive code here
+    while (!expect(TokenType::ClosedBrace) && currentToken.type != TokenType::EndOfFile) { // todo: error handling for end of file
+        if (currentToken.type == TokenType::Return) {
+            std::unique_ptr<Node> retNode = parseRet();
+            whileNode->body.push_back(std::move(retNode));
+        }
+        else if (currentToken.type == TokenType::Let) {
+            std::unique_ptr<Node> varNode = parseVarDeclare();
+            whileNode->body.push_back(std::move(varNode));
+        }
+        else if (currentToken.type == TokenType::If) {
+            std::unique_ptr<Node> newIfNode = parseIf();
+            whileNode->body.push_back(std::move(newIfNode));
+        }
+        else if (currentToken.type == TokenType::Identifier) {
+            std::unique_ptr<Node> varNode = parseVarMod();
+            whileNode->body.push_back(std::move(varNode));
+        }
+        else if (currentToken.type == TokenType::While) {
+            std::unique_ptr<Node> newWhileNode = parseWhile();
+            whileNode->body.push_back(std::move(newWhileNode));
+        }
+        // Todo: other statements
+        else {
+            advance();
+        }
+    }
+
+    if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
+    return whileNode;
 }
 
 std::unique_ptr<Node> Parser::parseVarDeclare() {

@@ -23,6 +23,7 @@ public:
     std::unique_ptr<Node> parseFn();
     std::unique_ptr<Node> parseRet();
     std::unique_ptr<Node> parseIf();
+    std::unique_ptr<Node> parseWhile();
     std::unique_ptr<Node> parseVarDeclare();
     std::unique_ptr<Node> parseVarLoad();
     std::unique_ptr<Node> parseVarMod();

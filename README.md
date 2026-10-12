@@ -47,7 +47,12 @@ fn main() : i32 { // this is a comment
         returnValue = 27 + x + y;
     }
 
-    return returnValue + 2; // return
+    let~ i32 i = 0;
+    while i < 20 { // while loop
+        i = i + 1
+    }
+
+    return returnValue + i; // return
 }
 ```
 
@@ -58,15 +63,16 @@ fn main() : i32 { // this is a comment
 
 | Potential future features (not garanteed) | Planned features  | Currently in development | Already implemented |
 | --------- | --------- | --------- | --------- |
-| C FFI | Longer math expresions working properly | Bool operations | Basic math functions |
+| C FFI | Autmomatic typing in some situations based on context | Bool operations | Basic math functions |
 | Package manager (using GitHub) | Multi function code | Different return types (return statement typing)  | Variables loading and declaring |
-| Multiple file compatibility | Strings, arrays, vectors | Loops (while, for, loop all rust style) | Return statement |
-| Multi Threading | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
+| Multiple file compatibility | Strings, arrays, vectors | Loops (for, loop all rust style) | Return statement |
+| Multi Threading | OOP (C++ style) | Math overhoul (Longer math expresions working properly) |  i32, i8, f64, bool and char data types |
 | Bootstrapping | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128) |  | Basic if/else (accepts variables and comapre expresions) |
-|  | Autmomatic typing in some situations based on context |  | Reading from file |
+|  |  |  | Reading from file |
 |  |  |  | Mutable/Imutable variables (let/let~) |   
 | | | | Comments|
+| | | | While loop |
 
 
 ---

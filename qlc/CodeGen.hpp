@@ -21,13 +21,12 @@ private:
     void compileFunction(FuncNode* node);
     llvm::Value* compileExpression(Node* node);
     llvm::Value* compileReturn(ReturnNode* node);
-
     llvm::Type *llvmTypeFromToken(TokenType type);
-
     llvm::Value* compileVarDeclare(VarDeclareNode* node);
     llvm::Value* compileVarLoad(VarLoadNode* node);
     llvm::Value* compileVarMod(VarModNode* node);
     llvm::Value* compileIf(IfNode* node);
+    llvm::Value* compileWhile(WhileNode* node);
 
 public:
     CodeGen();
