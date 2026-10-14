@@ -1,4 +1,19 @@
-fn main() : i32 { // this is a comment
+fn example() : i32 { // multi-functional code!
+    let~ i32 i = 0;
+    while i < 20 { // while loop
+        i = i + 1
+    }
+
+    let~ i32 a = 2 + 2; // 4
+    let~ i32 b = 4 - 2; // 2
+    let~ i32 c = 3 * 3; // 9
+    let~ i32 d = 9 / 3; // 3
+    let i32 mathTst = a + b * c - d; // 19
+
+    return i + mathTst;
+}
+
+entry main() { // this is entry function; code starts here
 
     let i32 x = 12; // declare immutable variable
     let~ i32 y = 2 * x;
@@ -22,16 +37,7 @@ fn main() : i32 { // this is a comment
         returnValue = 27 + x + y;
     }
 
-    let~ i32 i = 0;
-    while i < 20 { // while loop
-        i = i + 1
-    }
+    let i32 value = example();
 
-    let~ i32 a = 2 + 2; // 4
-    let~ i32 b = 4 - 2; // 2
-    let~ i32 c = 3 * 3; // 9
-    let~ i32 d = 9 / 3; // 3
-    let i32 mathTst = a + b * c - d; // 19
-
-    return returnValue + i + mathTst; // return
+    return returnValue + value; // return
 }

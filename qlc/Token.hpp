@@ -8,6 +8,7 @@ enum class TokenType {
     // keyword
     Return,
     Fn,
+    Entry,
     Let,
     If,
     Else,
@@ -70,6 +71,7 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::Fn:          return "Fn";
         case TokenType::Let:         return "Let";
         case TokenType::If:          return "If";
+        case TokenType::Entry:       return "Entry";
         case TokenType::Else:        return "Else";
         case TokenType::While:       return "While";
         case TokenType::IntLiteral:  return "IntLiteral";

@@ -119,6 +119,15 @@ llvm::Value* LlvmWrap::createBranch(llvm::BasicBlock* block) {
     return builder->CreateBr(block);
 }
 
+llvm::Function* LlvmWrap::getFunction(const std::string& name) {
+    return module->getFunction(name);
+}
+
+llvm::Value* LlvmWrap::createFuncCall(const std::string& name, std::vector<llvm::Value*> args) {
+    llvm::Function* fn = module->getFunction(name);
+    return builder->CreateCall(fn, args, "calltmp");
+}
+
 llvm::Value* LlvmWrap::createCompare(TokenType op, llvm::Value* operand1, llvm::Value* operand2) {
     switch (op) {
         case TokenType::IsEqualTo:    return builder->CreateICmpEQ(operand1, operand2, "cmptmp");

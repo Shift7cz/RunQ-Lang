@@ -18,6 +18,15 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
     std::string spaces(indent * 2, ' ');
 
     switch (node->type) {
+        case NodeType::Root: {
+            std::cout << spaces << "[Root] \n";
+            auto root = static_cast<RootNode*>(node);
+
+            for (const auto& child : root->body) {
+                printNode(child.get(), indent + 1);
+            }
+            break;
+        }
         case NodeType::Func: {
             // 1. Cast to FuncNode to access unique features (.identifier and .body)
             auto func = static_cast<FuncNode*>(node);
@@ -117,6 +126,11 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
         case NodeType::VarLoad: {
             auto var = static_cast<VarLoadNode*>(node);
             std::cout << spaces << "[VarLoad] -> Name: '" << var->identifier << "'\n";
+            break;
+        }
+        case NodeType::FuncLoad: {
+            auto var = static_cast<VarLoadNode*>(node);
+            std::cout << spaces << "[FuncLoad] -> Name: '" << var->identifier << "'\n";
             break;
         }
         case NodeType::VarMod: {

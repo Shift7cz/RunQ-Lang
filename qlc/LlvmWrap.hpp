@@ -60,6 +60,10 @@ public:
     llvm::Value *createCondBranch(llvm::Value *condition, llvm::BasicBlock *thenBlock, llvm::BasicBlock *elseBlock);
     llvm::Value *createBranch(llvm::BasicBlock *block);
 
+    llvm::Function *getFunction(const std::string &name);
+
+    llvm::Value *createFuncCall(const std::string &name, std::vector<llvm::Value *> args);
+
     llvm::Value *createCompare(TokenType op, llvm::Value *operand1, llvm::Value *operand2);
 
     // output

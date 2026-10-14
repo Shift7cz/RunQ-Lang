@@ -19,13 +19,16 @@ public:
 
     void parse(); // main parse
 
+    std::vector<std::unique_ptr<Node>> parseBlock(bool stopAtBrace);
+
     // helper parse for each type of statement.;
     std::unique_ptr<Node> parseFn();
+    std::unique_ptr<Node> parseEntry();
     std::unique_ptr<Node> parseRet();
     std::unique_ptr<Node> parseIf();
     std::unique_ptr<Node> parseWhile();
     std::unique_ptr<Node> parseVarDeclare();
-    std::unique_ptr<Node> parseVarLoad();
+    std::unique_ptr<Node> parseLoad();
     std::unique_ptr<Node> parseVarMod();
     std::unique_ptr<Node> parseIntLiteral();
     std::unique_ptr<Node> parseFloatLiteral();

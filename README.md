@@ -23,7 +23,22 @@ RunQ-Lang is an experimental, Turing complete, statically-typed programming lang
 ## Code Example
 
 ```runq
-fn main() : i32 { // this is a comment
+fn example() : i32 { // multi-functional code!
+    let~ i32 i = 0;
+    while i < 20 { // while loop
+        i = i + 1
+    }
+
+    let~ i32 a = 2 + 2; // 4
+    let~ i32 b = 4 - 2; // 2
+    let~ i32 c = 3 * 3; // 9
+    let~ i32 d = 9 / 3; // 3
+    let i32 mathTst = a + b * c - d; // 19
+
+    return i + mathTst;
+}
+
+entry main() { // this is entry function; code starts here
 
     let i32 x = 12; // declare immutable variable
     let~ i32 y = 2 * x;
@@ -47,18 +62,9 @@ fn main() : i32 { // this is a comment
         returnValue = 27 + x + y;
     }
 
-    let~ i32 i = 0;
-    while i < 20 { // while loop
-        i = i + 1
-    }
+    let i32 value = example();
 
-    let~ i32 a = 2 + 2; // 4
-    let~ i32 b = 4 - 2; // 2
-    let~ i32 c = 3 * 3; // 9
-    let~ i32 d = 9 / 3; // 3
-    let i32 mathTst = a + b * c - d; // 19
-
-    return returnValue + i + mathTst; // return
+    return returnValue + value; // return
 }
 ```
 
@@ -69,16 +75,17 @@ fn main() : i32 { // this is a comment
 
 | Potential future features (not garanteed) | Planned features  | Currently in development | Already implemented |
 | --------- | --------- | --------- | --------- |
-| C FFI | Autmomatic typing in some situations based on context | Bool operations | Basic math functions |
-| Package manager (using GitHub) | Multi function code | Different return types (return statement typing)  | Variables loading and declaring |
-| Multiple file compatibility | Strings, arrays, vectors | Loops (for, loop all rust style) | Return statement |
+| Bootstrapping | Autmomatic typing in some situations based on context | Different return types (return statement typing) | Basic math functions |
+| Package manager (using GitHub) | Loops (for, loop all rust style) | Function arguments | Variables loading and declaring |
+| Multiple file compatibility | Strings, arrays, vectors | Types overhoul (internal) | Return statement |
 | Multi Threading | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
-| Bootstrapping | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
+|  | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128) |  | Basic if/else (accepts variables and comapre expresions) |
-|  |  |  | Reading from file |
-|  |  |  | Mutable/Imutable variables (let/let~) |   
-| | | | Comments|
-| | | | While loop |
+|  | Bool operations  |  | Reading from file |
+|  | C FFI |  | Mutable/Imutable variables (let/let~) |   
+|  | Basic stdlib |  | Comments|
+|  |  |  | While loop |
+|  |  |  | Multi function code |
 
 
 ---

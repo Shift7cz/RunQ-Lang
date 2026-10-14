@@ -7,12 +7,15 @@
 enum class NodeType {
     Unassigned,
 
+    Root, // the main node under which the AST lives
+
     Func,
     Return,
     If, // contains else as optional data
     While,
     VarDeclare,
     VarLoad,
+    FuncLoad,
     VarMod,
     IntLiteral,
     FloatLiteral,
@@ -29,6 +32,13 @@ public:
     Node(NodeType t) : type(t) {}
 
     virtual ~Node() = default;
+};
+
+class RootNode : public Node {
+public:
+    std::vector<std::unique_ptr<Node>> body;
+
+    RootNode() : Node(NodeType::Root) {}
 };
 
 class UnassignedNode : public Node { // used for declaring before assignment.
@@ -85,6 +95,13 @@ public:
     std::string_view identifier;
 
     VarLoadNode() : Node(NodeType::VarLoad) {}
+};
+
+class FuncLoadNode : public Node {
+public:
+    std::string_view identifier;
+
+    FuncLoadNode() : Node(NodeType::FuncLoad) {}
 };
 
 class VarModNode : public Node {

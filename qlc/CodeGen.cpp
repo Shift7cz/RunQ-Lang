@@ -6,7 +6,9 @@
 CodeGen::CodeGen() : llvm("RunQ-Lang_Test") {
 }
 
-void CodeGen::compileFunction(FuncNode* node) {
+llvm::Value* CodeGen::compileFunction(FuncNode* node) {
+    symbolTable.clear(); // new function scope
+
     switch (node->returnType) {
         case TokenType::I32:
             currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i32Type());
@@ -25,19 +27,28 @@ void CodeGen::compileFunction(FuncNode* node) {
             break;
         default:
             // todo: error handling
-            return;
+            return nullptr;
     }
     llvm.createBlock("entry", currentFunction);
+
+    // for (auto& arg : currentFunction->args()) {
+    //     std::string name = std::string(arg.getName());
+    //     symbolTable[name] = {false, &arg, arg.getType()};
+    // }
 
     for (const auto& statement : node->body) {
         compileExpression(statement.get());
     }
+    return currentFunction;
 }
 
 llvm::Value* CodeGen::compileExpression(Node* node) {
     if (!node) return nullptr;
 
     switch (node->type) {
+        case NodeType::Func: {
+            return compileFunction(static_cast<FuncNode*>(node));
+        }
         case NodeType::If: {
             return compileIf(static_cast<IfNode*>(node));
         }
@@ -95,6 +106,9 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
         }
         case NodeType::VarMod: {
             return compileVarMod(static_cast<VarModNode*>(node));
+        }
+        case NodeType::FuncLoad: {
+            return compileFuncLoad(static_cast<FuncLoadNode*>(node));
         }
         case NodeType::While: {
             return compileWhile(static_cast<WhileNode*>(node));
@@ -178,6 +192,21 @@ llvm::Value * CodeGen::compileVarMod(VarModNode *node) {
     return llvm.createStore(val, entry.value); // entry.value is the pointer
 }
 
+llvm::Value * CodeGen::compileFuncLoad(FuncLoadNode *node) {
+    llvm::Function* fn = llvm.getFunction(std::string(node->identifier));
+    if (!fn) {
+        std::cerr << "Unknown function: " << node->identifier << std::endl;
+        return nullptr;
+    }
+
+    std::vector<llvm::Value*> args;
+    // for (const auto& arg : node->args) {x
+    //     args.push_back(compileExpression(arg.get()));
+    // }
+
+    return llvm.createFuncCall(std::string(node->identifier), {});
+}
+
 llvm::Value* CodeGen::compileIf(IfNode* node) {
     llvm::Value* condition = compileExpression(node->condition.get());
     bool doesElseExist = !node->elseBody.empty();
@@ -217,7 +246,7 @@ llvm::Value* CodeGen::compileIf(IfNode* node) {
     return nullptr;
 }
 
-llvm::Value * CodeGen::compileWhile(WhileNode *node) {
+llvm::Value * CodeGen::compileWhile(WhileNode *node) { // todo: return in while not handled
     llvm::BasicBlock* conditionBlock = llvm.createBlockNoInsert("whileCondition", currentFunction);
     llvm::BasicBlock* bodyBlock = llvm.createBlockNoInsert("whileBody", currentFunction);
     llvm::BasicBlock* mergeBlock = llvm.createBlockNoInsert("whileMerge", currentFunction);
@@ -239,10 +268,13 @@ llvm::Value * CodeGen::compileWhile(WhileNode *node) {
 }
 
 void CodeGen::compile(Ast& ast, bool generateCompiledFiles) {
-    if (!ast.root) return;
+    if (!ast.root) { std::cout << "no AST found" << std::endl; return; }
 
-    if (ast.root->type == NodeType::Func) {
-        compileFunction(static_cast<FuncNode*>(ast.root.get()));
+    if (ast.root->type == NodeType::Root) {
+        auto node = static_cast<RootNode*>(ast.root.get());
+        for (const auto& statement : node->body) {
+            compileExpression(statement.get());
+        }
     }
 
     std::cout << "\n--- LLVM IR Output ---\n";

@@ -28,21 +28,51 @@ bool Parser::expectAndConsume(TokenType expected) {
 void Parser::parse() {
     advance();
 
-    while (currentToken.type != TokenType::EndOfFile) {
-        if (currentToken.type == TokenType::Fn) {
-            std::unique_ptr<Node> funcNode = parseFn();
+    auto rootNode = std::make_unique<RootNode>();
 
-            if (funcNode != nullptr) {
-                ast.root = std::move(funcNode);
-            }
-            else {
-                std::cout << "Parser error" << std::endl;
-            }
+    rootNode->body = parseBlock(false);
+
+    ast.root = std::move(rootNode);
+}
+
+std::vector<std::unique_ptr<Node>> Parser::parseBlock(bool stopAtBrace) {
+    std::vector<std::unique_ptr<Node>> block;
+
+    while (!(expect(TokenType::ClosedBrace) && stopAtBrace) && currentToken.type != TokenType::EndOfFile) { // todo: error handling for end of file
+        if (currentToken.type == TokenType::Return) {
+            std::unique_ptr<Node> retNode = parseRet();
+            block.push_back(std::move(retNode));
         }
+        else if (currentToken.type == TokenType::Let) {
+            std::unique_ptr<Node> varNode = parseVarDeclare();
+            block.push_back(std::move(varNode));
+        }
+        else if (currentToken.type == TokenType::If) {
+            std::unique_ptr<Node> newIfNode = parseIf();
+            block.push_back(std::move(newIfNode));
+        }
+        else if (currentToken.type == TokenType::Identifier) {
+            std::unique_ptr<Node> varNode = parseVarMod();
+            block.push_back(std::move(varNode));
+        }
+        else if (currentToken.type == TokenType::While) {
+            std::unique_ptr<Node> whileNode = parseWhile();
+            block.push_back(std::move(whileNode));
+        }
+        else if (currentToken.type == TokenType::Fn) {
+            std::unique_ptr<Node> fnNode = parseFn();
+            block.push_back(std::move(fnNode));
+        }
+        else if (currentToken.type == TokenType::Entry) {
+            std::unique_ptr<Node> entryNode = parseEntry();
+            block.push_back(std::move(entryNode));
+        }
+        // Todo: other statements
         else {
             advance();
         }
     }
+    return block;
 }
 
 std::unique_ptr<Node> Parser::parseFn() {
@@ -80,33 +110,34 @@ std::unique_ptr<Node> Parser::parseFn() {
     auto funcNode = std::make_unique<FuncNode>();
     funcNode->identifier = identifier;
     funcNode->returnType = retType;
+    funcNode->body = parseBlock(true);
 
-    while (!expect(TokenType::ClosedBrace) && currentToken.type != TokenType::EndOfFile) {
-        if (currentToken.type == TokenType::Return) {
-            std::unique_ptr<Node> retNode = parseRet();
-            funcNode->body.push_back(std::move(retNode));
-        }
-        else if (currentToken.type == TokenType::Let) {
-            std::unique_ptr<Node> varNode = parseVarDeclare();
-            funcNode->body.push_back(std::move(varNode));
-        }
-        else if (currentToken.type == TokenType::If) {
-            std::unique_ptr<Node> ifNode = parseIf();
-            funcNode->body.push_back(std::move(ifNode));
-        }
-        else if (currentToken.type == TokenType::Identifier) {
-            std::unique_ptr<Node> varNode = parseVarMod();
-            funcNode->body.push_back(std::move(varNode));
-        }
-        else if (currentToken.type == TokenType::While) {
-            std::unique_ptr<Node> whileNode = parseWhile();
-            funcNode->body.push_back(std::move(whileNode));
-        }
-        // Todo: other statements
-        else {
-        advance();
-        }
-    }
+    if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
+
+    return funcNode;
+}
+
+std::unique_ptr<Node> Parser::parseEntry() {
+    expectAndConsume(TokenType::Entry);
+
+    if (!expect(TokenType::Identifier)) return nullptr;
+    std::string_view identifier = currentToken.data;
+    advance(); // move past identifier
+
+    if (!expectAndConsume(TokenType::OpenParen)) return nullptr;
+
+    // todo: implement parsing parameters
+
+    if (!expectAndConsume(TokenType::ClosedParen)) return nullptr;
+
+    TokenType retType = TokenType::I32; // entry has hardcoded return type
+
+    if (!expectAndConsume(TokenType::OpenBrace)) return nullptr;
+
+    auto funcNode = std::make_unique<FuncNode>();
+    funcNode->identifier = identifier;
+    funcNode->returnType = retType;
+    funcNode->body = parseBlock(true);
 
     if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
 
@@ -134,65 +165,13 @@ std::unique_ptr<Node> Parser::parseIf() {
     ifNode->condition = parseComparison();
 
     if (!expectAndConsume(TokenType::OpenBrace)) return nullptr;
-
     // todo: figure out a way to remove recursive code here
-    while (!expect(TokenType::ClosedBrace) && currentToken.type != TokenType::EndOfFile) { // todo: error handling for end of file
-        if (currentToken.type == TokenType::Return) {
-            std::unique_ptr<Node> retNode = parseRet();
-            ifNode->ifBody.push_back(std::move(retNode));
-        }
-        else if (currentToken.type == TokenType::Let) {
-            std::unique_ptr<Node> varNode = parseVarDeclare();
-            ifNode->ifBody.push_back(std::move(varNode));
-        }
-        else if (currentToken.type == TokenType::If) {
-            std::unique_ptr<Node> newIfNode = parseIf();
-            ifNode->ifBody.push_back(std::move(newIfNode));
-        }
-        else if (currentToken.type == TokenType::Identifier) {
-            std::unique_ptr<Node> varNode = parseVarMod();
-            ifNode->ifBody.push_back(std::move(varNode));
-        }
-        else if (currentToken.type == TokenType::While) {
-            std::unique_ptr<Node> whileNode = parseWhile();
-            ifNode->ifBody.push_back(std::move(whileNode));
-        }
-        // Todo: other statements
-        else {
-            advance();
-        }
-    }
-    advance();
+    ifNode->ifBody = parseBlock(true);
+    if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
 
     if (expectAndConsume(TokenType::Else)) {
         if (!expectAndConsume(TokenType::OpenBrace)) return nullptr; // todo: make this work with else if and the 'if (something) doCode;'
-
-        while (!expect(TokenType::ClosedBrace) && currentToken.type != TokenType::EndOfFile) {
-            if (currentToken.type == TokenType::Return) {
-                std::unique_ptr<Node> retNode = parseRet();
-                ifNode->elseBody.push_back(std::move(retNode));
-            }
-            else if (currentToken.type == TokenType::Let) {
-                std::unique_ptr<Node> varNode = parseVarDeclare();
-                ifNode->elseBody.push_back(std::move(varNode));
-            }
-            else if (currentToken.type == TokenType::If) {
-                std::unique_ptr<Node> newIfNode = parseIf();
-                ifNode->elseBody.push_back(std::move(newIfNode));
-            }
-            else if (currentToken.type == TokenType::Identifier) {
-                std::unique_ptr<Node> varNode = parseVarMod();
-                ifNode->elseBody.push_back(std::move(varNode));
-            }
-            else if (currentToken.type == TokenType::While) {
-                std::unique_ptr<Node> whileNode = parseWhile();
-                ifNode->elseBody.push_back(std::move(whileNode));
-            }
-            // Todo: other statements
-            else {
-                advance();
-            }
-        }
+        ifNode->elseBody = parseBlock(true);
         if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
     }
 
@@ -210,33 +189,7 @@ std::unique_ptr<Node> Parser::parseWhile() {
     if (!expectAndConsume(TokenType::OpenBrace)) return nullptr; // todo: error handling
     //std::cout << "entered body\n";
     // todo: figure out a way to remove recursive code here
-    while (!expect(TokenType::ClosedBrace) && currentToken.type != TokenType::EndOfFile) { // todo: error handling for end of file
-        if (currentToken.type == TokenType::Return) {
-            std::unique_ptr<Node> retNode = parseRet();
-            whileNode->body.push_back(std::move(retNode));
-        }
-        else if (currentToken.type == TokenType::Let) {
-            std::unique_ptr<Node> varNode = parseVarDeclare();
-            whileNode->body.push_back(std::move(varNode));
-        }
-        else if (currentToken.type == TokenType::If) {
-            std::unique_ptr<Node> newIfNode = parseIf();
-            whileNode->body.push_back(std::move(newIfNode));
-        }
-        else if (currentToken.type == TokenType::Identifier) {
-            std::unique_ptr<Node> varNode = parseVarMod();
-            whileNode->body.push_back(std::move(varNode));
-        }
-        else if (currentToken.type == TokenType::While) {
-            std::unique_ptr<Node> newWhileNode = parseWhile();
-            whileNode->body.push_back(std::move(newWhileNode));
-        }
-        // Todo: other statements
-        else {
-            advance();
-        }
-    }
-
+    whileNode->body = parseBlock(true);
     if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
     return whileNode;
 }
@@ -273,13 +226,23 @@ std::unique_ptr<Node> Parser::parseVarDeclare() {
     return varNode;
 }
 
-std::unique_ptr<Node> Parser::parseVarLoad() {
+std::unique_ptr<Node> Parser::parseLoad() {
     if (expect(TokenType::Identifier)) {
+        std::string_view identifier = currentToken.data;
+        advance(); // after the identifier
+
+        if (expect(TokenType::OpenParen)) {
+            // parse as function
+            auto funcNode = std::make_unique<FuncLoadNode>();
+            funcNode->identifier = identifier;
+            advance();
+            // args loop goes here
+            if (!expectAndConsume(TokenType::ClosedParen)) return nullptr;
+            return funcNode;
+        }
+        // parse as variable
         auto varNode = std::make_unique<VarLoadNode>();
-        varNode->identifier = currentToken.data;
-
-        advance();
-
+        varNode->identifier = identifier;
         return varNode;
     }
 
@@ -370,7 +333,7 @@ std::unique_ptr<Node> Parser::parsePrimary() {
     if (expect(TokenType::FloatLiteral)) return parseFloatLiteral();
     if (expect(TokenType::BoolLiteral))  return parseBoolLiteral();
     if (expect(TokenType::CharLiteral))  return parseCharLiteral();
-    if (expect(TokenType::Identifier))   return parseVarLoad();
+    if (expect(TokenType::Identifier))   return parseLoad();
     return nullptr;
 }
 
