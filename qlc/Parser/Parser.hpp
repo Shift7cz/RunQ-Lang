@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Lexer.hpp"
+#include "../lexer/Lexer.hpp"
 #include "Ast.hpp"
 
 class Parser {

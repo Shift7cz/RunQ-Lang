@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <memory>
-#include "Token.hpp"
+#include "../lexer/Token.hpp"
 
 enum class NodeType {
     Unassigned,

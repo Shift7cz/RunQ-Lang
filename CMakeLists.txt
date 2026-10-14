@@ -28,20 +28,20 @@ llvm_map_components_to_libnames(llvm_libs
 )
 
 add_executable(RunQ-Lang qlc/main.cpp
-        qlc/Lexer.cpp
-        qlc/Lexer.hpp
-        qlc/Parser.cpp
-        qlc/Parser.hpp
-        qlc/Checker.cpp
-        qlc/Checker.hpp
-        qlc/CodeGen.cpp
-        qlc/CodeGen.hpp
-        qlc/Token.hpp
-        qlc/Node.hpp
-        qlc/Ast.hpp
-        qlc/Ast.cpp
-        qlc/LlvmWrap.cpp
-        qlc/LlvmWrap.hpp
+        qlc/lexer/Lexer.cpp
+        qlc/lexer/Lexer.hpp
+        qlc/Parser/Parser.cpp
+        qlc/Parser/Parser.hpp
+        qlc/Checker/Checker.cpp
+        qlc/Checker/Checker.hpp
+        qlc/Codegen/CodeGen.cpp
+        qlc/Codegen/CodeGen.hpp
+        qlc/lexer/Token.hpp
+        qlc/Parser/Node.hpp
+        qlc/Parser/Ast.hpp
+        qlc/Parser/Ast.cpp
+        qlc/Codegen/LlvmWrap.cpp
+        qlc/Codegen/LlvmWrap.hpp
 )
 
 find_library(LLVM_SHARED_LIB LLVM HINTS ${LLVM_LIBRARY_DIRS})

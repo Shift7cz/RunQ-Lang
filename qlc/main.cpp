@@ -1,7 +1,7 @@
 #include <iostream>
-#include "Lexer.hpp"
-#include "Parser.hpp"
-#include "CodeGen.hpp"
+#include "lexer/Lexer.hpp"
+#include "Parser/Parser.hpp"
+#include "Codegen/CodeGen.hpp"
 
 #include <fstream>
 #include <sstream>
