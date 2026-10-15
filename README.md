@@ -1,6 +1,6 @@
 # RunQ-Lang
 
-RunQ-Lang is an experimental, Turing complete, statically-typed programming language, inspired by C++ and Rust. The project is written in C++ and translates directly to LLVM IR which compiles it down to x86 assembly, and an executable file.
+RunQ-Lang is an experimental, Turing complete, statically-typed programming language, inspired by C++ and Rust. The project is written in C++ and translates directly to LLVM IR which compiles it down to any assembly supported by LLVM, and an executable file.
 
 > **Project Status:** Under active development. Language features, AST design, and internal implementations are evolving rapidly.
 
@@ -85,7 +85,7 @@ entry main() { // this is entry function; code starts here
 | Potential future features (not garanteed) | Planned features  | Currently in development | Already implemented |
 | --------- | --------- | --------- | --------- |
 | Bootstrapping | Autmomatic typing in some situations based on context | Types overhoul (internal) | Basic math functions |
-| Package manager (using GitHub) | Loops (for, loop all rust style) | Function arguments | Variables loading and declaring |
+| Package manager (using GitHub) | Loops (for, loop all rust style) |  | Variables loading and declaring |
 | Multiple file compatibility | Strings, arrays, vectors |  | Return statement |
 | Multi Threading | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
 |  | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
@@ -94,7 +94,7 @@ entry main() { // this is entry function; code starts here
 |  | C FFI |  | Mutable/Imutable variables (let/let~) |   
 |  | Basic stdlib |  | Comments|
 |  |  |  | While loop |
-|  |  |  | Multi function code |
+|  |  |  | Multi functional code with arguments and function calling |
 
 
 ---

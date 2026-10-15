@@ -11,6 +11,7 @@
 #include <llvm/IR/LegacyPassManager.h>
 
 #include "../Lexer/Token.hpp"
+#include "../Parser/Node.hpp"
 
 LlvmWrap::LlvmWrap(const std::string& moduleName) { // initilises llvm
     context = std::make_unique<llvm::LLVMContext>();
@@ -34,8 +35,22 @@ llvm::Type * LlvmWrap::boolType() {
     return llvm::Type::getInt1Ty(*context);
 }
 
-llvm::Function* LlvmWrap::createFunc(const std::string& name, llvm::Type* retType) {
-    llvm::FunctionType* fnType = llvm::FunctionType::get(retType, {}, false);
+std::vector<llvm::Type*> LlvmWrap::argsToLlvmTypes(const std::vector<Argument>& args) {
+    std::vector<llvm::Type*> types;
+    for (const auto& arg : args) {
+        switch (arg.type) {
+            case TokenType::I32:  types.push_back(i32Type()); break;
+            case TokenType::F64:  types.push_back(f64Type()); break;
+            case TokenType::I8:  types.push_back(i8Type()); break;
+            case TokenType::Char:  types.push_back(i8Type()); break;
+            case TokenType::Bool:  types.push_back(boolType()); break;
+        }
+    }
+    return types;
+}
+
+llvm::Function* LlvmWrap::createFunc(const std::string& name, llvm::Type* retType, const std::vector<llvm::Type*>& paramTypes) {
+    llvm::FunctionType* fnType = llvm::FunctionType::get(retType, paramTypes, false);
     return llvm::Function::Create(fnType, llvm::Function::ExternalLinkage, name, module.get());
 }
 

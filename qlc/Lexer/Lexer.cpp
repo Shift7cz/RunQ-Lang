@@ -62,6 +62,7 @@ Token Lexer::nextToken() {
         case '-': advance(); return Token{TokenType::Dash, "-", line, column};
         case '*': advance(); return Token{TokenType::Star, "*", line, column};
         //case '/': advance(); return Token{TokenType::Slash, "/", line, column};
+        case ',': advance(); return Token{TokenType::Comma, ",", line, column};
 
             // starting with the same character handling here
         case '=':

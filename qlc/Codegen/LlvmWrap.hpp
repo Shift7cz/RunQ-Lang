@@ -14,6 +14,7 @@
 #include <string>
 
 #include "../Lexer/Token.hpp"
+#include "../Parser/Node.hpp"
 
 class LlvmWrap {
 private:
@@ -31,8 +32,10 @@ public:
     llvm::Type* boolType();
     // char is i8
 
+    std::vector<llvm::Type*> argsToLlvmTypes(const std::vector<Argument>& args);
+
     // structure
-    llvm::Function* createFunc(const std::string& name, llvm::Type* retType);
+    llvm::Function* createFunc(const std::string& name, llvm::Type* retType, const std::vector<llvm::Type*>& paramTypes);
     llvm::BasicBlock* createBlock(const std::string& name, llvm::Function* fn);
     llvm::BasicBlock *createBlockNoInsert(const std::string &name, llvm::Function *fn);
 

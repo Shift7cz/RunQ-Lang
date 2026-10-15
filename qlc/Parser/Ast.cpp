@@ -33,26 +33,53 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             auto func = static_cast<FuncNode*>(node);
             switch (func->returnType) {
                 case TokenType::I32:
-                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'i32'\n";
+                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'i32'\n";
                     break;
                 case TokenType::I8:
-                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'i8'\n";
+                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'i8'\n";
                     break;
                 case TokenType::F64:
-                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'f64'\n";
+                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'f64'\n";
                     break;
                 case TokenType::Bool:
-                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'bool'\n";
+                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'bool'\n";
                     break;
                 case TokenType::Char:
-                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'char'\n";
+                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'char'\n";
                     break;
                 default:
-                    std::cout << spaces << "[Function] -> name: '" << func->identifier << "'; [Return Type] -> 'ERROR in Ast'\n";
+                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'ERROR in Ast'\n";
                     break;
             }
 
+            std::cout << spaces << "[[Function]][Args]" << std::endl;
+            //indent += 1;
+            for (const auto& child : func->args) {
+                switch (child.type) {
+                    case TokenType::I32:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'i32'" << std::endl;
+                        break;
+                    case TokenType::I8:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'i8'" << std::endl;
+                        break;
+                    case TokenType::F64:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'f64'" << std::endl;
+                        break;
+                    case TokenType::Bool:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'bool'" << std::endl;
+                        break;
+                    case TokenType::Char:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'char'" << std::endl;
+                        break;
+                    default:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'ERROR in Ast'" << std::endl;
+                        break;
+                }
+            }
+            //indent -= 1;
+
             // 2. Recursively print all statements inside the function body
+            std::cout << spaces << "[[Function]][Body]" << std::endl;
             for (const auto& child : func->body) {
                 printNode(child.get(), indent + 1); // Increase indent for children!
             }
@@ -130,8 +157,13 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             break;
         }
         case NodeType::FuncLoad: {
-            auto var = static_cast<VarLoadNode*>(node);
-            std::cout << spaces << "[FuncLoad] -> Name: '" << var->identifier << "'\n";
+            auto var = static_cast<FuncLoadNode*>(node);
+            std::cout << spaces << "[FuncLoad] -> Name: '" << var->identifier << "' Args: \n";
+
+            for (const auto& child : var->args) {
+                printNode(child.get(), indent + 1);
+            }
+
             break;
         }
         case NodeType::VarMod: {

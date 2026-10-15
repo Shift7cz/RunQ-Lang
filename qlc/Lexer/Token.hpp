@@ -40,8 +40,9 @@ enum class TokenType {
     ClosedBrace, // '}'
     Semicolon, // ';'
     Colon, // ':'
-    Tilde, // ~
-    Equals,
+    Tilde, // '~'
+    Equals, // '='
+    Comma, // ','
 
     // compressions
     IsEqualTo, // ==
@@ -95,6 +96,7 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::Colon:       return "Colon";
         case TokenType::Tilde:       return "Tilde";
         case TokenType::Equals:      return "Equals";
+        case TokenType::Comma:       return "Comma";
         case TokenType::IsEqualTo:   return "IsEqualTo";
         case TokenType::NotEqualTo:  return "NotEqualTo";
         case TokenType::LessThan:    return "LessThan";

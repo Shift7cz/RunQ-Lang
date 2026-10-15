@@ -1,6 +1,7 @@
 #include "Parser.hpp"
 
 #include <iostream>
+#include <llvm/IR/Argument.h>
 
 void Parser::advance() {
     currentToken = lexer.nextToken();
@@ -77,16 +78,41 @@ std::vector<std::unique_ptr<Node>> Parser::parseBlock(bool stopAtBrace) {
 
 std::unique_ptr<Node> Parser::parseFn() {
     expectAndConsume(TokenType::Fn); // move past fn
+    auto funcNode = std::make_unique<FuncNode>();
 
     if (!expect(TokenType::Identifier)) return nullptr;
     std::string_view identifier = currentToken.data;
     advance(); // move past identifier
 
-    if (!expectAndConsume(TokenType::OpenParen)) return nullptr;
+    if (!expectAndConsume(TokenType::OpenParen)) return nullptr; // todo: error handling
 
-    // todo: implement parsing parameters
+    while (!expect(TokenType::ClosedParen)) { //args
+        Argument argument;
 
-    if (!expectAndConsume(TokenType::ClosedParen)) return nullptr;
+        //std::cout << "1" << currentToken.data << "\n";
+        if (expect(TokenType::I32)
+            || expect(TokenType::I8)
+            || expect(TokenType::F64)
+            || expect(TokenType::Bool)
+            || expect(TokenType::Char)) {
+            argument.type = currentToken.type;
+            advance();
+            }
+        else return nullptr;
+        //std::cout << "2" << currentToken.data << "\n";
+
+        if (!expect(TokenType::Identifier)) return nullptr; // todo: error handling
+        argument.identifier = currentToken.data;
+        advance();
+        //std::cout << "3" << currentToken.data << "\n";
+
+        funcNode->args.push_back(argument);
+
+        if (expect(TokenType::Comma)) advance(); // todo: error handling
+        //std::cout << "4" << currentToken.data << "\n";
+    }
+    advance();
+    //std::cout << "5" << currentToken.data << "\n";
 
     TokenType retType = TokenType::Unknown;
     if (expectAndConsume(TokenType::Colon)) {
@@ -107,7 +133,6 @@ std::unique_ptr<Node> Parser::parseFn() {
 
     if (!expectAndConsume(TokenType::OpenBrace)) return nullptr;
 
-    auto funcNode = std::make_unique<FuncNode>();
     funcNode->identifier = identifier;
     funcNode->returnType = retType;
     funcNode->body = parseBlock(true);
@@ -237,7 +262,18 @@ std::unique_ptr<Node> Parser::parseLoad() {
             funcNode->identifier = identifier;
             advance();
             // args loop goes here
-            if (!expectAndConsume(TokenType::ClosedParen)) return nullptr;
+
+            while (!expect(TokenType::ClosedParen)) {
+                //std::cout << "1" << currentToken.data << std::endl;
+                funcNode->args.push_back(parseExpresion());
+                //advance();
+
+                //std::cout << "2" << currentToken.data << std::endl;
+                if (expect(TokenType::Comma)) advance();
+                //std::cout << "3" << currentToken.data << std::endl;
+            }
+            advance();
+            //if (!expectAndConsume(TokenType::ClosedParen)) return nullptr;
             return funcNode;
         }
         // parse as variable

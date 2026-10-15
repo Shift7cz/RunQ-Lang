@@ -46,9 +46,15 @@ public:
     UnassignedNode() : Node(NodeType::Unassigned) {}
 };
 
+struct Argument {
+    std::string_view identifier;
+    TokenType type;
+};
+
 class FuncNode : public Node {
 public:
     std::string_view identifier;
+    std::vector<Argument> args;
     std::vector<std::unique_ptr<Node>> body;
     TokenType returnType; // only section types allowed.
 
@@ -100,6 +106,7 @@ public:
 class FuncLoadNode : public Node {
 public:
     std::string_view identifier;
+    std::vector<std::unique_ptr<Node>> args;
 
     FuncLoadNode() : Node(NodeType::FuncLoad) {}
 };

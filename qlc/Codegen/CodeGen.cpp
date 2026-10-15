@@ -7,38 +7,57 @@ CodeGen::CodeGen() : llvm("RunQ-Lang_Test") {
 }
 
 llvm::Value* CodeGen::compileFunction(FuncNode* node) {
+    std::cout << "entering compilefunc" << std::endl;
     symbolTable.clear(); // new function scope
 
+    std::cout << "entering switch" << std::endl;
     switch (node->returnType) {
         case TokenType::I32:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i32Type());
+            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i32Type(), llvm.argsToLlvmTypes(node->args));
             break;
         case TokenType::I8:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i8Type());
+            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i8Type(), llvm.argsToLlvmTypes(node->args));
             break;
         case TokenType::F64:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.f64Type());
+            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.f64Type(), llvm.argsToLlvmTypes(node->args));
             break;
         case TokenType::Bool:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.boolType());
+            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.boolType(), llvm.argsToLlvmTypes(node->args));
             break;
         case TokenType::Char:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i8Type());
+            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i8Type(), llvm.argsToLlvmTypes(node->args));
             break;
         default:
             // todo: error handling
             return nullptr;
     }
+
+    std::cout << "finnishing switch" << std::endl;
+
     llvm.createBlock("entry", currentFunction);
+
+    std::cout << "entering adding args to table" << std::endl;
 
     // for (auto& arg : currentFunction->args()) {
     //     std::string name = std::string(arg.getName());
     //     symbolTable[name] = {false, &arg, arg.getType()};
     // }
 
+    size_t index = 0;
+    for (auto& arg : currentFunction->args()) {
+        if (index < node->args.size()) {
+            std::string name(node->args[index].identifier);
+            symbolTable[name] = {false, &arg, arg.getType()};
+        }
+        index++;
+    }
+
+    std::cout << "entering body" << std::endl;
+
     for (const auto& statement : node->body) {
         compileExpression(statement.get());
     }
+    std::cout << "finished compilefunc" << std::endl;
     return currentFunction;
 }
 
@@ -196,18 +215,20 @@ llvm::Value * CodeGen::compileVarMod(VarModNode *node) {
 }
 
 llvm::Value * CodeGen::compileFuncLoad(FuncLoadNode *node) {
+    std::cout << "entering compilefuncload" << std::endl;
     llvm::Function* fn = llvm.getFunction(std::string(node->identifier));
     if (!fn) {
         std::cerr << "Unknown function: " << node->identifier << std::endl;
         return nullptr;
     }
 
+    std::cout << "bfore args" << std::endl;
     std::vector<llvm::Value*> args;
-    // for (const auto& arg : node->args) {x
-    //     args.push_back(compileExpression(arg.get()));
-    // }
-
-    return llvm.createFuncCall(std::string(node->identifier), {});
+    for (const auto& arg : node->args) {
+        args.push_back(compileExpression(arg.get()));
+    }
+    std::cout << "after args" << std::endl;
+    return llvm.createFuncCall(std::string(node->identifier), args);
 }
 
 llvm::Value* CodeGen::compileIf(IfNode* node) {
