@@ -175,6 +175,9 @@ llvm::Value* CodeGen::compileVarDeclare(VarDeclareNode* node) {
 
     symbolTable[std::string(node->identifier)] = {true, pointer, type};
     llvm::Value* val = compileExpression(node->body.get());
+    if (node->valueType == TokenType::I8 && val->getType() == llvm.i32Type()) {
+        val = llvm.createIntLiteral(static_cast<IntLiteralNode*>(node->body.get())->value, 8);
+    }
     return llvm.createStore(val, pointer);
 }
 

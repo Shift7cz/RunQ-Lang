@@ -28,15 +28,15 @@ llvm_map_components_to_libnames(llvm_libs
 )
 
 add_executable(RunQ-Lang qlc/main.cpp
-        qlc/lexer/Lexer.cpp
-        qlc/lexer/Lexer.hpp
+        qlc/Lexer/Lexer.cpp
+        qlc/Lexer/Lexer.hpp
         qlc/Parser/Parser.cpp
         qlc/Parser/Parser.hpp
         qlc/Checker/Checker.cpp
         qlc/Checker/Checker.hpp
         qlc/Codegen/CodeGen.cpp
         qlc/Codegen/CodeGen.hpp
-        qlc/lexer/Token.hpp
+        qlc/Lexer/Token.hpp
         qlc/Parser/Node.hpp
         qlc/Parser/Ast.hpp
         qlc/Parser/Ast.cpp

@@ -10,7 +10,7 @@
 #include <llvm/TargetParser/Host.h>
 #include <llvm/IR/LegacyPassManager.h>
 
-#include "../lexer/Token.hpp"
+#include "../Lexer/Token.hpp"
 
 LlvmWrap::LlvmWrap(const std::string& moduleName) { // initilises llvm
     context = std::make_unique<llvm::LLVMContext>();

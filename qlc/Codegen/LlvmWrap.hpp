@@ -13,7 +13,7 @@
 #include <memory>
 #include <string>
 
-#include "../lexer/Token.hpp"
+#include "../Lexer/Token.hpp"
 
 class LlvmWrap {
 private:
