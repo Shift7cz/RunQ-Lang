@@ -173,7 +173,7 @@ std::unique_ptr<Node> Parser::parseRet() {
     if (!expectAndConsume(TokenType::Return)) return nullptr;
 
     auto retNode = std::make_unique<ReturnNode>();
-    retNode->body = parseExpresion(); // this now leaves cursor right after the literal
+    retNode->body = parseComparison(); // this now leaves cursor right after the literal
 
     if (!retNode->body) return nullptr;
     if (!expectAndConsume(TokenType::Semicolon)) return nullptr;

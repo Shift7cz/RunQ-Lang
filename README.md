@@ -23,57 +23,33 @@ RunQ-Lang is an experimental, Turing complete, statically-typed programming lang
 ## Code Example
 
 ```runq
-fn example() : i32 { // multi-functional code!
+fn isPositive(i32 num) : bool {
+    return num > 0;
+}
+
+fn calculate(i32 a, i32 b) : i32 {
+    let~ i32 result = a;
     let~ i32 i = 0;
-    while i < 20 { // while loop
-        i = i + 1
+
+    while i < b {
+        result = result + a;
+        i = i + 1;
     }
 
-    let~ i32 a = 2 + 2; // 4
-    let~ i32 b = 4 - 2; // 2
-    let~ i32 c = 3 * 3; // 9
-    let~ i32 d = 9 / 3; // 3
-    let i32 mathTst = a + b * c - d; // 19
-
-    return i + mathTst;
+    return result;
 }
 
-fn retTstBool() : bool {
-    return true;
-}
+entry main() {
+    let i32 x = calculate(3, 4);
+    let bool check = isPositive(x);
+    let i8 small = 10i8;
+    let f64 pi = 3.14;
 
-fn retTestI8() : i8 {
-    return 16i8;
-}
-
-entry main() { // this is entry function; code starts here
-
-    let i32 x = 12; // declare immutable variable
-    let~ i32 y = 2 * x;
-    y = y - 4; // mod variable
-
-    let f64 pi = 3.141592;
-    let~ f64 otherDouble = pi; // declare mutable variable
-    otherDouble = 123.4567;
-
-    let i8 z = 56; // these will not be in LLVM IR because of compiler optimisations, but the return works properly.
-    let i8 w = z + 9i8;
-    let~ i8 idk = retTestI8(); // even returning i8 works
-
-    let char letter = 'q';
-    let bool isSomething = retTstBool();
-
-    let~ i32 returnValue = 0;
-    if x >= y { // If statements
-        returnValue = x + 27 + 6 + 4; // math
+    if check {
+        return x;
+    } else {
+        return 0;
     }
-    else {
-        returnValue = 27 + x + y;
-    }
-
-    let i32 value = example();
-
-    return returnValue + value; // return
 }
 ```
 
@@ -85,14 +61,14 @@ entry main() { // this is entry function; code starts here
 | Potential future features (not garanteed) | Planned features  | Currently in development | Already implemented |
 | --------- | --------- | --------- | --------- |
 | Bootstrapping | Autmomatic typing in some situations based on context | Types overhoul (internal) | Basic math functions |
-| Package manager (using GitHub) | Loops (for, loop all rust style) |  | Variables loading and declaring |
-| Multiple file compatibility | Strings, arrays, vectors |  | Return statement |
-| Multi Threading | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
+| Package manager (using GitHub) | Loops (for, loop all rust style) | C FFI | Variables loading and declaring |
+| Multi Threading | Strings, arrays, vectors |  | Return statement |
+|  | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
 |  | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128) |  | Basic if/else (accepts variables and comapre expresions) |
 |  | Bool operations  |  | Reading from file |
-|  | C FFI |  | Mutable/Imutable variables (let/let~) |   
-|  | Basic stdlib |  | Comments|
+|  | Basic stdlib |  | Mutable/Imutable variables (let/let~) |   
+|  | Multiple file compatibility/library capibility |  | Comments|
 |  |  |  | While loop |
 |  |  |  | Multi functional code with arguments and function calling |
 

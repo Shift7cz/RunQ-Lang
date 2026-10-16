@@ -1,17 +1,28 @@
-fn factorial(i32 num, bool test) : i32 {
-    let~ i32 i = 0;
-    let~ i32 retVal = 0;
+fn isPositive(i32 num) : bool {
+    return num > 0;
+}
 
-    while i <= num {
-        retVal = retVal + i;
+fn calculate(i32 a, i32 b) : i32 {
+    let~ i32 result = a;
+    let~ i32 i = 0;
+
+    while i < b {
+        result = result + a;
         i = i + 1;
     }
 
-    let bool test2 = test;
-
-    return retVal;
+    return result;
 }
 
 entry main() {
-    return factorial(5, true);
+    let i32 x = calculate(3, 4);
+    let bool check = isPositive(x);
+    let i8 small = 10i8;
+    let f64 pi = 3.14;
+
+    if check {
+        return x;
+    } else {
+        return 0;
+    }
 }
