@@ -3,6 +3,7 @@
 #include <map>
 
 #include "../Parser/Ast.hpp"
+#include "../Project/Project.hpp"
 #include "LlvmWrap.hpp"
 
 class CodeGen {
@@ -31,6 +32,8 @@ private:
     llvm::Value* compileWhile(WhileNode* node);
 
 public:
+    std::vector<std::string> cList;
+
     CodeGen();
-    void compile(Ast& ast, bool generateCompiledFiles);
+    void compile(Ast& ast, bool generateCompiledFiles, bool printIr);
 };

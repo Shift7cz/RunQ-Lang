@@ -331,7 +331,7 @@ llvm::Value * CodeGen::compileWhile(WhileNode *node) { // todo: return in while 
     return nullptr;
 }
 
-void CodeGen::compile(Ast& ast, bool generateCompiledFiles) {
+void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr) {
     if (!ast.root) { std::cout << "no AST found" << std::endl; return; }
 
     if (ast.root->type == NodeType::Root) {
@@ -341,15 +341,41 @@ void CodeGen::compile(Ast& ast, bool generateCompiledFiles) {
         }
     }
 
-    std::cout << "\n--- LLVM IR Output ---\n";
-    llvm.print();
+    if (printIr) {
+        std::cout << "\n--- LLVM IR Output ---\n";
+        llvm.print();
+    }
 
     if (!generateCompiledFiles) return;
 
-    std::cout << "\n--- COMPILING ---\n";
-    llvm.emitObjectFile("outputRunq.o");
-    llvm.emitAssembly("outputRunq.s");
-    system("clang -c ../Extern.c -o outputC.o");
-    system("clang outputRunq.o outputC.o -o output");
-    std::cout << "Executable: ./output" << std::endl;
+    std::cout << "\n--- COMPILING ---\n"; // todo: support for non-bash system
+    system("mkdir -p bin/obj");
+    system("mkdir -p bin/asm");
+
+    llvm.emitObjectFile("bin/obj/outputRunq.o");
+    llvm.emitAssembly("bin/asm/outputRunq.s"); // todo: toggle
+
+    std::string commandOut = "clang ";
+
+    for (int i = 0; i < cList.size(); i++) {
+        std::string sourceFile = cList[i];
+        std::string objFile = "bin/obj/" + sourceFile + ".o";
+
+        std::string commandTemp = "clang -c " + sourceFile + " -o " + objFile;
+
+        std::cout << "Running: " << commandTemp << std::endl;
+
+        system(commandTemp.c_str());
+        commandOut += objFile + " ";
+
+        //std::cout << cList[i] << std::endl;
+        //std::cout << objFile << std::endl;
+    }
+
+    commandOut += " bin/obj/outputRunq.o -o bin/output";
+    std::cout << "Linking: " << commandOut << std::endl;
+
+    system(commandOut.c_str());
+
+    std::cout << "Executable: ./bin/output" << std::endl;
 }

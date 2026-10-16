@@ -1,0 +1,8 @@
+extern fn myCFunc(i32 num) : i32;
+extern fn factorialC(i32 num) : i32;
+
+entry main() {
+    let i32 value1 = myCFunc(6);
+    let i32 value2 = factorialC(5);
+    return value1 + value2;
+}

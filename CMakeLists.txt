@@ -42,6 +42,9 @@ add_executable(RunQ-Lang qlc/main.cpp
         qlc/Parser/Ast.cpp
         qlc/Codegen/LlvmWrap.cpp
         qlc/Codegen/LlvmWrap.hpp
+        qlc/Project/Project.cpp
+        qlc/Project/Project.hpp
+        Example/foo2.c
 )
 
 find_library(LLVM_SHARED_LIB LLVM HINTS ${LLVM_LIBRARY_DIRS})

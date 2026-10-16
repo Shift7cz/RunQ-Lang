@@ -1,6 +1,0 @@
-extern fn myCFunc(i32 num) : i32;
-
-entry main() {
-    let i32 value = myCFunc(6);
-    return value;
-}

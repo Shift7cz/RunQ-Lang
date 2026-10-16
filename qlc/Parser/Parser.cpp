@@ -40,7 +40,7 @@ std::vector<std::unique_ptr<Node>> Parser::parseBlock(bool stopAtBrace) {
     std::vector<std::unique_ptr<Node>> block;
 
     while (!(expect(TokenType::ClosedBrace) && stopAtBrace) && currentToken.type != TokenType::EndOfFile) { // todo: error handling for end of file
-        std::cout << "parseBlock loop: " << tokenTypeToString(currentToken.type) << " '" << currentToken.data << "'\n";
+        //std::cout << "parseBlock loop: " << tokenTypeToString(currentToken.type) << " '" << currentToken.data << "'\n";
         if (currentToken.type == TokenType::Return) {
             std::unique_ptr<Node> retNode = parseRet();
             block.push_back(std::move(retNode));
@@ -215,14 +215,14 @@ std::unique_ptr<Node> Parser::parseExternFn() {
 }
 
 std::unique_ptr<Node> Parser::parseEntry() {
-    std::cout << "start of entry\n";
+    //std::cout << "start of entry\n";
     expectAndConsume(TokenType::Entry);
 
     if (!expect(TokenType::Identifier)) return nullptr;
     std::string_view identifier = currentToken.data;
     advance(); // move past identifier
 
-    std::cout << "idnentifier\n";
+    //std::cout << "idnentifier\n";
 
     if (!expectAndConsume(TokenType::OpenParen)) return nullptr;
 
@@ -232,7 +232,7 @@ std::unique_ptr<Node> Parser::parseEntry() {
 
     TokenType retType = TokenType::I32; // entry has hardcoded return type
 
-    std::cout << "type and params\n";
+    //std::cout << "type and params\n";
 
     if (!expectAndConsume(TokenType::OpenBrace)) return nullptr;
 
@@ -241,7 +241,7 @@ std::unique_ptr<Node> Parser::parseEntry() {
     funcNode->returnType = retType;
     funcNode->body = parseBlock(true);
 
-    std::cout << "body\n";
+    //std::cout << "body\n";
 
     if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
 
