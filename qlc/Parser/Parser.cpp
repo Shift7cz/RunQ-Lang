@@ -40,6 +40,7 @@ std::vector<std::unique_ptr<Node>> Parser::parseBlock(bool stopAtBrace) {
     std::vector<std::unique_ptr<Node>> block;
 
     while (!(expect(TokenType::ClosedBrace) && stopAtBrace) && currentToken.type != TokenType::EndOfFile) { // todo: error handling for end of file
+        std::cout << "parseBlock loop: " << tokenTypeToString(currentToken.type) << " '" << currentToken.data << "'\n";
         if (currentToken.type == TokenType::Return) {
             std::unique_ptr<Node> retNode = parseRet();
             block.push_back(std::move(retNode));
@@ -64,7 +65,12 @@ std::vector<std::unique_ptr<Node>> Parser::parseBlock(bool stopAtBrace) {
             std::unique_ptr<Node> fnNode = parseFn();
             block.push_back(std::move(fnNode));
         }
+        else if  (currentToken.type == TokenType::Extern) {
+            std::unique_ptr<Node> externNode = parseExternFn();
+            block.push_back(std::move(externNode));
+        }
         else if (currentToken.type == TokenType::Entry) {
+            std::cout << "entering fn in entry\n";
             std::unique_ptr<Node> entryNode = parseEntry();
             block.push_back(std::move(entryNode));
         }
@@ -142,12 +148,81 @@ std::unique_ptr<Node> Parser::parseFn() {
     return funcNode;
 }
 
+std::unique_ptr<Node> Parser::parseExternFn() {
+    expectAndConsume(TokenType::Extern); // move past extern
+    expectAndConsume(TokenType::Fn); // move past fn
+    auto funcNode = std::make_unique<ExternFuncNode>();
+
+    if (!expect(TokenType::Identifier)) return nullptr;
+    std::string_view identifier = currentToken.data;
+    advance(); // move past identifier
+
+    if (!expectAndConsume(TokenType::OpenParen)) return nullptr; // todo: error handling
+
+    while (!expect(TokenType::ClosedParen)) { //args
+        Argument argument;
+
+        //std::cout << "1" << currentToken.data << "\n";
+        if (expect(TokenType::I32)
+            || expect(TokenType::I8)
+            || expect(TokenType::F64)
+            || expect(TokenType::Bool)
+            || expect(TokenType::Char)) {
+            argument.type = currentToken.type;
+            advance();
+            }
+        else return nullptr;
+        //std::cout << "2" << currentToken.data << "\n";
+
+        if (!expect(TokenType::Identifier)) return nullptr; // todo: error handling
+        argument.identifier = currentToken.data;
+        advance();
+        //std::cout << "3" << currentToken.data << "\n";
+
+        funcNode->args.push_back(argument);
+
+        if (expect(TokenType::Comma)) advance(); // todo: error handling
+        //std::cout << "4" << currentToken.data << "\n";
+    }
+    advance();
+    //std::cout << "5" << currentToken.data << "\n";
+
+    TokenType retType = TokenType::Unknown;
+    if (expectAndConsume(TokenType::Colon)) {
+        // moves into return type if return type is available
+        if (expect(TokenType::I32)
+            || expect(TokenType::I8)
+            || expect(TokenType::F64)
+            || expect(TokenType::Bool)
+            || expect(TokenType::Char)) {
+            retType = currentToken.type;
+            advance();
+        }
+        else {
+            // todo: error handling
+            return nullptr;
+        }
+    }
+
+    if (!expectAndConsume(TokenType::Semicolon)) return nullptr;
+
+    funcNode->identifier = identifier;
+    funcNode->returnType = retType;
+
+    //std::cout << "retType: " << (int)retType << "\n";
+
+    return funcNode;
+}
+
 std::unique_ptr<Node> Parser::parseEntry() {
+    std::cout << "start of entry\n";
     expectAndConsume(TokenType::Entry);
 
     if (!expect(TokenType::Identifier)) return nullptr;
     std::string_view identifier = currentToken.data;
     advance(); // move past identifier
+
+    std::cout << "idnentifier\n";
 
     if (!expectAndConsume(TokenType::OpenParen)) return nullptr;
 
@@ -157,12 +232,16 @@ std::unique_ptr<Node> Parser::parseEntry() {
 
     TokenType retType = TokenType::I32; // entry has hardcoded return type
 
+    std::cout << "type and params\n";
+
     if (!expectAndConsume(TokenType::OpenBrace)) return nullptr;
 
     auto funcNode = std::make_unique<FuncNode>();
     funcNode->identifier = identifier;
     funcNode->returnType = retType;
     funcNode->body = parseBlock(true);
+
+    std::cout << "body\n";
 
     if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
 

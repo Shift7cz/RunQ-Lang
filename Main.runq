@@ -1,28 +1,6 @@
-fn isPositive(i32 num) : bool {
-    return num > 0;
-}
-
-fn calculate(i32 a, i32 b) : i32 {
-    let~ i32 result = a;
-    let~ i32 i = 0;
-
-    while i < b {
-        result = result + a;
-        i = i + 1;
-    }
-
-    return result;
-}
+extern fn myCFunc(i32 num) : i32;
 
 entry main() {
-    let i32 x = calculate(3, 4);
-    let bool check = isPositive(x);
-    let i8 small = 10i8;
-    let f64 pi = 3.14;
-
-    if check {
-        return x;
-    } else {
-        return 0;
-    }
+    let i32 value = myCFunc(6);
+    return value;
 }

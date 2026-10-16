@@ -19,6 +19,7 @@ private:
     llvm::Function* currentFunction = nullptr;
 
     llvm::Value* compileFunction(FuncNode* node);
+    llvm::Value* compileExternFunction(ExternFuncNode* node);
     llvm::Value* compileExpression(Node* node);
     llvm::Value* compileReturn(ReturnNode* node);
     llvm::Type* llvmTypeFromToken(TokenType type);

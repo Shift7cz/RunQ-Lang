@@ -23,6 +23,7 @@ public:
 
     // helper parse for each type of statement.;
     std::unique_ptr<Node> parseFn();
+    std::unique_ptr<Node> parseExternFn();
     std::unique_ptr<Node> parseEntry();
     std::unique_ptr<Node> parseRet();
     std::unique_ptr<Node> parseIf();

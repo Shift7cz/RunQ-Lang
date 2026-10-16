@@ -10,6 +10,7 @@ enum class NodeType {
     Root, // the main node under which the AST lives
 
     Func,
+    ExternFunc,
     Return,
     If, // contains else as optional data
     While,
@@ -59,6 +60,15 @@ public:
     TokenType returnType; // only section types allowed.
 
     FuncNode() : Node(NodeType::Func) {}
+};
+
+class ExternFuncNode : public Node {
+public:
+    std::string_view identifier;
+    std::vector<Argument> args;
+    TokenType returnType; // only section types allowed
+
+    ExternFuncNode() : Node(NodeType::ExternFunc) {}
 };
 
 class ReturnNode : public Node {

@@ -85,6 +85,57 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             }
             break;
         }
+        case NodeType::ExternFunc: {
+                        // 1. Cast to FuncNode to access unique features (.identifier and .body)
+            auto func = static_cast<ExternFuncNode*>(node);
+            switch (func->returnType) {
+                case TokenType::I32:
+                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'i32'\n";
+                    break;
+                case TokenType::I8:
+                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'i8'\n";
+                    break;
+                case TokenType::F64:
+                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'f64'\n";
+                    break;
+                case TokenType::Bool:
+                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'bool'\n";
+                    break;
+                case TokenType::Char:
+                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'char'\n";
+                    break;
+                default:
+                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'ERROR in Ast'\n";
+                    break;
+            }
+
+            std::cout << spaces << "[[Extrn Function]][Args]" << std::endl;
+            //indent += 1;
+            for (const auto& child : func->args) {
+                switch (child.type) {
+                    case TokenType::I32:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'i32'" << std::endl;
+                        break;
+                    case TokenType::I8:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'i8'" << std::endl;
+                        break;
+                    case TokenType::F64:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'f64'" << std::endl;
+                        break;
+                    case TokenType::Bool:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'bool'" << std::endl;
+                        break;
+                    case TokenType::Char:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'char'" << std::endl;
+                        break;
+                    default:
+                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'ERROR in Ast'" << std::endl;
+                        break;
+                }
+            }
+            //indent -= 1;
+            break;
+        }
         case NodeType::Return: {
             auto ret = static_cast<ReturnNode*>(node);
             std::cout << spaces << "[Return Statement] \n";

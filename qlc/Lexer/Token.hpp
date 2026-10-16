@@ -13,6 +13,7 @@ enum class TokenType {
     If,
     Else,
     While,
+    Extern,
 
     // literal (raw data)
     IntLiteral,
@@ -75,6 +76,7 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::Entry:       return "Entry";
         case TokenType::Else:        return "Else";
         case TokenType::While:       return "While";
+        case TokenType::Extern:      return "Extern";
         case TokenType::IntLiteral:  return "IntLiteral";
         case TokenType::FloatLiteral: return "FloatLiteral";
         case TokenType::BoolLiteral: return "BoolLiteral";

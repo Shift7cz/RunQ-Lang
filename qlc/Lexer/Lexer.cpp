@@ -135,6 +135,7 @@ Token Lexer::nextToken() {
         if (nextToken == "else") return Token{TokenType::Else, "else", line, column};
         if (nextToken == "while") return Token{TokenType::While, "while", line, column};
         if (nextToken == "entry") return Token{TokenType::Entry, "entry", line, column};
+        if (nextToken == "extern") return Token{TokenType::Extern, "extern", line, column};
 
         if (nextToken == "true" || nextToken == "false") {
             return Token{TokenType::BoolLiteral, nextToken, line, column};
