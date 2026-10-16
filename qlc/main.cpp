@@ -30,41 +30,53 @@ int main() {
     // ######################### //
 
     //std::cout << "Project Path"; // for some reson its printing after
-    setPath("../Example/RunQ-Project.qlc"); // todo: changeable
+    setPath("../example/RunQ-Project.qlc"); // todo: changeable
 
     Project prj;
     prj.load("RunQ-Project.qlc"); // todo: changeable
 
-    std::string source = readFile("main.runq"); // todo: error handling for when project folder is weird
+    std::vector<Ast> asts;
 
-    if (devMode) std::cout << "Source ->\n" << source << "\n\nLexer out ->"<< std::endl;
+    for (int i = 0; i < prj.runqList.size(); i++) {
+        std::string source = readFile(prj.runqList[i]);
 
-    Lexer lexer(source);
+        if (devMode) std::cout << "Source ->\n" << source << "\n\nLexer out ->"<< std::endl;
 
-    if (devMode) {
-        bool isAtEnd = false;
-        while (!isAtEnd) {
-            Token token = lexer.nextToken();
-            std::cout << token << std::endl;
-            if (token.type == TokenType::EndOfFile) {
-                isAtEnd = true;
+        Lexer lexer(source);
+
+        if (devMode) {
+            bool isAtEnd = false;
+            while (!isAtEnd) {
+                Token token = lexer.nextToken();
+                std::cout << token << std::endl;
+                if (token.type == TokenType::EndOfFile) {
+                    isAtEnd = true;
+                }
             }
         }
+
+        if (devMode) std::cout << "\n\nParser out ->" << std::endl;
+
+        Lexer lexer2(source);
+        Parser parser(lexer2);
+
+        parser.parse();
+        if (devMode) parser.ast.print();
+        asts.push_back(std::move(parser.ast));
     }
 
-    if (devMode) std::cout << "\n\nParser out ->" << std::endl;
+    std::cout << "Merging asts..." << std::endl;
+    for (int i = 1; i < asts.size(); i++) {
+        asts[0].add(asts[i]);
+    }
 
-    Lexer lexer2(source);
-    Parser parser(lexer2);
-
-    parser.parse();
-    if (devMode) parser.ast.print();
+    if (devMode) asts[0].print();
 
     if (devMode) std::cout << "\n\nLLVM out -> \n" << std::endl;
 
     CodeGen codegen;
     codegen.cList = prj.cList;
-    codegen.compile(parser.ast, generateCompiledFiles, devMode);
+    codegen.compile(asts[0], generateCompiledFiles, devMode);
 
     return 0;
 }

@@ -48,13 +48,13 @@ public:
 };
 
 struct Argument {
-    std::string_view identifier;
+    std::string identifier;
     TokenType type;
 };
 
 class FuncNode : public Node {
 public:
-    std::string_view identifier;
+    std::string identifier;
     std::vector<Argument> args;
     std::vector<std::unique_ptr<Node>> body;
     TokenType returnType; // only section types allowed.
@@ -64,7 +64,7 @@ public:
 
 class ExternFuncNode : public Node {
 public:
-    std::string_view identifier;
+    std::string identifier;
     std::vector<Argument> args;
     TokenType returnType; // only section types allowed
 
@@ -99,7 +99,7 @@ public:
 class VarDeclareNode : public Node {
 public:
     std::unique_ptr<Node> body;
-    std::string_view identifier;
+    std::string identifier;
     bool isMutable;
     TokenType valueType; // the type of the variable, only types allowed
 
@@ -108,14 +108,14 @@ public:
 
 class VarLoadNode : public Node {
 public:
-    std::string_view identifier;
+    std::string identifier;
 
     VarLoadNode() : Node(NodeType::VarLoad) {}
 };
 
 class FuncLoadNode : public Node {
 public:
-    std::string_view identifier;
+    std::string identifier;
     std::vector<std::unique_ptr<Node>> args;
 
     FuncLoadNode() : Node(NodeType::FuncLoad) {}
@@ -123,7 +123,7 @@ public:
 
 class VarModNode : public Node {
 public:
-    std::string_view identifier;
+    std::string identifier;
     std::unique_ptr<Node> body;
 
     VarModNode() : Node(NodeType::VarMod) {}

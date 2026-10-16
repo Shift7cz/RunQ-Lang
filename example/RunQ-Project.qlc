@@ -1,5 +1,6 @@
 [RunQ]
 > main.runq
+> fooLib.runq
 [C]
 > foo1.c
 > foo2.c

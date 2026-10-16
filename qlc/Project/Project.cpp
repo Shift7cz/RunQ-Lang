@@ -79,4 +79,7 @@ void Project::load(std::string path) {
     // for (int i = 0; i < cList.size(); i++) {
     //     std::cout << cList[i] << std::endl;
     // }
+    // for (int i = 0; i < runqList.size(); i++) {
+    //     std::cout << runqList[i] << std::endl;
+    // }
 }

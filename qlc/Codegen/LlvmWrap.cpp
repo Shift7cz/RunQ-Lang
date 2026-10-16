@@ -100,7 +100,7 @@ llvm::Value * LlvmWrap::createDevide(llvm::Value *operand1, llvm::Value *operand
     return builder->CreateSDiv(operand1, operand2, "sdivtmp");  // S = signed, matches i32
 }
 
-llvm::Value * LlvmWrap::createRegister(llvm::Value *value, TokenType type, std::string_view name) {
+llvm::Value * LlvmWrap::createRegister(llvm::Value *value, TokenType type, std::string name) {
     // llvm::Value* zeroVal;
     // switch (type) {
     //     case TokenType::I32: zeroVal = llvm::ConstantInt::get(i32Type(), 0); break;

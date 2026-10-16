@@ -12,6 +12,14 @@ void Ast::print() { // helper print function, debugging.
     printNode(root.get(), 0);
 }
 
+void Ast::add(Ast &otherAst) {
+    RootNode& otherRoot = static_cast<RootNode&>(*otherAst.root);
+    RootNode* myRoot = static_cast<RootNode*>(root.get());
+    for (int i = 0; i < otherRoot.body.size(); i++) {
+        myRoot->body.push_back(std::move(otherRoot.body[i]));
+    }
+}
+
 void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
     if (!node) return;
 

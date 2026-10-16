@@ -1,0 +1,28 @@
+fn isPositive(i32 num) : bool {
+    return num > 0;
+}
+
+fn calculate(i32 a, i32 b) : i32 { // function
+    let~ i32 result = a;
+    let~ i32 i = 0; // mutable var
+
+    while i < b { // loop
+        result = result + a;
+        i = i + 1;
+    }
+
+    return result;
+}
+
+fn example() : i32 { // code starts here
+    let i32 x = calculate(3, 4);
+    let bool check = isPositive(x);
+    let i8 small = 10i8; // immutable var
+    let f64 pi = 3.14;
+
+    if check { // if statement
+        return x;
+    } else {
+        return 0;
+    }
+}
