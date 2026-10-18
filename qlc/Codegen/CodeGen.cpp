@@ -5,10 +5,7 @@
 CodeGen::CodeGen() : llvm("RunQ-Lang_Test") {
 }
 
-llvm::Value* CodeGen::compileFunction(FuncNode* node) {
-    //std::cout << "entering compilefunc" << std::endl;
-    symbolTable.clear(); // new function scope
-
+void CodeGen::declareFunction(FuncNode *node) {
     //std::cout << "entering switch" << std::endl;
     switch (node->returnType) {
         case TokenType::I32:
@@ -28,22 +25,25 @@ llvm::Value* CodeGen::compileFunction(FuncNode* node) {
             break;
         default:
             // todo: error handling
-            return nullptr;
+            break;
     }
+}
+
+llvm::Value* CodeGen::compileFunction(FuncNode* node) {
+    //std::cout << "entering compilefunc" << std::endl;
+    symbolTable.clear(); // new function scope
 
     //std::cout << "finishing switch" << std::endl;
+
+    llvm::Function* fn = llvm.getFunction(std::string(node->identifier));
+    currentFunction = fn;
 
     llvm.createBlock("entry", currentFunction);
 
     //std::cout << "entering adding args to table" << std::endl;
 
-    // for (auto& arg : currentFunction->args()) {
-    //     std::string name = std::string(arg.getName());
-    //     symbolTable[name] = {false, &arg, arg.getType()};
-    // }
-
     size_t index = 0;
-    for (auto& arg : currentFunction->args()) {
+    for (auto& arg : currentFunction->args()) { // this goes where?
         if (index < node->args.size()) {
             std::string name(node->args[index].identifier);
             symbolTable[name] = {false, &arg, arg.getType()};
@@ -335,6 +335,13 @@ void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr) {
 
     if (ast.root->type == NodeType::Root) {
         auto node = static_cast<RootNode*>(ast.root.get());
+
+        // first pass
+        for (const auto& statement : node->body) {
+            declareFunction(static_cast<FuncNode*>(statement.get()));
+        }
+
+        // second pass
         for (const auto& statement : node->body) {
             compileExpression(statement.get());
         }
