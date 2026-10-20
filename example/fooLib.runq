@@ -1,7 +1,3 @@
-fn isPositive(i32 num) : bool {
-    return num > 0;
-}
-
 fn calculate(i32 a, i32 b) : i32 { // function
     let~ i32 result = a;
     let~ i32 i = 0; // mutable var
@@ -26,3 +22,9 @@ fn example() : i32 { // code starts here
         return 0;
     }
 }
+
+// fn error(int 67) : bool { // deliberately error function to test error handler
+    // let x = 64;
+    // return x
+// }
+// also files cna now end with comment and no whitespace

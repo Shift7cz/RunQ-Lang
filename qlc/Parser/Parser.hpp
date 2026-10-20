@@ -10,7 +10,7 @@ private:
 
     void advance();
     bool expect(TokenType expected);
-    bool expectAndConsume(TokenType expected);
+    bool expectAndConsume(TokenType expected, bool logError);
 
 public:
     Ast ast;

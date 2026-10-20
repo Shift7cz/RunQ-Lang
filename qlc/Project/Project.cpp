@@ -7,6 +7,7 @@
 enum ProjectTokenType {
     Runq,
     C,
+    Library,
     Identifier,
     Accesor, // >
 
@@ -38,6 +39,9 @@ void Project::load(std::string path) {
             else if (current == "[C]") {
                 tokens.push_back(ProjectToken{C, current}); current = "";
             }
+            else if (current == "[Library]") {
+                tokens.push_back(ProjectToken{Library, current}); current = "";
+            }
             else if (current == ">") {
                 tokens.push_back(ProjectToken{Accesor, current}); current = "";
             }
@@ -62,6 +66,9 @@ void Project::load(std::string path) {
         else if (tokens[i].Type == C) {
             group = C;
         }
+        else if (tokens[i].Type == Library) {
+            group = Library;
+        }
         else if (tokens[i].Type == Accesor && tokens[i+1].Type == Identifier) {
             i++;
             switch (group) {
@@ -71,6 +78,8 @@ void Project::load(std::string path) {
                 case C:
                     cList.push_back(tokens[i].Data);
                     break;
+                case Library:
+                    libList.push_back(tokens[i].Data);
             }
         }
     }

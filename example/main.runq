@@ -1,6 +1,10 @@
 extern fn myCFunc(i32 num) : i32;
 extern fn factorialC(i32 num) : i32;
 
+fn isPositive(i32 num) : bool {
+    return num > 0;
+}
+
 entry main() {
     let i32 value1 = myCFunc(6);
     let i32 value2 = factorialC(5);

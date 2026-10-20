@@ -42,7 +42,7 @@ int main() {
 
         if (devMode) std::cout << "Source ->\n" << source << "\n\nLexer out ->"<< std::endl;
 
-        Lexer lexer(source);
+        Lexer lexer(source, prj.runqList[i]);
 
         if (devMode) {
             bool isAtEnd = false;
@@ -57,7 +57,7 @@ int main() {
 
         if (devMode) std::cout << "\n\nParser out ->" << std::endl;
 
-        Lexer lexer2(source);
+        Lexer lexer2(source, prj.runqList[i]);
         Parser parser(lexer2);
 
         parser.parse();

@@ -61,9 +61,10 @@ enum class TokenType {
 
 struct Token {
     TokenType type;
-    std::string_view data;
+    std::string data;
     size_t line;
     size_t column;
+    std::string source;
 };
 
 inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}

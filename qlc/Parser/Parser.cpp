@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <llvm/IR/Argument.h>
+#include "../Checker/Logger.hpp"
 
 void Parser::advance() {
     currentToken = lexer.nextToken();
@@ -17,9 +18,9 @@ bool Parser::expect(TokenType expected) {
     return false;
 }
 
-bool Parser::expectAndConsume(TokenType expected) {
+bool Parser::expectAndConsume(TokenType expected, bool logError) {
     if (!expect(expected)) {
-        // todo: add syntax errors.
+        if (logError) Log::error("Expected '" + std::string(tokenTypeToString(expected)) + "', but got '" + currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
         return false;
     }
     advance();
@@ -39,7 +40,7 @@ void Parser::parse() {
 std::vector<std::unique_ptr<Node>> Parser::parseBlock(bool stopAtBrace) {
     std::vector<std::unique_ptr<Node>> block;
 
-    while (!(expect(TokenType::ClosedBrace) && stopAtBrace) && currentToken.type != TokenType::EndOfFile) { // todo: error handling for end of file
+    while (!(expect(TokenType::ClosedBrace) && stopAtBrace) && currentToken.type != TokenType::EndOfFile) {
         //std::cout << "parseBlock loop: " << tokenTypeToString(currentToken.type) << " '" << currentToken.data << "'\n";
         if (currentToken.type == TokenType::Return) {
             std::unique_ptr<Node> retNode = parseRet();
@@ -70,12 +71,13 @@ std::vector<std::unique_ptr<Node>> Parser::parseBlock(bool stopAtBrace) {
             block.push_back(std::move(externNode));
         }
         else if (currentToken.type == TokenType::Entry) {
-            std::cout << "entering fn in entry\n";
+            //std::cout << "entering fn in entry\n";
             std::unique_ptr<Node> entryNode = parseEntry();
             block.push_back(std::move(entryNode));
         }
         // Todo: other statements
         else {
+            Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
             advance();
         }
     }
@@ -83,14 +85,14 @@ std::vector<std::unique_ptr<Node>> Parser::parseBlock(bool stopAtBrace) {
 }
 
 std::unique_ptr<Node> Parser::parseFn() {
-    expectAndConsume(TokenType::Fn); // move past fn
+    if (!expectAndConsume(TokenType::Fn, true)) return nullptr; // move past fn
     auto funcNode = std::make_unique<FuncNode>();
 
     if (!expect(TokenType::Identifier)) return nullptr;
-    std::string_view identifier = currentToken.data;
+    std::string identifier = currentToken.data;
     advance(); // move past identifier
 
-    if (!expectAndConsume(TokenType::OpenParen)) return nullptr; // todo: error handling
+    if (!expectAndConsume(TokenType::OpenParen, true)) return nullptr;
 
     while (!expect(TokenType::ClosedParen)) { //args
         Argument argument;
@@ -104,24 +106,36 @@ std::unique_ptr<Node> Parser::parseFn() {
             argument.type = currentToken.type;
             advance();
             }
-        else return nullptr;
+        else {
+            Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+            advance();
+            argument.type = TokenType::Unknown;
+            return nullptr;
+        }
         //std::cout << "2" << currentToken.data << "\n";
 
-        if (!expect(TokenType::Identifier)) return nullptr; // todo: error handling
+        if (!expect(TokenType::Identifier)) {
+            Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+            return nullptr;
+        }
         argument.identifier = currentToken.data;
         advance();
         //std::cout << "3" << currentToken.data << "\n";
 
         funcNode->args.push_back(argument);
 
-        if (expect(TokenType::Comma)) advance(); // todo: error handling
+        if (expect(TokenType::Comma)) advance();
+        else if (!expect(TokenType::ClosedParen)) {
+            Log::error("Expected token ',' but got '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+            return nullptr;
+        }
         //std::cout << "4" << currentToken.data << "\n";
     }
     advance();
     //std::cout << "5" << currentToken.data << "\n";
 
     TokenType retType = TokenType::Unknown;
-    if (expectAndConsume(TokenType::Colon)) {
+    if (expectAndConsume(TokenType::Colon, true)) {
         // moves into return type if return type is available
         if (expect(TokenType::I32)
             || expect(TokenType::I8)
@@ -132,32 +146,33 @@ std::unique_ptr<Node> Parser::parseFn() {
             advance();
         }
         else {
-            // todo: error handling
+            Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+            advance();
             return nullptr;
         }
     }
 
-    if (!expectAndConsume(TokenType::OpenBrace)) return nullptr;
+    if (!expectAndConsume(TokenType::OpenBrace, true)) return nullptr;
 
     funcNode->identifier = identifier;
     funcNode->returnType = retType;
     funcNode->body = parseBlock(true);
 
-    if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
+    if (!expectAndConsume(TokenType::ClosedBrace, true)) return nullptr;
 
     return funcNode;
 }
 
 std::unique_ptr<Node> Parser::parseExternFn() {
-    expectAndConsume(TokenType::Extern); // move past extern
-    expectAndConsume(TokenType::Fn); // move past fn
+    if (!expectAndConsume(TokenType::Extern, true)) return nullptr; // move past extern
+    if (!expectAndConsume(TokenType::Fn, true)) return nullptr; // move past fn
     auto funcNode = std::make_unique<ExternFuncNode>();
 
     if (!expect(TokenType::Identifier)) return nullptr;
-    std::string_view identifier = currentToken.data;
+    std::string identifier = currentToken.data;
     advance(); // move past identifier
 
-    if (!expectAndConsume(TokenType::OpenParen)) return nullptr; // todo: error handling
+    if (!expectAndConsume(TokenType::OpenParen, true)) return nullptr;
 
     while (!expect(TokenType::ClosedParen)) { //args
         Argument argument;
@@ -171,24 +186,36 @@ std::unique_ptr<Node> Parser::parseExternFn() {
             argument.type = currentToken.type;
             advance();
             }
-        else return nullptr;
-        //std::cout << "2" << currentToken.data << "\n";
+        else {
+            Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+            advance();
+            argument.type = TokenType::Unknown;
+            return nullptr;
+        }
 
-        if (!expect(TokenType::Identifier)) return nullptr; // todo: error handling
+        if (!expect(TokenType::Identifier)) {
+            Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+            advance();
+            return nullptr;
+        }
         argument.identifier = currentToken.data;
         advance();
         //std::cout << "3" << currentToken.data << "\n";
 
         funcNode->args.push_back(argument);
 
-        if (expect(TokenType::Comma)) advance(); // todo: error handling
+        if (expect(TokenType::Comma)) advance();
+        else if (!expect(TokenType::ClosedParen)) {
+            Log::error("Expected token ',' but got '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+            return nullptr;
+        }
         //std::cout << "4" << currentToken.data << "\n";
     }
     advance();
     //std::cout << "5" << currentToken.data << "\n";
 
     TokenType retType = TokenType::Unknown;
-    if (expectAndConsume(TokenType::Colon)) {
+    if (expectAndConsume(TokenType::Colon, true)) {
         // moves into return type if return type is available
         if (expect(TokenType::I32)
             || expect(TokenType::I8)
@@ -199,12 +226,13 @@ std::unique_ptr<Node> Parser::parseExternFn() {
             advance();
         }
         else {
-            // todo: error handling
+            Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+            advance();
             return nullptr;
         }
     }
 
-    if (!expectAndConsume(TokenType::Semicolon)) return nullptr;
+    if (!expectAndConsume(TokenType::Semicolon, true)) return nullptr;
 
     funcNode->identifier = identifier;
     funcNode->returnType = retType;
@@ -216,25 +244,25 @@ std::unique_ptr<Node> Parser::parseExternFn() {
 
 std::unique_ptr<Node> Parser::parseEntry() {
     //std::cout << "start of entry\n";
-    expectAndConsume(TokenType::Entry);
+    if (!expectAndConsume(TokenType::Entry, true)) return nullptr;
 
     if (!expect(TokenType::Identifier)) return nullptr;
-    std::string_view identifier = currentToken.data;
+    std::string identifier = currentToken.data;
     advance(); // move past identifier
 
     //std::cout << "idnentifier\n";
 
-    if (!expectAndConsume(TokenType::OpenParen)) return nullptr;
+    if (!expectAndConsume(TokenType::OpenParen, true)) return nullptr;
 
     // todo: implement parsing parameters
 
-    if (!expectAndConsume(TokenType::ClosedParen)) return nullptr;
+    if (!expectAndConsume(TokenType::ClosedParen, true)) return nullptr;
 
     TokenType retType = TokenType::I32; // entry has hardcoded return type
 
     //std::cout << "type and params\n";
 
-    if (!expectAndConsume(TokenType::OpenBrace)) return nullptr;
+    if (!expectAndConsume(TokenType::OpenBrace, true)) return nullptr;
 
     auto funcNode = std::make_unique<FuncNode>();
     funcNode->identifier = identifier;
@@ -243,40 +271,43 @@ std::unique_ptr<Node> Parser::parseEntry() {
 
     //std::cout << "body\n";
 
-    if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
+    if (!expectAndConsume(TokenType::ClosedBrace, true)) return nullptr;
 
     return funcNode;
 }
 
 std::unique_ptr<Node> Parser::parseRet() {
-    if (!expectAndConsume(TokenType::Return)) return nullptr;
+    if (!expectAndConsume(TokenType::Return, true)) return nullptr;
 
     auto retNode = std::make_unique<ReturnNode>();
     retNode->body = parseComparison(); // this now leaves cursor right after the literal
 
-    if (!retNode->body) return nullptr;
-    if (!expectAndConsume(TokenType::Semicolon)) return nullptr;
+    if (!retNode->body) {
+        Log::error("Unexpected error at return", currentToken.line, currentToken.column, currentToken.source);
+        return nullptr;
+    }
+    if (!expectAndConsume(TokenType::Semicolon, true)) return nullptr;
 
     return retNode;
 }
 
 std::unique_ptr<Node> Parser::parseIf() {
-    if (!expectAndConsume(TokenType::If)) return nullptr; // todo: error handling
+    if (!expectAndConsume(TokenType::If, true)) return nullptr;
     auto ifNode = std::make_unique<IfNode>();
 
     //if (!expect(TokenType::BoolLiteral)) return nullptr;
     //ifNode->condition = parseBoolLiteral();
     ifNode->condition = parseComparison();
 
-    if (!expectAndConsume(TokenType::OpenBrace)) return nullptr;
+    if (!expectAndConsume(TokenType::OpenBrace, true)) return nullptr;
     // todo: figure out a way to remove recursive code here
     ifNode->ifBody = parseBlock(true);
-    if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
+    if (!expectAndConsume(TokenType::ClosedBrace, true)) return nullptr;
 
-    if (expectAndConsume(TokenType::Else)) {
-        if (!expectAndConsume(TokenType::OpenBrace)) return nullptr; // todo: make this work with else if and the 'if (something) doCode;'
+    if (expectAndConsume(TokenType::Else, false)) {
+        if (!expectAndConsume(TokenType::OpenBrace, true)) return nullptr; // todo: make this work with else if and the 'if something: doCode;'
         ifNode->elseBody = parseBlock(true);
-        if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
+        if (!expectAndConsume(TokenType::ClosedBrace, true)) return nullptr;
     }
 
     return ifNode;
@@ -284,33 +315,40 @@ std::unique_ptr<Node> Parser::parseIf() {
 
 std::unique_ptr<Node> Parser::parseWhile() {
     //std::cout << "entered while\n";
-    if (!expectAndConsume(TokenType::While)) return nullptr; // todo: error handling
+    if (!expectAndConsume(TokenType::While, true)) return nullptr;
     auto whileNode = std::make_unique<WhileNode>();
 
     //std::cout << "entered condition\n";
     whileNode->condition = parseComparison();
 
-    if (!expectAndConsume(TokenType::OpenBrace)) return nullptr; // todo: error handling
+    if (!expectAndConsume(TokenType::OpenBrace, true)) return nullptr;
     //std::cout << "entered body\n";
     // todo: figure out a way to remove recursive code here
     whileNode->body = parseBlock(true);
-    if (!expectAndConsume(TokenType::ClosedBrace)) return nullptr;
+    if (!expectAndConsume(TokenType::ClosedBrace, true)) return nullptr;
     return whileNode;
 }
 
 std::unique_ptr<Node> Parser::parseVarDeclare() {
-    if (!expectAndConsume(TokenType::Let)) return nullptr;
+    if (!expectAndConsume(TokenType::Let, true)) return nullptr;
 
     bool isMutable = false;
-    if (expectAndConsume(TokenType::Tilde)) isMutable = true;
+    if (expectAndConsume(TokenType::Tilde, false)) isMutable = true;
 
     auto varNode = std::make_unique<VarDeclareNode>();
     varNode->isMutable = isMutable;
 
-    if (expect(TokenType::I32) || expect(TokenType::I8) || expect(TokenType::F64) || expect(TokenType::Bool) || expect(TokenType::Char)) {
+    if (expect(TokenType::I32)
+        || expect(TokenType::I8)
+        || expect(TokenType::F64)
+        || expect(TokenType::Bool)
+        || expect(TokenType::Char)) {
         varNode->valueType = currentToken.type;
     }
-    else return nullptr;
+    else {
+        Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+        return nullptr;
+    }
 
     advance();
 
@@ -318,21 +356,27 @@ std::unique_ptr<Node> Parser::parseVarDeclare() {
         varNode->identifier = currentToken.data;
         advance();
     }
-    else return nullptr; // todo: error handling
+    else {
+        Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+        return nullptr;
+    }
 
-    if (!expectAndConsume(TokenType::Equals)) return nullptr;
+    if (!expectAndConsume(TokenType::Equals, true)) return nullptr;
 
     varNode->body = parseExpresion();
 
-    if (!varNode->body) return nullptr;
-    if (!expectAndConsume(TokenType::Semicolon)) return nullptr;
+    if (!varNode->body)  {
+        Log::error("Unexpected error at variable loading", currentToken.line, currentToken.column, currentToken.source);
+        return nullptr;
+    }
+    if (!expectAndConsume(TokenType::Semicolon, true)) return nullptr;
 
     return varNode;
 }
 
 std::unique_ptr<Node> Parser::parseLoad() {
     if (expect(TokenType::Identifier)) {
-        std::string_view identifier = currentToken.data;
+        std::string identifier = currentToken.data;
         advance(); // after the identifier
 
         if (expect(TokenType::OpenParen)) {
@@ -349,6 +393,10 @@ std::unique_ptr<Node> Parser::parseLoad() {
 
                 //std::cout << "2" << currentToken.data << std::endl;
                 if (expect(TokenType::Comma)) advance();
+                else if (!expect(TokenType::ClosedParen)) {
+                    Log::error("Expected token ',' but got '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+                    return nullptr;
+                }
                 //std::cout << "3" << currentToken.data << std::endl;
             }
             advance();
@@ -360,21 +408,25 @@ std::unique_ptr<Node> Parser::parseLoad() {
         varNode->identifier = identifier;
         return varNode;
     }
-
-    // todo: error handling
+    Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
     return nullptr;
 }
 
 std::unique_ptr<Node> Parser::parseVarMod() {
-    if (!expect(TokenType::Identifier)) return nullptr; // todo: error handling
+    if (!expect(TokenType::Identifier))  {
+        Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+        return nullptr;
+    }
 
     auto varNode = std::make_unique<VarModNode>();
     varNode->identifier = currentToken.data;
     advance();
 
-    if (!expectAndConsume(TokenType::Equals)) return nullptr;
+    if (!expectAndConsume(TokenType::Equals, true)) return nullptr;
 
     varNode->body = parseExpresion();
+
+    if (!expectAndConsume(TokenType::Semicolon, true)) return nullptr;
 
     return varNode;
 }
@@ -390,12 +442,12 @@ std::unique_ptr<Node> Parser::parseIntLiteral() {
             advance();
         }
         // todo: other int types
-        else intNode->type = TokenType::I32;
-
+        else {
+            intNode->type = TokenType::I32; // default, no token consumed
+        }
         return intNode;
     }
-
-    // todo: error handling
+    Log::error("Expected int literal but got '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
     return nullptr;
 }
 
@@ -408,8 +460,7 @@ std::unique_ptr<Node> Parser::parseFloatLiteral() {
 
         return floatNode;
     }
-
-    // todo: error handling
+    Log::error("Expected float literal but got '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
     return nullptr;
 }
 
@@ -418,14 +469,16 @@ std::unique_ptr<Node> Parser::parseBoolLiteral() {
         auto boolNode = std::make_unique<BoolLiteralNode>();
         if (currentToken.data == "true") boolNode->value = true;
         else if (currentToken.data == "false") boolNode->value = false;
-        else return nullptr; // todo: error handling
+        else {
+            Log::error("Expected bool literal (true/false) but got '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+            return nullptr;
+        }
 
         advance();
 
         return boolNode;
     }
-
-    // todo: error handling
+    Log::error("Expected bool literal (true/false) but got '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
     return nullptr;
 }
 
@@ -438,8 +491,7 @@ std::unique_ptr<Node> Parser::parseCharLiteral() {
 
         return boolNode;
     }
-
-    // todo: error handling
+    Log::error("Expected bool literal (true/false) but got '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
     return nullptr;
 }
 
@@ -449,6 +501,7 @@ std::unique_ptr<Node> Parser::parsePrimary() {
     if (expect(TokenType::BoolLiteral))  return parseBoolLiteral();
     if (expect(TokenType::CharLiteral))  return parseCharLiteral();
     if (expect(TokenType::Identifier))   return parseLoad();
+    Log::error("Expected any literal but got '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
     return nullptr;
 }
 
@@ -488,7 +541,10 @@ std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floa
         std::unique_ptr<Node> operand1 = parseExpresion();
         compareNode->operand1 = std::move(operand1);
     }
-    else return nullptr; // todo: error handling
+    else {
+        Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+        return nullptr;
+    }
 
     if (expect(TokenType::IsEqualTo)) compareNode->compareType = currentToken.type;
     else if (expect(TokenType::NotEqualTo)) compareNode->compareType = currentToken.type;
@@ -512,8 +568,7 @@ std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floa
         compareNode->operand2 = std::move(operand2);
         return compareNode;
     }
-
-    // todo: error handling
+    Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
     return nullptr;
 }
 
