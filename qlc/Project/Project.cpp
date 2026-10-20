@@ -1,5 +1,5 @@
 #include "Project.hpp"
-
+#include "../Checker/Logger.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -8,6 +8,7 @@ enum ProjectTokenType {
     Runq,
     C,
     Library,
+    Flags,
     Identifier,
     Accesor, // >
 
@@ -42,6 +43,9 @@ void Project::load(std::string path) {
             else if (current == "[Library]") {
                 tokens.push_back(ProjectToken{Library, current}); current = "";
             }
+            else if (current == "[Flags]") {
+                tokens.push_back(ProjectToken{Flags, current}); current = "";
+            }
             else if (current == ">") {
                 tokens.push_back(ProjectToken{Accesor, current}); current = "";
             }
@@ -69,6 +73,9 @@ void Project::load(std::string path) {
         else if (tokens[i].Type == Library) {
             group = Library;
         }
+        else if (tokens[i].Type == Flags) {
+            group = Flags;
+        }
         else if (tokens[i].Type == Accesor && tokens[i+1].Type == Identifier) {
             i++;
             switch (group) {
@@ -79,7 +86,16 @@ void Project::load(std::string path) {
                     cList.push_back(tokens[i].Data);
                     break;
                 case Library:
+                    //std::cout << tokens[i].Data << std::endl;
                     libList.push_back(tokens[i].Data);
+                    break;
+                case Flags:
+                    if (tokens[i].Data == "DontCompile") flagList.push_back(DontCompile);
+                    else if (tokens[i].Data == "DevMode") flagList.push_back(DevMode);
+                    else if (tokens[i].Data == "IsLibrary") flagList.push_back(IsLibrary);
+                    else if (tokens[i].Data == "EmitAsm") flagList.push_back(EmitAsm);
+                    else Log::log("Unknown flag: '" + tokens[i].Data + "' skipping");
+                    break;
             }
         }
     }
@@ -90,5 +106,11 @@ void Project::load(std::string path) {
     // }
     // for (int i = 0; i < runqList.size(); i++) {
     //     std::cout << runqList[i] << std::endl;
+    // }
+    // for (int i = 0; i < libList.size(); i++) {
+    //     std::cout << libList[i] << std::endl;
+    // }
+    // for (int i = 0; i < flagList.size(); i++) {
+    //     std::cout << flagList[i] << std::endl;
     // }
 }

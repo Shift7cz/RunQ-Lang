@@ -1,5 +1,6 @@
 extern fn myCFunc(i32 num) : i32;
 extern fn factorialC(i32 num) : i32;
+extern fn addOne(i32 value) : i32;
 
 fn isPositive(i32 num) : bool {
     return num > 0;
@@ -7,6 +8,6 @@ fn isPositive(i32 num) : bool {
 
 entry main() {
     let i32 value1 = myCFunc(6);
-    let i32 value2 = factorialC(5);
+    let i32 value2 = addOne(factorialC(5));
     return value1 + value2 + example();
 }

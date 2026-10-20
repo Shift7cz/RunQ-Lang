@@ -1,0 +1,3 @@
+fn addOne(i32 value) : i32 {
+    return value + 1;
+}

@@ -1,5 +1,6 @@
 #include "CodeGen.hpp"
 #include <iostream>
+#include <ranges>
 #include <string>
 
 CodeGen::CodeGen() : llvm("RunQ-Lang_Test") {
@@ -330,7 +331,7 @@ llvm::Value * CodeGen::compileWhile(WhileNode *node) { // todo: return in while 
     return nullptr;
 }
 
-void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr) {
+void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool isLibrary, bool emitAsm) {
     if (!ast.root) { std::cout << "no AST found" << std::endl; return; }
 
     if (ast.root->type == NodeType::Root) {
@@ -359,13 +360,13 @@ void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr) {
     system("mkdir -p bin/asm");
 
     llvm.emitObjectFile("bin/obj/outputRunq.o");
-    llvm.emitAssembly("bin/asm/outputRunq.s"); // todo: toggle
+    if (emitAsm) llvm.emitAssembly("bin/asm/outputRunq.s");
 
     std::string commandOut = "clang ";
 
     for (int i = 0; i < cList.size(); i++) {
         std::string sourceFile = cList[i];
-        std::string objFile = "bin/obj/" + sourceFile + ".o";
+        std::string objFile = "bin/obj/" + std::to_string(i) + ".o"; // todo: find a better way to generate names
 
         std::string commandTemp = "clang -c " + sourceFile + " -o " + objFile;
 
@@ -377,11 +378,25 @@ void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr) {
         //std::cout << cList[i] << std::endl;
         //std::cout << objFile << std::endl;
     }
+    for (int i = 0; i < libList.size(); i++) {
+        std::filesystem::path absolutePath = std::filesystem::absolute(libList[i]);
+        std::string libSource = absolutePath.parent_path().string();
+
+        std::string dirName = absolutePath.parent_path().filename().string() + "/bin/obj/";
+
+        for (const auto& entry : std::filesystem::directory_iterator(dirName)) {
+            std::string fileName = entry.path().filename().string();
+            commandOut += dirName + fileName + " ";
+        }
+    }
 
     commandOut += " bin/obj/outputRunq.o -o bin/output";
-    std::cout << "Linking: " << commandOut << std::endl;
 
-    system(commandOut.c_str());
+    if (!isLibrary) {
+        std::cout << "Linking: " << commandOut << std::endl;
+        system(commandOut.c_str());
+        std::cout << "Executable: ./bin/output" << std::endl;
+    }
 
-    std::cout << "Executable: ./bin/output" << std::endl;
+    std::cout << "Done" << std::endl;
 }

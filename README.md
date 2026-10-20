@@ -62,9 +62,9 @@ entry main() { // code starts here
 | --------- | --------- | --------- | --------- |
 | Bootstrapping | Autmomatic typing in some situations based on context | Types overhoul (internal) | Basic math functions |
 | Package manager (using GitHub) | Loops (for, loop all rust style) | Basic Checker | Variables loading and declaring |
-| Multi Threading | Strings, arrays, vectors | Library inport | Return statement |
-|  | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
-|  | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
+| Multi Threading | Strings, arrays, vectors | Library inport (full implementaion) | Return statement |
+| Rust FFI | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
+| C++ FFI | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128) |  | Basic if/else (accepts variables and comapre expresions) |
 |  | Bool operations  |  | Reading from file |
 |  | Basic stdlib |  | Mutable/Imutable variables (let/let~) |   
@@ -75,6 +75,7 @@ entry main() { // code starts here
 |  |  |  | Proper project structure (multiple files, proper bin folder) |
 |  |  |  | Two pass codegen (functions can be in whatever order) |
 |  |  |  | Proper error handeling and logging |
+|  |  |  | Library inport (basic) |
 
 ---
 

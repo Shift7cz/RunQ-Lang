@@ -34,7 +34,8 @@ private:
 
 public:
     std::vector<std::string> cList;
+    std::vector<std::string> libList;
 
     CodeGen();
-    void compile(Ast& ast, bool generateCompiledFiles, bool printIr);
+    void compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool isLibrary, bool emitAsm);
 };

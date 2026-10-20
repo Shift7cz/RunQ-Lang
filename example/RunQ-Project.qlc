@@ -1,6 +1,13 @@
+[Flags]
+> EmitAsm
+
 [RunQ]
 > main.runq
-> fooLib.runq
+> foo.runq
+
 [C]
 > foo1.c
 > foo2.c
+
+[Library]
+> libs/Library-Example.qlc 
