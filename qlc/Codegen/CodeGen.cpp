@@ -331,7 +331,7 @@ llvm::Value * CodeGen::compileWhile(WhileNode *node) { // todo: return in while 
     return nullptr;
 }
 
-void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool isLibrary, bool emitAsm) {
+void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool isLibrary, bool emitAsm, std::string outputLocation) {
     if (!ast.root) { std::cout << "no AST found" << std::endl; return; }
 
     if (ast.root->type == NodeType::Root) {
@@ -362,9 +362,9 @@ void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool i
     llvm.emitObjectFile("bin/obj/outputRunq.o");
     if (emitAsm) llvm.emitAssembly("bin/asm/outputRunq.s");
 
-    std::string commandOut = "clang ";
+    std::string objStr;
 
-    for (int i = 0; i < cList.size(); i++) {
+    for (int i = 0; i < cList.size(); i++) { // gets object files
         std::string sourceFile = cList[i];
         std::string objFile = "bin/obj/" + std::to_string(i) + ".o"; // todo: find a better way to generate names
 
@@ -373,29 +373,41 @@ void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool i
         std::cout << "Running: " << commandTemp << std::endl;
 
         system(commandTemp.c_str());
-        commandOut += objFile + " ";
+        objStr += objFile + " ";
 
         //std::cout << cList[i] << std::endl;
         //std::cout << objFile << std::endl;
     }
-    for (int i = 0; i < libList.size(); i++) {
-        std::filesystem::path absolutePath = std::filesystem::absolute(libList[i]);
-        std::string libSource = absolutePath.parent_path().string();
 
-        std::string dirName = absolutePath.parent_path().filename().string() + "/bin/obj/";
+    objStr += " bin/obj/outputRunq.o "; // gets RunQ files
 
-        for (const auto& entry : std::filesystem::directory_iterator(dirName)) {
-            std::string fileName = entry.path().filename().string();
-            commandOut += dirName + fileName + " ";
-        }
+    for (int i = 0; i < libList.size(); i++) { // gets archive files
+        objStr += libList[i] + " "; // todo nesting archives will cause a crash: fix later
     }
 
-    commandOut += " bin/obj/outputRunq.o -o bin/output";
+    std::string command;
 
-    if (!isLibrary) {
-        std::cout << "Linking: " << commandOut << std::endl;
-        system(commandOut.c_str());
-        std::cout << "Executable: ./bin/output" << std::endl;
+    if (isLibrary) {
+        std::string archivePath;
+
+        if (outputLocation.empty()) archivePath = "bin/lib.a";
+        else archivePath = outputLocation + "/lib.a";
+
+        command = "ar rcs " + archivePath + " " + objStr;
+        std::cout << "Archiving: " << command << std::endl;
+        system(command.c_str());
+        std::cout << "Archive: " << archivePath << std::endl;
+    }
+    else {
+        std::string outputPath;
+
+        if (outputLocation.empty()) outputPath = "bin/output";
+        else outputPath = outputLocation + "/output";
+
+        command = "clang " + objStr + " -o " + outputPath;
+        std::cout << "Linking: " << command << std::endl;
+        system(command.c_str());
+        std::cout << "Executable: ./" + outputPath << std::endl;
     }
 
     std::cout << "Done" << std::endl;

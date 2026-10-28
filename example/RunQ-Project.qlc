@@ -10,4 +10,6 @@
 > foo2.c
 
 [Library]
-> libs/Library-Example.qlc 
+> lib/libExample/lib.a
+
+[Output]

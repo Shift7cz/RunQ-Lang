@@ -37,5 +37,5 @@ public:
     std::vector<std::string> libList;
 
     CodeGen();
-    void compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool isLibrary, bool emitAsm);
+    void compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool isLibrary, bool emitAsm, std::string outputLocation);
 };

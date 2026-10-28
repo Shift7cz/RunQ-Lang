@@ -7,13 +7,6 @@
 #include <fstream>
 #include <sstream>
 
-void setPath(const std::string& path) {
-    std::filesystem::path absolutePath = std::filesystem::absolute(path);
-    std::filesystem::path projectDir = absolutePath.parent_path();
-    std::filesystem::current_path(projectDir);
-    system("pwd");
-}
-
 std::string readFile(const std::string& path) {
     std::ifstream file(path);
     std::stringstream buffer;
@@ -29,8 +22,11 @@ void compile(std::string path, std::string projectFile) {
     bool emitAsm = false; // if .s file will be generated
     // ##################################### //
 
-    //std::cout << "Project Path"; // for some reson its printing after
-    setPath(path);
+    // std::cout << "Project Path: " << std::endl;
+    std::filesystem::path absolutePath = std::filesystem::absolute(path);
+    std::filesystem::path projectDir = absolutePath.parent_path();
+    std::filesystem::current_path(projectDir);
+    system("pwd");
 
     Project prj;
     prj.load(projectFile);
@@ -44,15 +40,15 @@ void compile(std::string path, std::string projectFile) {
         }
     }
 
-    for ( int i = 0; i < prj.libList.size(); i++) { // builds libraries
-        std::cout << "Compiling dependent library: " << std::endl;
-
-        std::filesystem::path originalPath = std::filesystem::current_path();
-
-        compile(prj.libList[i], std::filesystem::path(prj.libList[i]).filename().string());
-
-        std::filesystem::current_path(originalPath);
-    }
+    // for ( int i = 0; i < prj.libList.size(); i++) { // builds libraries
+    //     std::cout << "Compiling dependent library: " << std::endl;
+    //
+    //     std::filesystem::path originalPath = std::filesystem::current_path();
+    //
+    //     compile(prj.libList[i], std::filesystem::path(prj.libList[i]).filename().string());
+    //
+    //     std::filesystem::current_path(originalPath);
+    // }
 
     std::vector<Ast> asts;
 
@@ -96,13 +92,14 @@ void compile(std::string path, std::string projectFile) {
     CodeGen codegen;
     codegen.cList = prj.cList;
     codegen.libList = prj.libList;
-    codegen.compile(asts[0], !dontCompile, devMode, isLibrary, emitAsm);
+    codegen.compile(asts[0], !dontCompile, devMode, isLibrary, emitAsm, prj.outputLocation);
 }
 
 int main() {
     std::cout << "Hello, RunQ!" << std::endl;
 
     std::string path = "../example/RunQ-Project.qlc";
+    //std::string path = "../libExample/Library-Example.qlc";
     compile(path, std::filesystem::path(path).filename().string());  // todo: changeable
     return 0;
 }

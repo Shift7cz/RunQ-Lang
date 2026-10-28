@@ -18,5 +18,7 @@ public:
 
     std::vector<CompilerFlags> flagList;
 
+    std::string outputLocation;
+
     void load(std::string path);
 };

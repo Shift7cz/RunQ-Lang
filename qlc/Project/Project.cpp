@@ -9,6 +9,7 @@ enum ProjectTokenType {
     C,
     Library,
     Flags,
+    Output,
     Identifier,
     Accesor, // >
 
@@ -46,6 +47,9 @@ void Project::load(std::string path) {
             else if (current == "[Flags]") {
                 tokens.push_back(ProjectToken{Flags, current}); current = "";
             }
+            else if (current == "[Output]") {
+                tokens.push_back(ProjectToken{Output, current}); current = "";
+            }
             else if (current == ">") {
                 tokens.push_back(ProjectToken{Accesor, current}); current = "";
             }
@@ -76,6 +80,9 @@ void Project::load(std::string path) {
         else if (tokens[i].Type == Flags) {
             group = Flags;
         }
+        else if (tokens[i].Type == Output) {
+            group = Output;
+        }
         else if (tokens[i].Type == Accesor && tokens[i+1].Type == Identifier) {
             i++;
             switch (group) {
@@ -86,8 +93,11 @@ void Project::load(std::string path) {
                     cList.push_back(tokens[i].Data);
                     break;
                 case Library:
-                    //std::cout << tokens[i].Data << std::endl;
+                    std::cout << tokens[i].Data << std::endl;
                     libList.push_back(tokens[i].Data);
+                    break;
+                case Output:
+                    outputLocation = tokens[i].Data; // multiple output locations possible feature?
                     break;
                 case Flags:
                     if (tokens[i].Data == "DontCompile") flagList.push_back(DontCompile);
@@ -101,16 +111,22 @@ void Project::load(std::string path) {
     }
 
     // debug
+    // std::cout << "clist" << std::endl;
     // for (int i = 0; i < cList.size(); i++) {
     //     std::cout << cList[i] << std::endl;
     // }
+    // std::cout << "runqlist" << std::endl;
     // for (int i = 0; i < runqList.size(); i++) {
     //     std::cout << runqList[i] << std::endl;
     // }
+    // std::cout << "liblist" << std::endl;
     // for (int i = 0; i < libList.size(); i++) {
     //     std::cout << libList[i] << std::endl;
     // }
+    // std::cout << "flaglist" << std::endl;
     // for (int i = 0; i < flagList.size(); i++) {
     //     std::cout << flagList[i] << std::endl;
     // }
+    //  std::cout << "output" << std::endl;
+    //  std::cout << outputLocation << std::endl;
 }

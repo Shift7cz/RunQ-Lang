@@ -1,0 +1,11 @@
+[Flags]
+> EmitAsm
+> IsLibrary
+
+[RunQ]
+> lib.runq
+
+[C]
+[Library]
+[Output]
+> ../example/lib/libExample

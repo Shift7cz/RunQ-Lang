@@ -1,9 +1,0 @@
-[Flags]
-> IsLibrary
-> EmitAsm
-
-[RunQ]
-> lib.runq
-
-[C]
-[Library]
