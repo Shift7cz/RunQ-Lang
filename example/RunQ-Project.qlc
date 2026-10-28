@@ -3,11 +3,10 @@
 
 [RunQ]
 > main.runq
-> foo.runq
+> otherFile.runq
 
 [C]
-> foo1.c
-> foo2.c
+> fnFromC.c
 
 [Library]
 > lib/libExample/lib.a

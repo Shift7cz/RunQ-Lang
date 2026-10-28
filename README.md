@@ -70,7 +70,7 @@ entry main() { // code starts here
 |  | Basic stdlib |  | Mutable/Imutable variables (let/let~) |   
 |  | Full Checker |  | Comments|
 |  | Mid-level IR and rust style borow-checker |  | While loop |
-|  |  |  | Multi functional code with arguments and function calling |
+|  | Compiler wont recompile unchanged files |  | Multi functional code with arguments and function calling |
 |  |  |  | C FFI | 
 |  |  |  | Proper project structure (multiple files, proper bin folder) |
 |  |  |  | Two pass codegen (functions can be in whatever order) |
