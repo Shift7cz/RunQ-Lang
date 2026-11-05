@@ -7,6 +7,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "Checker/Checker.hpp"
+
 std::string readFile(const std::string& path) {
     std::ifstream file(path);
     std::stringstream buffer;
@@ -84,6 +86,9 @@ void compile(std::string path, std::string projectFile) {
     for (int i = 1; i < asts.size(); i++) {
         asts[0].add(asts[i]);
     }
+
+    Checker checker;
+    checker.check(asts[0]);
 
     if (devMode) asts[0].print();
 
