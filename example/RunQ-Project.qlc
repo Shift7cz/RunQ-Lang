@@ -10,5 +10,6 @@
 
 [Library]
 > lib/libExample/lib.a
+> lib/stdlib/lib.a
 
 [Output]

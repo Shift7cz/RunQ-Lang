@@ -55,7 +55,11 @@ std::vector<std::unique_ptr<Node>> Parser::parseBlock(bool stopAtBrace) {
             block.push_back(std::move(newIfNode));
         }
         else if (currentToken.type == TokenType::Identifier) {
-            std::unique_ptr<Node> varNode = parseVarMod();
+            std::unique_ptr<Node> varNode = parseLoad();
+            if (!varNode) return {}; // propagate the parse error
+            if (varNode->type == NodeType::FuncLoad) {
+                if (!expectAndConsume(TokenType::Semicolon, true)) return {};
+            }
             block.push_back(std::move(varNode));
         }
         else if (currentToken.type == TokenType::While) {
@@ -401,9 +405,21 @@ std::unique_ptr<Node> Parser::parseLoad() {
             }
             advance();
             //if (!expectAndConsume(TokenType::ClosedParen)) return nullptr;
+            //if (expect(TokenType::Semicolon)) advance();
             return funcNode;
         }
         // parse as variable
+        if (expect(TokenType::Equals)) { // parse as mod
+            advance();
+            auto varNode = std::make_unique<VarModNode>();
+            varNode->identifier = identifier;
+            varNode->body = parseExpresion();
+
+            if (!expectAndConsume(TokenType::Semicolon, true)) return nullptr;
+
+            return varNode;
+        }
+        // parse as load
         auto varNode = std::make_unique<VarLoadNode>();
         varNode->identifier = identifier;
         return varNode;
@@ -412,7 +428,7 @@ std::unique_ptr<Node> Parser::parseLoad() {
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::parseVarMod() {
+std::unique_ptr<Node> Parser::parseVarMod() { // NOT IN USE !!!
     if (!expect(TokenType::Identifier))  {
         Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
         return nullptr;
@@ -537,6 +553,9 @@ std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floa
         std::unique_ptr<Node> operand1 = parseExpresion();
         compareNode->operand1 = std::move(operand1);
     }
+    else if (expect(TokenType::CharLiteral)) {
+        compareNode->operand1 = parseCharLiteral();
+    }
     else if (expect(TokenType::Identifier)) {
         std::unique_ptr<Node> operand1 = parseExpresion();
         compareNode->operand1 = std::move(operand1);
@@ -558,7 +577,7 @@ std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floa
 
     advance();
 
-    if (expect(TokenType::IntLiteral)) {
+    if (expect(TokenType::IntLiteral) || expect(TokenType::CharLiteral)) {
         std::unique_ptr<Node> operand2 = parseExpresion();
         compareNode->operand2 = std::move(operand2);
         return compareNode;

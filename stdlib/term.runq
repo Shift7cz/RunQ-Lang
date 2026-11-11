@@ -1,0 +1,48 @@
+extern fn cPutc(i32 c) : i32;
+extern fn cGetc() : i32;
+extern fn cNewLine() : i32;
+
+fn putc(char c) : char {
+    return cPutc(c);
+}
+
+fn getc() : char {
+    return cGetc();
+}
+
+fn newLn() : char {
+    return cNewLine();
+}
+
+fn putI32(i32 n) : i32 { // todo: doesnt handle negative numbers
+    let~ i32 num = n;
+    if num < 9 {
+        putc(castDigitToChar(num));
+        return 0;
+    }
+
+    let~ i32 digits = countDigitsDec(num);
+
+    // gets starting divisor
+    let~ i32 divisor = 1;
+    let~ i32 count = digits - 1;
+    while count > 0 {
+        divisor = divisor * 10;
+        count = count - 1;
+    }
+
+    // prints
+    while divisor > 0 {
+        let i32 digit = num / divisor;
+        putc(castDigitToChar(digit));
+
+        num = num - digit * divisor;
+        divisor = divisor / 10;
+    }
+
+    return num;
+}
+
+fn getDigit() : i32 {
+    return castCharToDigit(getc());
+}

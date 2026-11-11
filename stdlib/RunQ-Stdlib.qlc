@@ -1,0 +1,16 @@
+[Flags]
+> IsLibrary
+> EmitAsm
+> DevMode
+
+[RunQ]
+> term.runq
+> casts.runq
+
+[C]
+> cOper.c
+
+[Library]
+
+[Output]
+> ../example/lib/stdlib

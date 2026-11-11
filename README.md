@@ -23,6 +23,13 @@ RunQ-Lang is an experimental, Turing complete, statically-typed programming lang
 ## Code Example
 
 ```runq
+extern fn putc(char c) : char;
+extern fn getc() : char;
+extern fn newLn() : char;
+extern fn castDigitToChar(i32 digit) : char;
+extern fn putI32(i32 num) : i32;
+extern fn getDigit() : i32; // assuming stdlib is included
+
 fn isPositive(i32 num) : bool {
     return num > 0;
 }
@@ -39,11 +46,27 @@ fn calculate(i32 a, i32 b) : i32 { // function
     return result;
 }
 
+fn sayRunq() : i32 {  // stdlib functions
+    putc('R'); putc('u'); putc('n'); putc('Q'); newLn();
+
+    putc(castDigitToChar(6));
+    newLn();
+    putI32(12367);
+    newLn();
+    // putI32(getDigit()); this works as well
+    putc(getc());
+    newLn();
+
+    return 0;
+}
+
 entry main() { // code starts here
     let i32 x = calculate(3, 4);
     let bool check = isPositive(x);
     let i8 small = 10i8; // immutable var
     let f64 pi = 3.14;
+
+    sayRunq();
 
     if check { // if statement
         return x;
@@ -61,21 +84,23 @@ entry main() { // code starts here
 | Potential future features (not garanteed) | Planned features  | Currently in development | Already implemented |
 | --------- | --------- | --------- | --------- |
 | Bootstrapping | Autmomatic typing in some situations based on context | Types overhoul (internal) | Basic math functions |
-| Package manager (using GitHub) | Loops (for, loop all rust style) | Basic Checker | Variables loading and declaring |
+| Package manager (using GitHub) | Loops (for, loop all rust style) | Mid-level IR | Variables loading and declaring |
 | Multi Threading | Strings, arrays, vectors |  | Return statement |
 | Rust FFI | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
 | C++ FFI | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
 |  | More data types (i64, u64, u32, u8, f32, f128) |  | Basic if/else (accepts variables and comapre expresions) |
 |  | Bool operations  |  | Reading from file |
-|  | Basic stdlib |  | Mutable/Imutable variables (let/let~) |   
+|  | Full stdlib |  | Mutable/Imutable variables (let/let~) |   
 |  | Full Checker |  | Comments|
-|  | Mid-level IR and rust style borow-checker |  | While loop |
+|  | Rust style borow-checker |  | While loop |
 |  | Compiler wont recompile unchanged files |  | Multi functional code with arguments and function calling |
 |  |  |  | C FFI | 
 |  |  |  | Proper project structure (multiple files, proper bin folder) |
 |  |  |  | Two pass codegen (functions can be in whatever order) |
 |  |  |  | Proper error handeling and logging |
 |  |  |  | Library import |
+|  |  |  | Basic Checker  |
+|  |  |  | Basic stdlib |
 
 ---
 
