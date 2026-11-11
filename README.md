@@ -1,4 +1,5 @@
 # RunQ-Lang
+v0.1.0
 
 RunQ-Lang is an experimental, Turing complete, statically-typed programming language, inspired by C++ and Rust. The project is written in C++ and translates directly to LLVM IR which compiles it down to any assembly supported by LLVM, and an executable file.
 
