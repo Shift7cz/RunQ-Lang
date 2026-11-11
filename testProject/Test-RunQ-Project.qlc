@@ -1,0 +1,8 @@
+[Flags]
+[RunQ]
+> main.runq
+
+[C]
+[Library]
+> lib/stdlib/lib.a
+[Output]

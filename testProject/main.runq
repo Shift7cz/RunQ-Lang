@@ -1,0 +1,4 @@
+entry main() {
+    let i32 num = 125;
+    return 125;
+}
