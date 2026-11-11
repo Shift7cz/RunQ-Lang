@@ -22,11 +22,13 @@ enum class TokenType {
     CharLiteral,
 
     // Types
-    I32,
-    I8,
+    SignedInt, // i<n>
+    UnsignedInt, // u<n>
     F64,
+    F32,
     Bool,
     Char,
+    Void,
 
     // math operators
     Plus, // '+'
