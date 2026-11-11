@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include "../Lexer/Token.hpp"
+#include "../Type/Type.hpp"
 
 enum class NodeType {
     Unassigned,
@@ -49,7 +50,7 @@ public:
 
 struct Argument {
     std::string identifier;
-    TokenType type;
+    Type type;
 };
 
 class FuncNode : public Node {
@@ -57,7 +58,7 @@ public:
     std::string identifier;
     std::vector<Argument> args;
     std::vector<std::unique_ptr<Node>> body;
-    TokenType returnType; // only section types allowed.
+    Type returnType; // only section types allowed.
 
     FuncNode() : Node(NodeType::Func) {}
 };
@@ -66,7 +67,7 @@ class ExternFuncNode : public Node {
 public:
     std::string identifier;
     std::vector<Argument> args;
-    TokenType returnType; // only section types allowed
+    Type returnType; // only section types allowed
 
     ExternFuncNode() : Node(NodeType::ExternFunc) {}
 };
@@ -101,7 +102,7 @@ public:
     std::unique_ptr<Node> body;
     std::string identifier;
     bool isMutable;
-    TokenType valueType; // the type of the variable, only types allowed
+    Type valueType; // the type of the variable, only types allowed
 
     VarDeclareNode() : Node(NodeType::VarDeclare) {}
 };
@@ -132,7 +133,7 @@ public:
 class IntLiteralNode : public Node {
 public:
     int value;
-    TokenType type; // only Types section allowed
+    Type type; // only Types section allowed
     IntLiteralNode() : Node(NodeType::IntLiteral) {}
 };
 

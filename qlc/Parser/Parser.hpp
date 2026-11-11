@@ -12,6 +12,9 @@ private:
     bool expect(TokenType expected);
     bool expectAndConsume(TokenType expected, bool logError);
 
+    Type getType(); // advances past type if theres any and returns the appropriate type struct
+    Type makeType(Token token); // same as getType but you provide the token
+
 public:
     Ast ast;
 

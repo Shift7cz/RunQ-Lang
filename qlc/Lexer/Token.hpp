@@ -2,6 +2,8 @@
 #include <string_view>
 #include <iomanip>
 
+#include
+
 enum class TokenType {
     Identifier, // eg "main" or "myVariable"
 
@@ -67,6 +69,8 @@ struct Token {
     size_t line;
     size_t column;
     std::string source;
+
+    Token() = default;
 };
 
 inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}

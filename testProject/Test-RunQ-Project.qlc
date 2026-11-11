@@ -1,4 +1,6 @@
 [Flags]
+> DevMode
+
 [RunQ]
 > main.runq
 

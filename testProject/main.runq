@@ -1,4 +1,5 @@
 entry main() {
-    let i32 num = 125;
+    let i672 num = 125;
+    let u51 num2 = 31234;
     return 125;
 }

@@ -27,6 +27,82 @@ bool Parser::expectAndConsume(TokenType expected, bool logError) {
     return true;
 }
 
+Type Parser::getType() {
+    TokenType token;
+    std::string data;
+    if (expect(TokenType::SignedInt)
+    || expect(TokenType::UnsignedInt)
+    || expect(TokenType::F64)
+    || expect(TokenType::F32)
+    || expect(TokenType::Bool)
+    || expect(TokenType::Char)
+    || expect(TokenType::Void)) {
+        token = currentToken.type;
+        data = currentToken.data;
+        advance();
+    }
+    else {
+        Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
+        advance();
+        return {Unknown, 0, false};
+    }
+
+    switch (token) {
+        case TokenType::F64: return {Float, 64, true}; break; // true in float is convention, doesnt mean anything is just a filler data to make c++ happy
+        case TokenType::F32: return {Float, 32, true}; break;
+        case TokenType::Bool: return {Bool, 1, false}; break;
+        case TokenType::Char: return {Char, 8, true}; break;
+        case TokenType::Void: return {Void, 0, false}; break; // false in void is convention
+    }
+
+    for (int i = 0; i < data.length(); i++) if (!isdigit(data[i])) Log::error("'" + data + "' isnt valid int count for an int data type", currentToken.line, currentToken.column, currentToken.source); return {Unknown, 0, false}; // checks if data is all digits
+    size_t bits = std::stoull(data); // gets the num of digits
+
+    switch (token) {
+        case TokenType::SignedInt: return {Int, bits, true}; break;
+        case TokenType::UnsignedInt: return {Int, bits, false}; break;
+    }
+    Log::error("Unexpected error either in your type definition or in compilers parser in getType()", currentToken.line, currentToken.column, currentToken.source);
+    return {Unknown, 0, false};
+}
+
+Type Parser::makeType(Token token) {
+    TokenType tokenType;
+    std::string data;
+    if (expect(TokenType::SignedInt)
+    || expect(TokenType::UnsignedInt)
+    || expect(TokenType::F64)
+    || expect(TokenType::F32)
+    || expect(TokenType::Bool)
+    || expect(TokenType::Char)
+    || expect(TokenType::Void)) {
+        tokenType = token.type;
+        data = token.data;
+    }
+    else {
+        Log::error("Unexpected token '"+ token.data + "'", token.line, token.column, token.source);
+        return {Unknown, 0, false};
+    }
+
+    switch (tokenType) {
+        case TokenType::F64: return {Float, 64, true}; break; // true in float is convention, doesnt mean anything is just a filler data to make c++ happy
+        case TokenType::F32: return {Float, 32, true}; break;
+        case TokenType::Bool: return {Bool, 1, false}; break;
+        case TokenType::Char: return {Char, 8, true}; break;
+        case TokenType::Void: return {Void, 0, false}; break; // false in void is convention
+    }
+
+    for (int i = 0; i < data.length(); i++) if (!isdigit(data[i])) Log::error("'" + data + "' isnt valid int count for an int data type", token.line, token.column, token.source); return {Unknown, 0, false}; // checks if data is all digits
+    size_t bits = std::stoull(data); // gets the num of digits
+
+    switch (tokenType) {
+        case TokenType::SignedInt: return {Int, bits, true}; break;
+        case TokenType::UnsignedInt: return {Int, bits, false}; break;
+    }
+    Log::error("Unexpected error either in your type definition or in compilers parser in getType()", token.line, token.column, token.source);
+    return {Unknown, 0, false};
+}
+
 void Parser::parse() {
     advance();
 
@@ -102,20 +178,7 @@ std::unique_ptr<Node> Parser::parseFn() {
         Argument argument;
 
         //std::cout << "1" << currentToken.data << "\n";
-        if (expect(TokenType::I32)
-            || expect(TokenType::I8)
-            || expect(TokenType::F64)
-            || expect(TokenType::Bool)
-            || expect(TokenType::Char)) {
-            argument.type = currentToken.type;
-            advance();
-            }
-        else {
-            Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
-            advance();
-            argument.type = TokenType::Unknown;
-            return nullptr;
-        }
+        argument.type = getType();
         //std::cout << "2" << currentToken.data << "\n";
 
         if (!expect(TokenType::Identifier)) {
@@ -138,22 +201,9 @@ std::unique_ptr<Node> Parser::parseFn() {
     advance();
     //std::cout << "5" << currentToken.data << "\n";
 
-    TokenType retType = TokenType::Unknown;
+    Type retType;
     if (expectAndConsume(TokenType::Colon, true)) {
-        // moves into return type if return type is available
-        if (expect(TokenType::I32)
-            || expect(TokenType::I8)
-            || expect(TokenType::F64)
-            || expect(TokenType::Bool)
-            || expect(TokenType::Char)) {
-            retType = currentToken.type;
-            advance();
-        }
-        else {
-            Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
-            advance();
-            return nullptr;
-        }
+        retType = getType();
     }
 
     if (!expectAndConsume(TokenType::OpenBrace, true)) return nullptr;
@@ -182,20 +232,7 @@ std::unique_ptr<Node> Parser::parseExternFn() {
         Argument argument;
 
         //std::cout << "1" << currentToken.data << "\n";
-        if (expect(TokenType::I32)
-            || expect(TokenType::I8)
-            || expect(TokenType::F64)
-            || expect(TokenType::Bool)
-            || expect(TokenType::Char)) {
-            argument.type = currentToken.type;
-            advance();
-            }
-        else {
-            Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
-            advance();
-            argument.type = TokenType::Unknown;
-            return nullptr;
-        }
+        argument.type = getType();
 
         if (!expect(TokenType::Identifier)) {
             Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
@@ -218,22 +255,9 @@ std::unique_ptr<Node> Parser::parseExternFn() {
     advance();
     //std::cout << "5" << currentToken.data << "\n";
 
-    TokenType retType = TokenType::Unknown;
+    Type retType;
     if (expectAndConsume(TokenType::Colon, true)) {
-        // moves into return type if return type is available
-        if (expect(TokenType::I32)
-            || expect(TokenType::I8)
-            || expect(TokenType::F64)
-            || expect(TokenType::Bool)
-            || expect(TokenType::Char)) {
-            retType = currentToken.type;
-            advance();
-        }
-        else {
-            Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
-            advance();
-            return nullptr;
-        }
+        retType = getType();
     }
 
     if (!expectAndConsume(TokenType::Semicolon, true)) return nullptr;
@@ -262,7 +286,7 @@ std::unique_ptr<Node> Parser::parseEntry() {
 
     if (!expectAndConsume(TokenType::ClosedParen, true)) return nullptr;
 
-    TokenType retType = TokenType::I32; // entry has hardcoded return type
+    Type retType = {Int, 32, true}; // entry has hardcoded return type todo: dynamic return type based on platform?
 
     //std::cout << "type and params\n";
 
@@ -342,19 +366,7 @@ std::unique_ptr<Node> Parser::parseVarDeclare() {
     auto varNode = std::make_unique<VarDeclareNode>();
     varNode->isMutable = isMutable;
 
-    if (expect(TokenType::I32)
-        || expect(TokenType::I8)
-        || expect(TokenType::F64)
-        || expect(TokenType::Bool)
-        || expect(TokenType::Char)) {
-        varNode->valueType = currentToken.type;
-    }
-    else {
-        Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
-        return nullptr;
-    }
-
-    advance();
+    varNode->valueType = getType();
 
     if (expect(TokenType::Identifier)) {
         varNode->identifier = currentToken.data;
@@ -453,21 +465,28 @@ std::unique_ptr<Node> Parser::parseIntLiteral() {
         intNode->value = std::atoi(currentToken.data.data());
 
         advance();
-        if (expect(TokenType::I8)) {
-            intNode->type = currentToken.type;
-            advance();
+
+        for (int i = 0; i < currentToken.data.length(); i++) if (!isdigit(currentToken.data[i])) { // checks if data is all digits
+            Log::error("'" + currentToken.data + "' isnt valid int count for an int data type", currentToken.line, currentToken.column, currentToken.source);
+            return nullptr;
         }
-        // todo: other int types
-        else {
-            intNode->type = TokenType::I32; // default, no token consumed
+        size_t bits = std::stoull(currentToken.data); // gets the num of digits
+
+        switch (currentToken.type) {
+            case TokenType::SignedInt: intNode->type = {Int, bits, true};
+            case TokenType::UnsignedInt: intNode->type = {Int, bits, false};
+            default:
+                Log::error("Unexpected error either in your type definition or in compilers parser in parseIntLiteral()", currentToken.line, currentToken.column, currentToken.source);
+                return nullptr;
         }
+
         return intNode;
     }
     Log::error("Expected int literal but got '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::parseFloatLiteral() {
+std::unique_ptr<Node> Parser::parseFloatLiteral() { //todo: f32/f64 handling
     if (expect(TokenType::FloatLiteral)) {
         auto floatNode = std::make_unique<FloatLiteralNode>();
         floatNode->value = std::atof(currentToken.data.data());

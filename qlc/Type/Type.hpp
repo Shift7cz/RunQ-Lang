@@ -6,7 +6,9 @@ enum TypeKind {
     Float,
     Bool,
     Char,
-    Void
+    Void,
+
+    Unknown // error
 };
 
 struct Type {
