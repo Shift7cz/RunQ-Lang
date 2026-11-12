@@ -55,7 +55,12 @@ Type Parser::getType() {
         case TokenType::Void: return {Void_, 0, false}; break; // false in void is convention
     }
 
-    for (int i = 0; i < data.length(); i++) if (!isdigit(data[i])) Log::error("'" + data + "' isnt valid int count for an int data type", currentToken.line, currentToken.column, currentToken.source); return {Unknown_, 0, false}; // checks if data is all digits
+    for (int i = 0; i < data.length(); i++) {
+        if (!isdigit(data[i])) { // checks if data is all digits
+            Log::error("'" + data + "' isnt valid int count for an int data type", currentToken.line, currentToken.column, currentToken.source);
+            return {Unknown_, 0, false};
+        }
+    }
     size_t bits = std::stoull(data); // gets the num of digits
 
     switch (token) {
@@ -92,7 +97,12 @@ Type Parser::makeType(Token token) {
         case TokenType::Void: return {Void_, 0, false}; break; // false in void is convention
     }
 
-    for (int i = 0; i < data.length(); i++) if (!isdigit(data[i])) Log::error("'" + data + "' isnt valid int count for an int data type", token.line, token.column, token.source); return {Unknown_, 0, false}; // checks if data is all digits
+    for (int i = 0; i < data.length(); i++) {
+        if (!isdigit(data[i])) { // checks if data is all digits
+            Log::error("'" + data + "' isnt valid int count for an int data type", currentToken.line, currentToken.column, currentToken.source);
+            return {Unknown_, 0, false};
+        }
+    }
     size_t bits = std::stoull(data); // gets the num of digits
 
     switch (tokenType) {
@@ -466,18 +476,26 @@ std::unique_ptr<Node> Parser::parseIntLiteral() {
 
         advance();
 
-        for (int i = 0; i < currentToken.data.length(); i++) if (!isdigit(currentToken.data[i])) { // checks if data is all digits
-            Log::error("'" + currentToken.data + "' isnt valid int count for an int data type", currentToken.line, currentToken.column, currentToken.source);
-            return nullptr;
-        }
-        size_t bits = std::stoull(currentToken.data); // gets the num of digits
+        if (expect(SignedInt) || expect(UnsignedInt)) {
+            for (int i = 0; i < currentToken.data.length(); i++) {
+                if (!isdigit(currentToken.data[i])) { // checks if data is all digits
+                    Log::error("'" + currentToken.data + "' isnt valid int count for an int data type", currentToken.line, currentToken.column, currentToken.source);
+                    return nullptr;
+                }
+            }
+            size_t bits = std::stoull(currentToken.data); // gets the num of digits
 
-        switch (currentToken.type) {
-            case TokenType::SignedInt: intNode->type = {Int_, bits, true};
-            case TokenType::UnsignedInt: intNode->type = {Int_, bits, false};
-            default:
-                Log::error("Unexpected error either in your type definition or in compilers parser in parseIntLiteral()", currentToken.line, currentToken.column, currentToken.source);
-                return nullptr;
+            switch (currentToken.type) {
+                case TokenType::SignedInt: intNode->type = {Int_, bits, true}; break;
+                case TokenType::UnsignedInt: intNode->type = {Int_, bits, false}; break;
+                default:
+                    Log::error("Unexpected error either in your type definition or in compilers parser in parseIntLiteral()", currentToken.line, currentToken.column, currentToken.source);
+                    return nullptr;
+            }
+            advance();
+        }
+        else {
+            intNode->type = {Int_, 32, true}; // default when no suffix
         }
 
         return intNode;

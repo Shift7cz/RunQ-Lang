@@ -1,5 +1,20 @@
+fn testFunc(i24 value) : u5 {
+    let~ i24 something = 362i24;
+    something = something + value;
+
+    return 4u5;
+}
+
+fn tstFunc2() : void {
+    let~ char var1 = 'q';
+    let~ bool var2 = true;
+}
+
 entry main() {
-    let i32 num = 12i32;
-    //let u5 num2 = 3i5;
+    let~ i32 num = 12;
+    let~ u5 num2 = testFunc(742i24);
+
+    tstFunc2();
+
     return 125;
 }
