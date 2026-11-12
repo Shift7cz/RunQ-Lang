@@ -318,6 +318,12 @@ std::unique_ptr<Node> Parser::parseRet() {
     if (!expectAndConsume(TokenType::Return, true)) return nullptr;
 
     auto retNode = std::make_unique<ReturnNode>();
+
+    if (expectAndConsume(TokenType::Semicolon, false)) { // skips making body if its just return;
+        retNode->body = nullptr;
+        return retNode;
+    }
+
     retNode->body = parseComparison(); // this now leaves cursor right after the literal
 
     if (!retNode->body) {

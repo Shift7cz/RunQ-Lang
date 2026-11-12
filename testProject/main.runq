@@ -8,6 +8,7 @@ fn testFunc(i24 value) : u5 {
 fn tstFunc2() : void {
     let~ char var1 = 'q';
     let~ bool var2 = true;
+    // return; // return is optional but works
 }
 
 entry main() {

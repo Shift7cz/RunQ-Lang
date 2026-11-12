@@ -62,6 +62,7 @@ void LlvmWrap::setInsertPoint(llvm::BasicBlock* block) {
 }
 
 llvm::Value* LlvmWrap::createReturn(llvm::Value* value) {
+    if (!value) return builder->CreateRetVoid(); // handles plain return; in void functions
     return builder->CreateRet(value);
 }
 

@@ -38,6 +38,11 @@ llvm::Value* CodeGen::compileFunction(FuncNode* node) {
     for (const auto& statement : node->body) {
         compileExpression(statement.get());
     }
+
+    if (node->returnType.kind == Void_ && !llvm.currentBlockHasTerminator()) { // creates return in void function if there isnt one
+        llvm.createReturn(nullptr);
+    }
+
     //std::cout << "finished compilefunc" << std::endl;
     return currentFunction;
 }
@@ -134,6 +139,7 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
 }
 
 llvm::Value* CodeGen::compileReturn(ReturnNode* node) { // todo: return statement typing
+    if (!node->body) return llvm.createReturn(nullptr); // when return is void
     llvm::Value* val = compileExpression(node->body.get());
     return llvm.createReturn(val);
 }
