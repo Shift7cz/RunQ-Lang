@@ -2,9 +2,7 @@
 #include <string_view>
 #include <iomanip>
 
-#include
-
-enum class TokenType {
+enum TokenType {
     Identifier, // eg "main" or "myVariable"
 
     // keyword
@@ -69,8 +67,6 @@ struct Token {
     size_t line;
     size_t column;
     std::string source;
-
-    Token() = default;
 };
 
 inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
@@ -88,8 +84,8 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::FloatLiteral: return "FloatLiteral";
         case TokenType::BoolLiteral: return "BoolLiteral";
         case TokenType::CharLiteral: return "CharLiteral";
-        case TokenType::I32:         return "I32";
-        case TokenType::I8:          return "I8";
+        case TokenType::SignedInt:   return "Int";
+        case TokenType::UnsignedInt: return "UInt";
         case TokenType::F64:         return "F64";
         case TokenType::Bool:        return "Bool";
         case TokenType::Char:        return "Char";

@@ -44,26 +44,26 @@ Type Parser::getType() {
     else {
         Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
         advance();
-        return {Unknown, 0, false};
+        return {Unknown_, 0, false};
     }
 
     switch (token) {
-        case TokenType::F64: return {Float, 64, true}; break; // true in float is convention, doesnt mean anything is just a filler data to make c++ happy
-        case TokenType::F32: return {Float, 32, true}; break;
-        case TokenType::Bool: return {Bool, 1, false}; break;
-        case TokenType::Char: return {Char, 8, true}; break;
-        case TokenType::Void: return {Void, 0, false}; break; // false in void is convention
+        case TokenType::F64: return {Float_, 64, true}; break; // true in float is convention, doesnt mean anything is just a filler data to make c++ happy
+        case TokenType::F32: return {Float_, 32, true}; break;
+        case TokenType::Bool: return {Bool_, 1, false}; break;
+        case TokenType::Char: return {Char_, 8, true}; break;
+        case TokenType::Void: return {Void_, 0, false}; break; // false in void is convention
     }
 
-    for (int i = 0; i < data.length(); i++) if (!isdigit(data[i])) Log::error("'" + data + "' isnt valid int count for an int data type", currentToken.line, currentToken.column, currentToken.source); return {Unknown, 0, false}; // checks if data is all digits
+    for (int i = 0; i < data.length(); i++) if (!isdigit(data[i])) Log::error("'" + data + "' isnt valid int count for an int data type", currentToken.line, currentToken.column, currentToken.source); return {Unknown_, 0, false}; // checks if data is all digits
     size_t bits = std::stoull(data); // gets the num of digits
 
     switch (token) {
-        case TokenType::SignedInt: return {Int, bits, true}; break;
-        case TokenType::UnsignedInt: return {Int, bits, false}; break;
+        case TokenType::SignedInt: return {Int_, bits, true}; break;
+        case TokenType::UnsignedInt: return {Int_, bits, false}; break;
     }
     Log::error("Unexpected error either in your type definition or in compilers parser in getType()", currentToken.line, currentToken.column, currentToken.source);
-    return {Unknown, 0, false};
+    return {Unknown_, 0, false};
 }
 
 Type Parser::makeType(Token token) {
@@ -81,26 +81,26 @@ Type Parser::makeType(Token token) {
     }
     else {
         Log::error("Unexpected token '"+ token.data + "'", token.line, token.column, token.source);
-        return {Unknown, 0, false};
+        return {Unknown_, 0, false};
     }
 
     switch (tokenType) {
-        case TokenType::F64: return {Float, 64, true}; break; // true in float is convention, doesnt mean anything is just a filler data to make c++ happy
-        case TokenType::F32: return {Float, 32, true}; break;
-        case TokenType::Bool: return {Bool, 1, false}; break;
-        case TokenType::Char: return {Char, 8, true}; break;
-        case TokenType::Void: return {Void, 0, false}; break; // false in void is convention
+        case TokenType::F64: return {Float_, 64, true}; break; // true in float is convention, doesnt mean anything is just a filler data to make c++ happy
+        case TokenType::F32: return {Float_, 32, true}; break;
+        case TokenType::Bool: return {Bool_, 1, false}; break;
+        case TokenType::Char: return {Char_, 8, true}; break;
+        case TokenType::Void: return {Void_, 0, false}; break; // false in void is convention
     }
 
-    for (int i = 0; i < data.length(); i++) if (!isdigit(data[i])) Log::error("'" + data + "' isnt valid int count for an int data type", token.line, token.column, token.source); return {Unknown, 0, false}; // checks if data is all digits
+    for (int i = 0; i < data.length(); i++) if (!isdigit(data[i])) Log::error("'" + data + "' isnt valid int count for an int data type", token.line, token.column, token.source); return {Unknown_, 0, false}; // checks if data is all digits
     size_t bits = std::stoull(data); // gets the num of digits
 
     switch (tokenType) {
-        case TokenType::SignedInt: return {Int, bits, true}; break;
-        case TokenType::UnsignedInt: return {Int, bits, false}; break;
+        case TokenType::SignedInt: return {Int_, bits, true}; break;
+        case TokenType::UnsignedInt: return {Int_, bits, false}; break;
     }
     Log::error("Unexpected error either in your type definition or in compilers parser in getType()", token.line, token.column, token.source);
-    return {Unknown, 0, false};
+    return {Unknown_, 0, false};
 }
 
 void Parser::parse() {
@@ -286,7 +286,7 @@ std::unique_ptr<Node> Parser::parseEntry() {
 
     if (!expectAndConsume(TokenType::ClosedParen, true)) return nullptr;
 
-    Type retType = {Int, 32, true}; // entry has hardcoded return type todo: dynamic return type based on platform?
+    Type retType = {Int_, 32, true}; // entry has hardcoded return type todo: dynamic return type based on platform?
 
     //std::cout << "type and params\n";
 
@@ -473,8 +473,8 @@ std::unique_ptr<Node> Parser::parseIntLiteral() {
         size_t bits = std::stoull(currentToken.data); // gets the num of digits
 
         switch (currentToken.type) {
-            case TokenType::SignedInt: intNode->type = {Int, bits, true};
-            case TokenType::UnsignedInt: intNode->type = {Int, bits, false};
+            case TokenType::SignedInt: intNode->type = {Int_, bits, true};
+            case TokenType::UnsignedInt: intNode->type = {Int_, bits, false};
             default:
                 Log::error("Unexpected error either in your type definition or in compilers parser in parseIntLiteral()", currentToken.line, currentToken.column, currentToken.source);
                 return nullptr;

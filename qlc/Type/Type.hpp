@@ -2,13 +2,13 @@
 #include <cstddef>
 
 enum TypeKind {
-    Int,
-    Float,
-    Bool,
-    Char,
-    Void,
+    Int_,
+    Float_,
+    Bool_,
+    Char_,
+    Void_,
 
-    Unknown // error
+    Unknown_ // error
 };
 
 struct Type {

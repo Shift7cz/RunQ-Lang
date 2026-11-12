@@ -26,11 +26,7 @@ public:
     LlvmWrap(const std::string& moduleName);
 
     // types
-    llvm::Type* i32Type();
-    llvm::Type* i8Type();
-    llvm::Type* f64Type(); // double
-    llvm::Type* boolType();
-    // char is i8
+    llvm::Type* createType(const Type& t);
 
     std::vector<llvm::Type*> argsToLlvmTypes(const std::vector<Argument>& args);
 
@@ -44,7 +40,7 @@ public:
 
     // instructions
     llvm::Value* createReturn(llvm::Value* value);
-    llvm::Value* createIntLiteral(int value, int numBits, bool isSigned = true);
+    llvm::Value* createIntLiteral(int value, int numBits, bool isSigned);
     llvm::Value *createF64Literal(double value);
 
     // math operations

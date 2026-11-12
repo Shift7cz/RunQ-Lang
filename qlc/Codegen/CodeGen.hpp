@@ -24,7 +24,6 @@ private:
     llvm::Value* compileExternFunction(ExternFuncNode* node);
     llvm::Value* compileExpression(Node* node);
     llvm::Value* compileReturn(ReturnNode* node);
-    llvm::Type* llvmTypeFromToken(TokenType type);
     llvm::Value* compileVarDeclare(VarDeclareNode* node);
     llvm::Value* compileVarLoad(VarLoadNode* node);
     llvm::Value* compileVarMod(VarModNode* node);

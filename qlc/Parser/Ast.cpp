@@ -22,7 +22,7 @@ void Ast::add(Ast &otherAst) {
 
 std::string Ast::typeToString(Type type) {
     std::string str;
-    if (type.kind == Int) {
+    if (type.kind == Int_) {
         if (type.isSigned) {
             str = "i";
         }
@@ -33,15 +33,15 @@ std::string Ast::typeToString(Type type) {
         str += std::to_string(type.bitSize);
         return str;
     }
-    if (type.kind == Float) {
+    if (type.kind == Float_) {
         str = "f";
         str += std::to_string(type.bitSize);
         return str;
     }
     switch (type.kind) {
-        case Bool: return "bool";
-        case Char: return "char";
-        case Void: return "void";
+        case Bool_: return "bool";
+        case Char_: return "char";
+        case Void_: return "void";
         default: return "ERROR in Ast";
     }
 }

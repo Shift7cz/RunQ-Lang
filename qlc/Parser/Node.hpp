@@ -133,7 +133,7 @@ public:
 class IntLiteralNode : public Node {
 public:
     int value;
-    Type type; // only Types section allowed
+    Type type;
     IntLiteralNode() : Node(NodeType::IntLiteral) {}
 };
 
