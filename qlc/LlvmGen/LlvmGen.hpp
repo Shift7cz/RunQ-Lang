@@ -22,7 +22,7 @@ private:
     void declareFunction(FuncNode* node);
     llvm::Value* compileFunction(FuncNode* node);
     llvm::Value* compileExternFunction(ExternFuncNode* node);
-    llvm::Value* compileExpression(Node* node);
+    llvm::Value* compileExpression(AstNode* node);
     llvm::Value* compileReturn(ReturnNode* node);
     llvm::Value* compileVarDeclare(VarDeclareNode* node);
     llvm::Value* compileVarLoad(VarLoadNode* node);

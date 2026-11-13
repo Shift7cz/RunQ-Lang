@@ -65,39 +65,39 @@ llvm::Value * LlvmGen::compileExternFunction(ExternFuncNode *node) {
     return currentFunction;
 }
 
-llvm::Value* LlvmGen::compileExpression(Node* node) {
+llvm::Value* LlvmGen::compileExpression(AstNode* node) {
     if (!node) return nullptr;
 
     switch (node->type) {
-        case NodeType::Func: {
+        case AstNodeType::Func: {
             return compileFunction(static_cast<FuncNode*>(node));
         }
         // case NodeType::ExternFunc: {
         //     return compileExternFunction(static_cast<ExternFuncNode*>(node));
         // }
-        case NodeType::If: {
+        case AstNodeType::If: {
             return compileIf(static_cast<IfNode*>(node));
         }
-        case NodeType::Return: {
+        case AstNodeType::Return: {
             return compileReturn(static_cast<ReturnNode*>(node));
         }
-        case NodeType::IntLiteral: {
+        case AstNodeType::IntLiteral: {
             auto* literal = static_cast<IntLiteralNode*>(node);
             return llvm.createIntLiteral(literal->value, literal->type.bitSize, literal->type.isSigned);
         }
-        case NodeType::FloatLiteral: {
+        case AstNodeType::FloatLiteral: {
             auto* literal = static_cast<FloatLiteralNode*>(node);
             return llvm.createF64Literal(literal->value); // todo: handling of other sized floats
         }
-        case NodeType::BoolLiteral: {
+        case AstNodeType::BoolLiteral: {
             auto* literal = static_cast<BoolLiteralNode*>(node);
             return llvm.createIntLiteral(literal->value, 1, false); // i1 has to actually be u1, otherwise its either 0 or -1
         }
-        case NodeType::CharLiteral: {
+        case AstNodeType::CharLiteral: {
             auto* literal = static_cast<CharLiteralNode*>(node);
             return llvm.createIntLiteral(literal->value, 8, true); // todo: char can be not signed
         }
-        case NodeType::MathOperator: {
+        case AstNodeType::MathOperator: {
             auto* mathOp = static_cast<MathOperatorNode*>(node);
             llvm::Value* left = compileExpression(mathOp->operand1.get());
             llvm::Value* right = compileExpression(mathOp->operand2.get());
@@ -110,25 +110,25 @@ llvm::Value* LlvmGen::compileExpression(Node* node) {
                 default: return nullptr;
             }
         }
-        case NodeType::Compare: {
+        case AstNodeType::Compare: {
             auto* cmp = static_cast<CompareNode*>(node);
             llvm::Value* operand1 = compileExpression(cmp->operand1.get());
             llvm::Value* operand2 = compileExpression(cmp->operand2.get());
             return llvm.createCompare(cmp->compareType , operand1, operand2);
         }
-        case NodeType::VarDeclare: {
+        case AstNodeType::VarDeclare: {
             return compileVarDeclare(static_cast<VarDeclareNode*>(node));
         }
-        case NodeType::VarLoad: {
+        case AstNodeType::VarLoad: {
             return compileVarLoad(static_cast<VarLoadNode*>(node));
         }
-        case NodeType::VarMod: {
+        case AstNodeType::VarMod: {
             return compileVarMod(static_cast<VarModNode*>(node));
         }
-        case NodeType::FuncLoad: {
+        case AstNodeType::FuncLoad: {
             return compileFuncLoad(static_cast<FuncLoadNode*>(node));
         }
-        case NodeType::While: {
+        case AstNodeType::While: {
             return compileWhile(static_cast<WhileNode*>(node));
         }
         default:
@@ -260,15 +260,15 @@ llvm::Value * LlvmGen::compileWhile(WhileNode *node) { // todo: return in while 
 void LlvmGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool isLibrary, bool emitAsm, std::string outputLocation) {
     if (!ast.root) { std::cout << "no AST found" << std::endl; return; }
 
-    if (ast.root->type == NodeType::Root) {
+    if (ast.root->type == AstNodeType::Root) {
         auto node = static_cast<RootNode*>(ast.root.get());
 
         // first pass
         for (const auto& statement : node->body) {
-            if (statement->type == NodeType::Func) {
+            if (statement->type == AstNodeType::Func) {
                 declareFunction(static_cast<FuncNode*>(statement.get()));
             }
-            else if (statement->type == NodeType::ExternFunc) {
+            else if (statement->type == AstNodeType::ExternFunc) {
                 compileExternFunction(static_cast<ExternFuncNode*>(statement.get()));
             }
         }

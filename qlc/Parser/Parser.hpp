@@ -22,27 +22,27 @@ public:
 
     void parse(); // main parse
 
-    std::vector<std::unique_ptr<Node>> parseBlock(bool stopAtBrace);
+    std::vector<std::unique_ptr<AstNode>> parseBlock(bool stopAtBrace);
 
     // helper parse for each type of statement.;
-    std::unique_ptr<Node> parseFn();
-    std::unique_ptr<Node> parseExternFn();
-    std::unique_ptr<Node> parseEntry();
-    std::unique_ptr<Node> parseRet();
-    std::unique_ptr<Node> parseIf();
-    std::unique_ptr<Node> parseWhile();
-    std::unique_ptr<Node> parseVarDeclare();
-    std::unique_ptr<Node> parseLoad();
-    std::unique_ptr<Node> parseVarMod();
-    std::unique_ptr<Node> parseIntLiteral();
-    std::unique_ptr<Node> parseFloatLiteral();
-    std::unique_ptr<Node> parseBoolLiteral();
-    std::unique_ptr<Node> parseCharLiteral();
+    std::unique_ptr<AstNode> parseFn();
+    std::unique_ptr<AstNode> parseExternFn();
+    std::unique_ptr<AstNode> parseEntry();
+    std::unique_ptr<AstNode> parseRet();
+    std::unique_ptr<AstNode> parseIf();
+    std::unique_ptr<AstNode> parseWhile();
+    std::unique_ptr<AstNode> parseVarDeclare();
+    std::unique_ptr<AstNode> parseLoad();
+    std::unique_ptr<AstNode> parseVarMod();
+    std::unique_ptr<AstNode> parseIntLiteral();
+    std::unique_ptr<AstNode> parseFloatLiteral();
+    std::unique_ptr<AstNode> parseBoolLiteral();
+    std::unique_ptr<AstNode> parseCharLiteral();
 
-    std::unique_ptr<Node> parsePrimary();
+    std::unique_ptr<AstNode> parsePrimary();
 
-    std::unique_ptr<Node> parseMultiplicative();
+    std::unique_ptr<AstNode> parseMultiplicative();
 
-    std::unique_ptr<Node> parseComparison();
-    std::unique_ptr<Node> parseExpresion();
+    std::unique_ptr<AstNode> parseComparison();
+    std::unique_ptr<AstNode> parseExpresion();
 };

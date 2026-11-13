@@ -123,46 +123,46 @@ void Parser::parse() {
     ast.root = std::move(rootNode);
 }
 
-std::vector<std::unique_ptr<Node>> Parser::parseBlock(bool stopAtBrace) {
-    std::vector<std::unique_ptr<Node>> block;
+std::vector<std::unique_ptr<AstNode>> Parser::parseBlock(bool stopAtBrace) {
+    std::vector<std::unique_ptr<AstNode>> block;
 
     while (!(expect(TokenType::ClosedBrace) && stopAtBrace) && currentToken.type != TokenType::EndOfFile) {
         //std::cout << "parseBlock loop: " << tokenTypeToString(currentToken.type) << " '" << currentToken.data << "'\n";
         if (currentToken.type == TokenType::Return) {
-            std::unique_ptr<Node> retNode = parseRet();
+            std::unique_ptr<AstNode> retNode = parseRet();
             block.push_back(std::move(retNode));
         }
         else if (currentToken.type == TokenType::Let) {
-            std::unique_ptr<Node> varNode = parseVarDeclare();
+            std::unique_ptr<AstNode> varNode = parseVarDeclare();
             block.push_back(std::move(varNode));
         }
         else if (currentToken.type == TokenType::If) {
-            std::unique_ptr<Node> newIfNode = parseIf();
+            std::unique_ptr<AstNode> newIfNode = parseIf();
             block.push_back(std::move(newIfNode));
         }
         else if (currentToken.type == TokenType::Identifier) {
-            std::unique_ptr<Node> varNode = parseLoad();
+            std::unique_ptr<AstNode> varNode = parseLoad();
             if (!varNode) return {}; // propagate the parse error
-            if (varNode->type == NodeType::FuncLoad) {
+            if (varNode->type == AstNodeType::FuncLoad) {
                 if (!expectAndConsume(TokenType::Semicolon, true)) return {};
             }
             block.push_back(std::move(varNode));
         }
         else if (currentToken.type == TokenType::While) {
-            std::unique_ptr<Node> whileNode = parseWhile();
+            std::unique_ptr<AstNode> whileNode = parseWhile();
             block.push_back(std::move(whileNode));
         }
         else if (currentToken.type == TokenType::Fn) {
-            std::unique_ptr<Node> fnNode = parseFn();
+            std::unique_ptr<AstNode> fnNode = parseFn();
             block.push_back(std::move(fnNode));
         }
         else if  (currentToken.type == TokenType::Extern) {
-            std::unique_ptr<Node> externNode = parseExternFn();
+            std::unique_ptr<AstNode> externNode = parseExternFn();
             block.push_back(std::move(externNode));
         }
         else if (currentToken.type == TokenType::Entry) {
             //std::cout << "entering fn in entry\n";
-            std::unique_ptr<Node> entryNode = parseEntry();
+            std::unique_ptr<AstNode> entryNode = parseEntry();
             block.push_back(std::move(entryNode));
         }
         // Todo: other statements
@@ -174,7 +174,7 @@ std::vector<std::unique_ptr<Node>> Parser::parseBlock(bool stopAtBrace) {
     return block;
 }
 
-std::unique_ptr<Node> Parser::parseFn() {
+std::unique_ptr<AstNode> Parser::parseFn() {
     if (!expectAndConsume(TokenType::Fn, true)) return nullptr; // move past fn
     auto funcNode = std::make_unique<FuncNode>();
 
@@ -227,7 +227,7 @@ std::unique_ptr<Node> Parser::parseFn() {
     return funcNode;
 }
 
-std::unique_ptr<Node> Parser::parseExternFn() {
+std::unique_ptr<AstNode> Parser::parseExternFn() {
     if (!expectAndConsume(TokenType::Extern, true)) return nullptr; // move past extern
     if (!expectAndConsume(TokenType::Fn, true)) return nullptr; // move past fn
     auto funcNode = std::make_unique<ExternFuncNode>();
@@ -280,7 +280,7 @@ std::unique_ptr<Node> Parser::parseExternFn() {
     return funcNode;
 }
 
-std::unique_ptr<Node> Parser::parseEntry() {
+std::unique_ptr<AstNode> Parser::parseEntry() {
     //std::cout << "start of entry\n";
     if (!expectAndConsume(TokenType::Entry, true)) return nullptr;
 
@@ -314,7 +314,7 @@ std::unique_ptr<Node> Parser::parseEntry() {
     return funcNode;
 }
 
-std::unique_ptr<Node> Parser::parseRet() {
+std::unique_ptr<AstNode> Parser::parseRet() {
     if (!expectAndConsume(TokenType::Return, true)) return nullptr;
 
     auto retNode = std::make_unique<ReturnNode>();
@@ -335,7 +335,7 @@ std::unique_ptr<Node> Parser::parseRet() {
     return retNode;
 }
 
-std::unique_ptr<Node> Parser::parseIf() {
+std::unique_ptr<AstNode> Parser::parseIf() {
     if (!expectAndConsume(TokenType::If, true)) return nullptr;
     auto ifNode = std::make_unique<IfNode>();
 
@@ -357,7 +357,7 @@ std::unique_ptr<Node> Parser::parseIf() {
     return ifNode;
 }
 
-std::unique_ptr<Node> Parser::parseWhile() {
+std::unique_ptr<AstNode> Parser::parseWhile() {
     //std::cout << "entered while\n";
     if (!expectAndConsume(TokenType::While, true)) return nullptr;
     auto whileNode = std::make_unique<WhileNode>();
@@ -373,7 +373,7 @@ std::unique_ptr<Node> Parser::parseWhile() {
     return whileNode;
 }
 
-std::unique_ptr<Node> Parser::parseVarDeclare() {
+std::unique_ptr<AstNode> Parser::parseVarDeclare() {
     if (!expectAndConsume(TokenType::Let, true)) return nullptr;
 
     bool isMutable = false;
@@ -406,7 +406,7 @@ std::unique_ptr<Node> Parser::parseVarDeclare() {
     return varNode;
 }
 
-std::unique_ptr<Node> Parser::parseLoad() {
+std::unique_ptr<AstNode> Parser::parseLoad() {
     if (expect(TokenType::Identifier)) {
         std::string identifier = currentToken.data;
         advance(); // after the identifier
@@ -456,7 +456,7 @@ std::unique_ptr<Node> Parser::parseLoad() {
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::parseVarMod() { // NOT IN USE !!!
+std::unique_ptr<AstNode> Parser::parseVarMod() { // NOT IN USE !!!
     if (!expect(TokenType::Identifier))  {
         Log::error("Unexpected token '"+ currentToken.data + "'", currentToken.line, currentToken.column, currentToken.source);
         return nullptr;
@@ -475,7 +475,7 @@ std::unique_ptr<Node> Parser::parseVarMod() { // NOT IN USE !!!
     return varNode;
 }
 
-std::unique_ptr<Node> Parser::parseIntLiteral() {
+std::unique_ptr<AstNode> Parser::parseIntLiteral() {
     if (expect(TokenType::IntLiteral)) {
         auto intNode = std::make_unique<IntLiteralNode>();
         intNode->value = std::atoi(currentToken.data.data());
@@ -510,7 +510,7 @@ std::unique_ptr<Node> Parser::parseIntLiteral() {
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::parseFloatLiteral() { //todo: f32/f64 handling
+std::unique_ptr<AstNode> Parser::parseFloatLiteral() { //todo: f32/f64 handling
     if (expect(TokenType::FloatLiteral)) {
         auto floatNode = std::make_unique<FloatLiteralNode>();
         floatNode->value = std::atof(currentToken.data.data());
@@ -523,7 +523,7 @@ std::unique_ptr<Node> Parser::parseFloatLiteral() { //todo: f32/f64 handling
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::parseBoolLiteral() {
+std::unique_ptr<AstNode> Parser::parseBoolLiteral() {
     if (expect(TokenType::BoolLiteral)) {
         auto boolNode = std::make_unique<BoolLiteralNode>();
         if (currentToken.data == "true") boolNode->value = true;
@@ -541,7 +541,7 @@ std::unique_ptr<Node> Parser::parseBoolLiteral() {
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::parseCharLiteral() {
+std::unique_ptr<AstNode> Parser::parseCharLiteral() {
     if (expect(TokenType::CharLiteral)) {
         auto boolNode = std::make_unique<CharLiteralNode>();
         boolNode->value = currentToken.data[0]; // todo: escape sequence parsing
@@ -554,7 +554,7 @@ std::unique_ptr<Node> Parser::parseCharLiteral() {
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::parsePrimary() {
+std::unique_ptr<AstNode> Parser::parsePrimary() {
     if (expect(TokenType::IntLiteral))   return parseIntLiteral();
     if (expect(TokenType::FloatLiteral)) return parseFloatLiteral();
     if (expect(TokenType::BoolLiteral))  return parseBoolLiteral();
@@ -564,7 +564,7 @@ std::unique_ptr<Node> Parser::parsePrimary() {
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::parseMultiplicative() {
+std::unique_ptr<AstNode> Parser::parseMultiplicative() {
     auto left = parsePrimary();
     while (expect(TokenType::Star) || expect(TokenType::Slash)) {
         TokenType op = currentToken.type;
@@ -579,7 +579,7 @@ std::unique_ptr<Node> Parser::parseMultiplicative() {
     return left;
 }
 
-std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floats
+std::unique_ptr<AstNode> Parser::parseComparison() { // todo: comparisons with floats
     if (expect(TokenType::BoolLiteral)) {
         auto boolNode = parseBoolLiteral();
         return boolNode;
@@ -593,14 +593,14 @@ std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floa
     auto compareNode = std::make_unique<CompareNode>();
 
     if (expect(TokenType::IntLiteral)) {
-        std::unique_ptr<Node> operand1 = parseExpresion();
+        std::unique_ptr<AstNode> operand1 = parseExpresion();
         compareNode->operand1 = std::move(operand1);
     }
     else if (expect(TokenType::CharLiteral)) {
         compareNode->operand1 = parseCharLiteral();
     }
     else if (expect(TokenType::Identifier)) {
-        std::unique_ptr<Node> operand1 = parseExpresion();
+        std::unique_ptr<AstNode> operand1 = parseExpresion();
         compareNode->operand1 = std::move(operand1);
     }
     else {
@@ -621,12 +621,12 @@ std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floa
     advance();
 
     if (expect(TokenType::IntLiteral) || expect(TokenType::CharLiteral)) {
-        std::unique_ptr<Node> operand2 = parseExpresion();
+        std::unique_ptr<AstNode> operand2 = parseExpresion();
         compareNode->operand2 = std::move(operand2);
         return compareNode;
     }
     if (expect(TokenType::Identifier)) {
-        std::unique_ptr<Node> operand2 = parseExpresion();
+        std::unique_ptr<AstNode> operand2 = parseExpresion();
         compareNode->operand2 = std::move(operand2);
         return compareNode;
     }
@@ -634,7 +634,7 @@ std::unique_ptr<Node> Parser::parseComparison() { // todo: comparisons with floa
     return nullptr;
 }
 
-std::unique_ptr<Node> Parser::parseExpresion() {
+std::unique_ptr<AstNode> Parser::parseExpresion() {
     auto left = parseMultiplicative();
     while (expect(TokenType::Plus) || expect(TokenType::Dash)) {
         TokenType op = currentToken.type;

@@ -48,7 +48,7 @@ add_executable(RunQ-Lang qlc/main.cpp
         qlc/Checker/Logger.hpp
         qlc/MidIr/Asl.cpp
         qlc/MidIr/Asl.hpp
-        qlc/MidIr/AslNode.h
+        qlc/MidIr/AslNode.hpp
 )
 
 find_library(LLVM_SHARED_LIB LLVM HINTS ${LLVM_LIBRARY_DIRS})

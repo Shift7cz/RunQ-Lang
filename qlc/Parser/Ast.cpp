@@ -46,14 +46,14 @@ std::string Ast::typeToString(Type type) {
     }
 }
 
-void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
+void Ast::printNode(AstNode* node, int indent) { // helper print function, {ai/2}
     if (!node) return;
 
     // Create indentation string (2 spaces per level)
     std::string spaces(indent * 2, ' ');
 
     switch (node->type) {
-        case NodeType::Root: {
+        case AstNodeType::Root: {
             std::cout << spaces << "[Root] \n";
             auto root = static_cast<RootNode*>(node);
 
@@ -62,7 +62,7 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             }
             break;
         }
-        case NodeType::Func: {
+        case AstNodeType::Func: {
             // 1. Cast to FuncNode to access unique features (.identifier and .body)
             auto func = static_cast<FuncNode*>(node);
             std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> '" << typeToString(func->returnType) << "'\n";
@@ -81,7 +81,7 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             }
             break;
         }
-        case NodeType::ExternFunc: {
+        case AstNodeType::ExternFunc: {
                         // 1. Cast to FuncNode to access unique features (.identifier and .body)
             auto func = static_cast<ExternFuncNode*>(node);
             std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> '" << typeToString(func->returnType) << "'\n";
@@ -94,14 +94,14 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             //indent -= 1;
             break;
         }
-        case NodeType::Return: {
+        case AstNodeType::Return: {
             auto ret = static_cast<ReturnNode*>(node);
             std::cout << spaces << "[Return Statement] \n";
 
             printNode(ret->body.get(), indent + 1);
             break;
         }
-        case NodeType::If: {
+        case AstNodeType::If: {
             auto ifNode = static_cast<IfNode*>(node);
             std::cout << spaces << "[[IF STATEMENT]] [Condition] \n";
 
@@ -121,7 +121,7 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             }
             break;
         }
-        case NodeType::While: {
+        case AstNodeType::While: {
             auto whileNode = static_cast<WhileNode*>(node);
             std::cout << spaces << "[[While]] [Condition] \n";
 
@@ -133,19 +133,19 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
             }
             break;
         }
-        case NodeType::VarDeclare: {
+        case AstNodeType::VarDeclare: {
             auto var = static_cast<VarDeclareNode*>(node);
             std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> '" << typeToString(var->valueType) << "'; [Mutable] -> '" << var -> isMutable << "'\n";
 
             printNode(var->body.get(), indent + 1);
             break;
         }
-        case NodeType::VarLoad: {
+        case AstNodeType::VarLoad: {
             auto var = static_cast<VarLoadNode*>(node);
             std::cout << spaces << "[VarLoad] -> Name: '" << var->identifier << "'\n";
             break;
         }
-        case NodeType::FuncLoad: {
+        case AstNodeType::FuncLoad: {
             auto var = static_cast<FuncLoadNode*>(node);
             std::cout << spaces << "[FuncLoad] -> Name: '" << var->identifier << "' Args: \n";
 
@@ -155,34 +155,34 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
 
             break;
         }
-        case NodeType::VarMod: {
+        case AstNodeType::VarMod: {
             auto var = static_cast<VarModNode*>(node);
             std::cout << spaces << "[VarMod] -> Name: '" << var->identifier << "'\n";
 
             printNode(var->body.get(), indent + 1);
             break;
         }
-        case NodeType::IntLiteral: {
+        case AstNodeType::IntLiteral: {
             auto intl = static_cast<IntLiteralNode*>(node);
             std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'; [Type] -> '" << typeToString(intl->type) << "'\n";
             break;
         }
-        case NodeType::FloatLiteral: { // todo: multiple float types
+        case AstNodeType::FloatLiteral: { // todo: multiple float types
             auto floatl = static_cast<FloatLiteralNode*>(node);
             std::cout << spaces << "[FloatLiteral] -> value: '" << floatl->value << "'\n";
             break;
         }
-        case NodeType::BoolLiteral: {
+        case AstNodeType::BoolLiteral: {
             auto booll = static_cast<BoolLiteralNode*>(node);
             std::cout << spaces << "[BoolLiteral] -> value: '" << booll->value << "'\n";
             break;
         }
-        case NodeType::CharLiteral: {
+        case AstNodeType::CharLiteral: {
             auto charl = static_cast<CharLiteralNode*>(node);
             std::cout << spaces << "[CharLiteral] -> value: '" << charl->value << "'\n";
             break;
         }
-        case NodeType::MathOperator: {
+        case AstNodeType::MathOperator: {
             auto op = static_cast<MathOperatorNode*>(node);
             std::string_view optype;
             switch (op->operatorType) {
@@ -206,7 +206,7 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
 
             break;
         }
-        case NodeType::Compare: {
+        case AstNodeType::Compare: {
             auto comp = static_cast<CompareNode*>(node);
             std::string_view compType;
             switch (comp->compareType) {

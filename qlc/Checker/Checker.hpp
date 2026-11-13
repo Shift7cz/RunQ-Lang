@@ -15,7 +15,7 @@ public:
     void addExternFnEntry(ExternFuncNode * node);
 
     void validateCall(FuncLoadNode * node);
-    void visit(Node * node);
+    void visit(AstNode * node);
 
     void check(Ast& ast);
 };

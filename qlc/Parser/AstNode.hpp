@@ -5,7 +5,7 @@
 #include "../Lexer/Token.hpp"
 #include "../Type/Type.hpp"
 
-enum class NodeType {
+enum class AstNodeType {
     Unassigned,
 
     Root, // the main node under which the AST lives
@@ -27,25 +27,25 @@ enum class NodeType {
     Compare,
 };
 
-class Node {
+class AstNode {
 public:
-    NodeType type;
+    AstNodeType type;
 
-    Node(NodeType t) : type(t) {}
+    AstNode(AstNodeType t) : type(t) {}
 
-    virtual ~Node() = default;
+    virtual ~AstNode() = default;
 };
 
-class RootNode : public Node {
+class RootNode : public AstNode {
 public:
-    std::vector<std::unique_ptr<Node>> body;
+    std::vector<std::unique_ptr<AstNode>> body;
 
-    RootNode() : Node(NodeType::Root) {}
+    RootNode() : AstNode(AstNodeType::Root) {}
 };
 
-class UnassignedNode : public Node { // used for declaring before assignment.
+class UnassignedNode : public AstNode { // used for declaring before assignment.
 public:
-    UnassignedNode() : Node(NodeType::Unassigned) {}
+    UnassignedNode() : AstNode(AstNodeType::Unassigned) {}
 };
 
 struct Argument {
@@ -53,122 +53,122 @@ struct Argument {
     Type type;
 };
 
-class FuncNode : public Node {
+class FuncNode : public AstNode {
 public:
     std::string identifier;
     std::vector<Argument> args;
     Type returnType;
-    std::vector<std::unique_ptr<Node>> body;
+    std::vector<std::unique_ptr<AstNode>> body;
 
-    FuncNode() : Node(NodeType::Func) {}
+    FuncNode() : AstNode(AstNodeType::Func) {}
 };
 
-class ExternFuncNode : public Node {
+class ExternFuncNode : public AstNode {
 public:
     std::string identifier;
     std::vector<Argument> args;
     Type returnType; // only section types allowed
 
-    ExternFuncNode() : Node(NodeType::ExternFunc) {}
+    ExternFuncNode() : AstNode(AstNodeType::ExternFunc) {}
 };
 
-class ReturnNode : public Node {
+class ReturnNode : public AstNode {
 public:
-    std::unique_ptr<Node> body;
-    ReturnNode() : Node(NodeType::Return) {}
+    std::unique_ptr<AstNode> body;
+    ReturnNode() : AstNode(AstNodeType::Return) {}
 };
 
-class IfNode : public Node {
+class IfNode : public AstNode {
 public:
-    std::unique_ptr<Node> condition;
+    std::unique_ptr<AstNode> condition;
 
-    std::vector<std::unique_ptr<Node>> ifBody;
-    std::vector<std::unique_ptr<Node>> elseBody;
+    std::vector<std::unique_ptr<AstNode>> ifBody;
+    std::vector<std::unique_ptr<AstNode>> elseBody;
 
-    IfNode() : Node(NodeType::If) {}
+    IfNode() : AstNode(AstNodeType::If) {}
 };
 
-class WhileNode : public Node {
+class WhileNode : public AstNode {
 public:
-    std::unique_ptr<Node> condition;
+    std::unique_ptr<AstNode> condition;
 
-    std::vector<std::unique_ptr<Node>> body;
+    std::vector<std::unique_ptr<AstNode>> body;
 
-    WhileNode() : Node(NodeType::While) {}
+    WhileNode() : AstNode(AstNodeType::While) {}
 };
 
-class VarDeclareNode : public Node {
+class VarDeclareNode : public AstNode {
 public:
-    std::unique_ptr<Node> body;
+    std::unique_ptr<AstNode> body;
     std::string identifier;
     bool isMutable;
     Type valueType; // the type of the variable, only types allowed
 
-    VarDeclareNode() : Node(NodeType::VarDeclare) {}
+    VarDeclareNode() : AstNode(AstNodeType::VarDeclare) {}
 };
 
-class VarLoadNode : public Node {
+class VarLoadNode : public AstNode {
 public:
     std::string identifier;
 
-    VarLoadNode() : Node(NodeType::VarLoad) {}
+    VarLoadNode() : AstNode(AstNodeType::VarLoad) {}
 };
 
-class FuncLoadNode : public Node {
+class FuncLoadNode : public AstNode {
 public:
     std::string identifier;
-    std::vector<std::unique_ptr<Node>> args;
+    std::vector<std::unique_ptr<AstNode>> args;
 
-    FuncLoadNode() : Node(NodeType::FuncLoad) {}
+    FuncLoadNode() : AstNode(AstNodeType::FuncLoad) {}
 };
 
-class VarModNode : public Node {
+class VarModNode : public AstNode {
 public:
     std::string identifier;
-    std::unique_ptr<Node> body;
+    std::unique_ptr<AstNode> body;
 
-    VarModNode() : Node(NodeType::VarMod) {}
+    VarModNode() : AstNode(AstNodeType::VarMod) {}
 };
 
-class IntLiteralNode : public Node {
+class IntLiteralNode : public AstNode {
 public:
     int value;
     Type type;
-    IntLiteralNode() : Node(NodeType::IntLiteral) {}
+    IntLiteralNode() : AstNode(AstNodeType::IntLiteral) {}
 };
 
-class FloatLiteralNode : public Node { // todo: add typing when f32 is a thing as in int
+class FloatLiteralNode : public AstNode { // todo: add typing when f32 is a thing as in int
 public:
     double value;
-    FloatLiteralNode() : Node(NodeType::FloatLiteral) {}
+    FloatLiteralNode() : AstNode(AstNodeType::FloatLiteral) {}
 };
 
-class BoolLiteralNode : public Node {
+class BoolLiteralNode : public AstNode {
 public:
     bool value;
-    BoolLiteralNode() : Node(NodeType::BoolLiteral) {}
+    BoolLiteralNode() : AstNode(AstNodeType::BoolLiteral) {}
 };
 
-class CharLiteralNode : public Node {
+class CharLiteralNode : public AstNode {
 public:
     char value;
-    CharLiteralNode() : Node(NodeType::CharLiteral) {}
+    CharLiteralNode() : AstNode(AstNodeType::CharLiteral) {}
 };
 
-class MathOperatorNode : public Node {
+class MathOperatorNode : public AstNode {
 public:
     TokenType operatorType; // only section math operators are allowed!
-    std::unique_ptr<Node> operand1;
-    std::unique_ptr<Node> operand2;
+    std::unique_ptr<AstNode> operand1;
+    std::unique_ptr<AstNode> operand2;
 
-    MathOperatorNode() : Node(NodeType::MathOperator) {}
+    MathOperatorNode() : AstNode(AstNodeType::MathOperator) {}
 };
 
-class CompareNode : public Node {
+class CompareNode : public AstNode {
 public:
     TokenType compareType; // only section compressions allowed
-    std::unique_ptr<Node> operand1;
-    std::unique_ptr<Node> operand2;
+    std::unique_ptr<AstNode> operand1;
+    std::unique_ptr<AstNode> operand2;
 
-    CompareNode() : Node(NodeType::Compare) {}
+    CompareNode() : AstNode(AstNodeType::Compare) {}
 };
