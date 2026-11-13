@@ -6,7 +6,7 @@
 #include "../Project/Project.hpp"
 #include "LlvmWrap.hpp"
 
-class CodeGen {
+class LlvmGen {
 private:
     struct VarEntry {
         bool isMutable;
@@ -35,6 +35,6 @@ public:
     std::vector<std::string> cList;
     std::vector<std::string> libList;
 
-    CodeGen();
+    LlvmGen();
     void compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool isLibrary, bool emitAsm, std::string outputLocation);
 };

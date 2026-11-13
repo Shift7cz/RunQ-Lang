@@ -14,7 +14,7 @@
 #include <string>
 
 #include "../Lexer/Token.hpp"
-#include "../Parser/Node.hpp"
+#include "../Parser/AstNode.hpp"
 
 class LlvmWrap {
 private:

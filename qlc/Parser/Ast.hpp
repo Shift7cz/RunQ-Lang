@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Node.hpp"
+#include "AstNode.hpp"
 
 class Ast {
 public:

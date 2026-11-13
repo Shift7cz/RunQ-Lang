@@ -34,18 +34,21 @@ add_executable(RunQ-Lang qlc/main.cpp
         qlc/Parser/Parser.hpp
         qlc/Checker/Checker.cpp
         qlc/Checker/Checker.hpp
-        qlc/Codegen/CodeGen.cpp
-        qlc/Codegen/CodeGen.hpp
+        qlc/LlvmGen/LlvmGen.cpp
+        qlc/LlvmGen/LlvmGen.hpp
         qlc/Lexer/Token.hpp
-        qlc/Parser/Node.hpp
+        qlc/Parser/AstNode.hpp
         qlc/Parser/Ast.hpp
         qlc/Parser/Ast.cpp
-        qlc/Codegen/LlvmWrap.cpp
-        qlc/Codegen/LlvmWrap.hpp
+        qlc/LlvmGen/LlvmWrap.cpp
+        qlc/LlvmGen/LlvmWrap.hpp
         qlc/Project/Project.cpp
         qlc/Project/Project.hpp
         qlc/Checker/Logger.cpp
         qlc/Checker/Logger.hpp
+        qlc/MidIr/Asl.cpp
+        qlc/MidIr/Asl.hpp
+        qlc/MidIr/AslNode.h
 )
 
 find_library(LLVM_SHARED_LIB LLVM HINTS ${LLVM_LIBRARY_DIRS})

@@ -11,7 +11,7 @@
 #include <llvm/IR/LegacyPassManager.h>
 
 #include "../Lexer/Token.hpp"
-#include "../Parser/Node.hpp"
+#include "../Parser/AstNode.hpp"
 
 LlvmWrap::LlvmWrap(const std::string& moduleName) { // initilises llvm
     context = std::make_unique<llvm::LLVMContext>();

@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Lexer/Lexer.hpp"
 #include "Parser/Parser.hpp"
-#include "Codegen/CodeGen.hpp"
+#include "LlvmGen/LlvmGen.hpp"
 #include "Project/Project.hpp"
 #include <filesystem>
 #include <fstream>
@@ -94,10 +94,10 @@ void compile(std::string path, std::string projectFile) {
 
     if (devMode) std::cout << "\n\nLLVM out -> \n" << std::endl;
 
-    CodeGen codegen;
-    codegen.cList = prj.cList;
-    codegen.libList = prj.libList;
-    codegen.compile(asts[0], !dontCompile, devMode, isLibrary, emitAsm, prj.outputLocation);
+    LlvmGen llvmGen;
+    llvmGen.cList = prj.cList;
+    llvmGen.libList = prj.libList;
+    llvmGen.compile(asts[0], !dontCompile, devMode, isLibrary, emitAsm, prj.outputLocation);
 }
 
 int main() {

@@ -1,17 +1,17 @@
-#include "CodeGen.hpp"
+#include "LlvmGen.hpp"
 #include <iostream>
 #include <ranges>
 #include <string>
 
-CodeGen::CodeGen() : llvm("RunQ-Lang_Test") {
+LlvmGen::LlvmGen() : llvm("RunQ-Lang_Test") {
 }
 
-void CodeGen::declareFunction(FuncNode *node) {
+void LlvmGen::declareFunction(FuncNode *node) {
     //std::cout << "entering switch" << std::endl;
     currentFunction = llvm.createFunc(std::string(node->identifier), llvm.createType(node->returnType), llvm.argsToLlvmTypes(node->args));
 }
 
-llvm::Value* CodeGen::compileFunction(FuncNode* node) {
+llvm::Value* LlvmGen::compileFunction(FuncNode* node) {
     //std::cout << "entering compilefunc" << std::endl;
     symbolTable.clear(); // new function scope
 
@@ -47,7 +47,7 @@ llvm::Value* CodeGen::compileFunction(FuncNode* node) {
     return currentFunction;
 }
 
-llvm::Value * CodeGen::compileExternFunction(ExternFuncNode *node) {
+llvm::Value * LlvmGen::compileExternFunction(ExternFuncNode *node) {
     symbolTable.clear(); // new function scope
 
     //std::cout << "entering switch" << std::endl;
@@ -65,7 +65,7 @@ llvm::Value * CodeGen::compileExternFunction(ExternFuncNode *node) {
     return currentFunction;
 }
 
-llvm::Value* CodeGen::compileExpression(Node* node) {
+llvm::Value* LlvmGen::compileExpression(Node* node) {
     if (!node) return nullptr;
 
     switch (node->type) {
@@ -138,13 +138,13 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
     return nullptr;
 }
 
-llvm::Value* CodeGen::compileReturn(ReturnNode* node) { // todo: return statement typing
+llvm::Value* LlvmGen::compileReturn(ReturnNode* node) { // todo: return statement typing
     if (!node->body) return llvm.createReturn(nullptr); // when return is void
     llvm::Value* val = compileExpression(node->body.get());
     return llvm.createReturn(val);
 }
 
-llvm::Value* CodeGen::compileVarDeclare(VarDeclareNode* node) {
+llvm::Value* LlvmGen::compileVarDeclare(VarDeclareNode* node) {
     if (!node->isMutable) {
         // immutable - SSA value, no alloca needed
         llvm::Value* val = compileExpression(node->body.get());
@@ -166,7 +166,7 @@ llvm::Value* CodeGen::compileVarDeclare(VarDeclareNode* node) {
     return llvm.createStore(val, pointer);
 }
 
-llvm::Value * CodeGen::compileVarLoad(VarLoadNode *node) {
+llvm::Value * LlvmGen::compileVarLoad(VarLoadNode *node) {
     auto& entry = symbolTable[std::string(node->identifier)];
     if (entry.isMutable) {
         return llvm.createLoad(entry.type, entry.value); // value is pointer
@@ -174,13 +174,13 @@ llvm::Value * CodeGen::compileVarLoad(VarLoadNode *node) {
     return entry.value; // value is direct SSA value
 }
 
-llvm::Value * CodeGen::compileVarMod(VarModNode *node) {
+llvm::Value * LlvmGen::compileVarMod(VarModNode *node) {
     auto& entry = symbolTable[std::string(node->identifier)];
     llvm::Value* val = compileExpression(node->body.get());
     return llvm.createStore(val, entry.value); // entry.value is the pointer
 }
 
-llvm::Value * CodeGen::compileFuncLoad(FuncLoadNode *node) {
+llvm::Value * LlvmGen::compileFuncLoad(FuncLoadNode *node) {
     //std::cout << "entering compilefuncload" << std::endl;
     llvm::Function* fn = llvm.getFunction(std::string(node->identifier));
     if (!fn) {
@@ -197,7 +197,7 @@ llvm::Value * CodeGen::compileFuncLoad(FuncLoadNode *node) {
     return llvm.createFuncCall(std::string(node->identifier), args);
 }
 
-llvm::Value* CodeGen::compileIf(IfNode* node) {
+llvm::Value* LlvmGen::compileIf(IfNode* node) {
     llvm::Value* condition = compileExpression(node->condition.get());
     bool doesElseExist = !node->elseBody.empty();
 
@@ -236,7 +236,7 @@ llvm::Value* CodeGen::compileIf(IfNode* node) {
     return nullptr;
 }
 
-llvm::Value * CodeGen::compileWhile(WhileNode *node) { // todo: return in while not handled
+llvm::Value * LlvmGen::compileWhile(WhileNode *node) { // todo: return in while not handled
     llvm::BasicBlock* conditionBlock = llvm.createBlockNoInsert("whileCondition", currentFunction);
     llvm::BasicBlock* bodyBlock = llvm.createBlockNoInsert("whileBody", currentFunction);
     llvm::BasicBlock* mergeBlock = llvm.createBlockNoInsert("whileMerge", currentFunction);
@@ -257,7 +257,7 @@ llvm::Value * CodeGen::compileWhile(WhileNode *node) { // todo: return in while 
     return nullptr;
 }
 
-void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool isLibrary, bool emitAsm, std::string outputLocation) {
+void LlvmGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool isLibrary, bool emitAsm, std::string outputLocation) {
     if (!ast.root) { std::cout << "no AST found" << std::endl; return; }
 
     if (ast.root->type == NodeType::Root) {
