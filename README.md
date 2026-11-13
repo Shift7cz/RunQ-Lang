@@ -1,4 +1,5 @@
 # RunQ-Lang
+v0.2.0
 
 RunQ-Lang is an experimental, Turing complete, statically-typed programming language, inspired by C++ and Rust. The project is written in C++ and translates directly to LLVM IR which compiles it down to any assembly supported by LLVM, and an executable file.
 
@@ -83,8 +84,8 @@ entry main() { // code starts here
 
 | Potential future features (not garanteed) | Planned features  | Currently in development | Already implemented |
 | --------- | --------- | --------- | --------- |
-| Bootstrapping | Autmomatic typing in some situations based on context | Types overhoul (internal) | Basic math functions |
-| Package manager (using GitHub) | Loops (for, loop all rust style) | Mid-level IR | Variables loading and declaring |
+| Bootstrapping | Autmomatic typing in some situations based on context | Mid-level IR | Basic math functions |
+| Package manager (using GitHub) | Loops (for, loop all rust style) |  | Variables loading and declaring |
 | Multi Threading | Strings, arrays, vectors |  | Return statement |
 | Rust FFI | OOP (C++ style) |  |  i32, i8, f64, bool and char data types |
 | C++ FFI | LLVM Compiler optimilastions |  | Compileation to assembly and executible using LLVM |
@@ -101,6 +102,7 @@ entry main() { // code starts here
 |  |  |  | Library import |
 |  |  |  | Basic Checker  |
 |  |  |  | Basic stdlib |
+|  |  |  | variable bit length (annoted as i<n> or u<n>) zig style |
 
 ---
 
