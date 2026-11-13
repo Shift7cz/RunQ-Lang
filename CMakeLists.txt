@@ -50,6 +50,8 @@ add_executable(RunQ-Lang qlc/main.cpp
         qlc/MidIr/Asl.hpp
         qlc/MidIr/AslNode.hpp
         qlc/MidIr/AslNode.hpp
+        qlc/MidIr/MidIrGen.cpp
+        qlc/MidIr/MidIrGen.hpp
 )
 
 find_library(LLVM_SHARED_LIB LLVM HINTS ${LLVM_LIBRARY_DIRS})
