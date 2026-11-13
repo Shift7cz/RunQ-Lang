@@ -1,11 +1,11 @@
 #include "Checker.hpp"
 #include "Logger.hpp"
 
-void Checker::addFnEntry(FuncNode * node) {
+void Checker::addFnEntry(FuncAstNode * node) {
     signatures[node->identifier] = FnEntry(node->args.size());
 }
 
-void Checker::addExternFnEntry(ExternFuncNode *node) {
+void Checker::addExternFnEntry(ExternFuncAstNode *node) {
     signatures[node->identifier] = FnEntry(node->args.size());
 }
 
@@ -26,12 +26,12 @@ void Checker::visit(AstNode* node) {
 
     switch (node->type) {
         case AstNodeType::Func: {
-            auto f = static_cast<FuncNode*>(node);
+            auto f = static_cast<FuncAstNode*>(node);
             for (auto& stmt : f->body) visit(stmt.get());
             break;
         }
         case AstNodeType::Return: {
-            auto r = static_cast<ReturnNode*>(node);
+            auto r = static_cast<ReturnAstNode*>(node);
             visit(r->body.get());
             break;
         }
@@ -86,8 +86,8 @@ void Checker::check(Ast& ast) {
         auto node = static_cast<RootNode*>(ast.root.get());
 
         for (const auto& statement : node->body) { // pass one
-            if (statement->type == AstNodeType::Func) addFnEntry(static_cast<FuncNode*>(statement.get()));
-            else if (statement->type == AstNodeType::ExternFunc) addExternFnEntry(static_cast<ExternFuncNode*>(statement.get()));
+            if (statement->type == AstNodeType::Func) addFnEntry(static_cast<FuncAstNode*>(statement.get()));
+            else if (statement->type == AstNodeType::ExternFunc) addExternFnEntry(static_cast<ExternFuncAstNode*>(statement.get()));
         }
 
         for (const auto& statement : node->body) { // pass one

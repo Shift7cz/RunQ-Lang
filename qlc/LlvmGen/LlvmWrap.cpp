@@ -30,7 +30,7 @@ llvm::Type* LlvmWrap::createType(const Type& t) {
     }
 }
 
-std::vector<llvm::Type*> LlvmWrap::argsToLlvmTypes(const std::vector<Argument>& args) {
+std::vector<llvm::Type*> LlvmWrap::argsToLlvmTypes(const std::vector<AstArgument>& args) {
     std::vector<llvm::Type*> types;
     for (const auto& arg : args) {
         types.push_back(createType(arg.type));

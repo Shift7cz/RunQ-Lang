@@ -43,39 +43,39 @@ public:
     RootNode() : AstNode(AstNodeType::Root) {}
 };
 
-class UnassignedNode : public AstNode { // used for declaring before assignment.
+class UnassignedAstNode : public AstNode { // used for declaring before assignment.
 public:
-    UnassignedNode() : AstNode(AstNodeType::Unassigned) {}
+    UnassignedAstNode() : AstNode(AstNodeType::Unassigned) {}
 };
 
-struct Argument {
+struct AstArgument {
     std::string identifier;
     Type type;
 };
 
-class FuncNode : public AstNode {
+class FuncAstNode : public AstNode {
 public:
     std::string identifier;
-    std::vector<Argument> args;
+    std::vector<AstArgument> args;
     Type returnType;
     std::vector<std::unique_ptr<AstNode>> body;
 
-    FuncNode() : AstNode(AstNodeType::Func) {}
+    FuncAstNode() : AstNode(AstNodeType::Func) {}
 };
 
-class ExternFuncNode : public AstNode {
+class ExternFuncAstNode : public AstNode {
 public:
     std::string identifier;
-    std::vector<Argument> args;
+    std::vector<AstArgument> args;
     Type returnType; // only section types allowed
 
-    ExternFuncNode() : AstNode(AstNodeType::ExternFunc) {}
+    ExternFuncAstNode() : AstNode(AstNodeType::ExternFunc) {}
 };
 
-class ReturnNode : public AstNode {
+class ReturnAstNode : public AstNode {
 public:
     std::unique_ptr<AstNode> body;
-    ReturnNode() : AstNode(AstNodeType::Return) {}
+    ReturnAstNode() : AstNode(AstNodeType::Return) {}
 };
 
 class IfNode : public AstNode {
@@ -130,7 +130,7 @@ public:
     VarModNode() : AstNode(AstNodeType::VarMod) {}
 };
 
-class IntLiteralNode : public AstNode {
+class IntLiteralNode : public AstNode { // todo: same error as with numbers in AslNode.hpp
 public:
     int value;
     Type type;

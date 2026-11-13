@@ -176,7 +176,7 @@ std::vector<std::unique_ptr<AstNode>> Parser::parseBlock(bool stopAtBrace) {
 
 std::unique_ptr<AstNode> Parser::parseFn() {
     if (!expectAndConsume(TokenType::Fn, true)) return nullptr; // move past fn
-    auto funcNode = std::make_unique<FuncNode>();
+    auto funcNode = std::make_unique<FuncAstNode>();
 
     if (!expect(TokenType::Identifier)) return nullptr;
     std::string identifier = currentToken.data;
@@ -185,7 +185,7 @@ std::unique_ptr<AstNode> Parser::parseFn() {
     if (!expectAndConsume(TokenType::OpenParen, true)) return nullptr;
 
     while (!expect(TokenType::ClosedParen)) { //args
-        Argument argument;
+        AstArgument argument;
 
         //std::cout << "1" << currentToken.data << "\n";
         argument.type = getType();
@@ -230,7 +230,7 @@ std::unique_ptr<AstNode> Parser::parseFn() {
 std::unique_ptr<AstNode> Parser::parseExternFn() {
     if (!expectAndConsume(TokenType::Extern, true)) return nullptr; // move past extern
     if (!expectAndConsume(TokenType::Fn, true)) return nullptr; // move past fn
-    auto funcNode = std::make_unique<ExternFuncNode>();
+    auto funcNode = std::make_unique<ExternFuncAstNode>();
 
     if (!expect(TokenType::Identifier)) return nullptr;
     std::string identifier = currentToken.data;
@@ -239,7 +239,7 @@ std::unique_ptr<AstNode> Parser::parseExternFn() {
     if (!expectAndConsume(TokenType::OpenParen, true)) return nullptr;
 
     while (!expect(TokenType::ClosedParen)) { //args
-        Argument argument;
+        AstArgument argument;
 
         //std::cout << "1" << currentToken.data << "\n";
         argument.type = getType();
@@ -302,7 +302,7 @@ std::unique_ptr<AstNode> Parser::parseEntry() {
 
     if (!expectAndConsume(TokenType::OpenBrace, true)) return nullptr;
 
-    auto funcNode = std::make_unique<FuncNode>();
+    auto funcNode = std::make_unique<FuncAstNode>();
     funcNode->identifier = identifier;
     funcNode->returnType = retType;
     funcNode->body = parseBlock(true);
@@ -317,7 +317,7 @@ std::unique_ptr<AstNode> Parser::parseEntry() {
 std::unique_ptr<AstNode> Parser::parseRet() {
     if (!expectAndConsume(TokenType::Return, true)) return nullptr;
 
-    auto retNode = std::make_unique<ReturnNode>();
+    auto retNode = std::make_unique<ReturnAstNode>();
 
     if (expectAndConsume(TokenType::Semicolon, false)) { // skips making body if its just return;
         retNode->body = nullptr;

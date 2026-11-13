@@ -19,11 +19,11 @@ private:
     LlvmWrap llvm;
     llvm::Function* currentFunction = nullptr;
 
-    void declareFunction(FuncNode* node);
-    llvm::Value* compileFunction(FuncNode* node);
-    llvm::Value* compileExternFunction(ExternFuncNode* node);
+    void declareFunction(FuncAstNode* node);
+    llvm::Value* compileFunction(FuncAstNode* node);
+    llvm::Value* compileExternFunction(ExternFuncAstNode* node);
     llvm::Value* compileExpression(AstNode* node);
-    llvm::Value* compileReturn(ReturnNode* node);
+    llvm::Value* compileReturn(ReturnAstNode* node);
     llvm::Value* compileVarDeclare(VarDeclareNode* node);
     llvm::Value* compileVarLoad(VarLoadNode* node);
     llvm::Value* compileVarMod(VarModNode* node);

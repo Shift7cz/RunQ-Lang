@@ -6,12 +6,12 @@
 LlvmGen::LlvmGen() : llvm("RunQ-Lang_Test") {
 }
 
-void LlvmGen::declareFunction(FuncNode *node) {
+void LlvmGen::declareFunction(FuncAstNode *node) {
     //std::cout << "entering switch" << std::endl;
     currentFunction = llvm.createFunc(std::string(node->identifier), llvm.createType(node->returnType), llvm.argsToLlvmTypes(node->args));
 }
 
-llvm::Value* LlvmGen::compileFunction(FuncNode* node) {
+llvm::Value* LlvmGen::compileFunction(FuncAstNode* node) {
     //std::cout << "entering compilefunc" << std::endl;
     symbolTable.clear(); // new function scope
 
@@ -47,7 +47,7 @@ llvm::Value* LlvmGen::compileFunction(FuncNode* node) {
     return currentFunction;
 }
 
-llvm::Value * LlvmGen::compileExternFunction(ExternFuncNode *node) {
+llvm::Value * LlvmGen::compileExternFunction(ExternFuncAstNode *node) {
     symbolTable.clear(); // new function scope
 
     //std::cout << "entering switch" << std::endl;
@@ -70,7 +70,7 @@ llvm::Value* LlvmGen::compileExpression(AstNode* node) {
 
     switch (node->type) {
         case AstNodeType::Func: {
-            return compileFunction(static_cast<FuncNode*>(node));
+            return compileFunction(static_cast<FuncAstNode*>(node));
         }
         // case NodeType::ExternFunc: {
         //     return compileExternFunction(static_cast<ExternFuncNode*>(node));
@@ -79,7 +79,7 @@ llvm::Value* LlvmGen::compileExpression(AstNode* node) {
             return compileIf(static_cast<IfNode*>(node));
         }
         case AstNodeType::Return: {
-            return compileReturn(static_cast<ReturnNode*>(node));
+            return compileReturn(static_cast<ReturnAstNode*>(node));
         }
         case AstNodeType::IntLiteral: {
             auto* literal = static_cast<IntLiteralNode*>(node);
@@ -138,7 +138,7 @@ llvm::Value* LlvmGen::compileExpression(AstNode* node) {
     return nullptr;
 }
 
-llvm::Value* LlvmGen::compileReturn(ReturnNode* node) { // todo: return statement typing
+llvm::Value* LlvmGen::compileReturn(ReturnAstNode* node) { // todo: return statement typing
     if (!node->body) return llvm.createReturn(nullptr); // when return is void
     llvm::Value* val = compileExpression(node->body.get());
     return llvm.createReturn(val);
@@ -266,10 +266,10 @@ void LlvmGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool i
         // first pass
         for (const auto& statement : node->body) {
             if (statement->type == AstNodeType::Func) {
-                declareFunction(static_cast<FuncNode*>(statement.get()));
+                declareFunction(static_cast<FuncAstNode*>(statement.get()));
             }
             else if (statement->type == AstNodeType::ExternFunc) {
-                compileExternFunction(static_cast<ExternFuncNode*>(statement.get()));
+                compileExternFunction(static_cast<ExternFuncAstNode*>(statement.get()));
             }
         }
 

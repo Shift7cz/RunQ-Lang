@@ -11,8 +11,8 @@ public:
 
     std::map<std::string, FnEntry> signatures;
 
-    void addFnEntry(FuncNode * node);
-    void addExternFnEntry(ExternFuncNode * node);
+    void addFnEntry(FuncAstNode * node);
+    void addExternFnEntry(ExternFuncAstNode * node);
 
     void validateCall(FuncLoadNode * node);
     void visit(AstNode * node);

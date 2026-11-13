@@ -64,7 +64,7 @@ void Ast::printNode(AstNode* node, int indent) { // helper print function, {ai/2
         }
         case AstNodeType::Func: {
             // 1. Cast to FuncNode to access unique features (.identifier and .body)
-            auto func = static_cast<FuncNode*>(node);
+            auto func = static_cast<FuncAstNode*>(node);
             std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> '" << typeToString(func->returnType) << "'\n";
 
             std::cout << spaces << "[[Function]][Args]" << std::endl;
@@ -83,7 +83,7 @@ void Ast::printNode(AstNode* node, int indent) { // helper print function, {ai/2
         }
         case AstNodeType::ExternFunc: {
                         // 1. Cast to FuncNode to access unique features (.identifier and .body)
-            auto func = static_cast<ExternFuncNode*>(node);
+            auto func = static_cast<ExternFuncAstNode*>(node);
             std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> '" << typeToString(func->returnType) << "'\n";
 
             std::cout << spaces << "[[Extrn Function]][Args]" << std::endl;
@@ -95,7 +95,7 @@ void Ast::printNode(AstNode* node, int indent) { // helper print function, {ai/2
             break;
         }
         case AstNodeType::Return: {
-            auto ret = static_cast<ReturnNode*>(node);
+            auto ret = static_cast<ReturnAstNode*>(node);
             std::cout << spaces << "[Return Statement] \n";
 
             printNode(ret->body.get(), indent + 1);

@@ -28,7 +28,7 @@ public:
     // types
     llvm::Type* createType(const Type& t);
 
-    std::vector<llvm::Type*> argsToLlvmTypes(const std::vector<Argument>& args);
+    std::vector<llvm::Type*> argsToLlvmTypes(const std::vector<AstArgument>& args);
 
     // structure
     llvm::Function* createFunc(const std::string& name, llvm::Type* retType, const std::vector<llvm::Type*>& paramTypes);
