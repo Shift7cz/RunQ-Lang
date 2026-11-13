@@ -1,7 +1,6 @@
 [Flags]
 > IsLibrary
 > EmitAsm
-> DevMode
 
 [RunQ]
 > term.runq
@@ -13,4 +12,4 @@
 [Library]
 
 [Output]
-> ../example/lib/stdlib
+> ../testProject/lib/stdlib

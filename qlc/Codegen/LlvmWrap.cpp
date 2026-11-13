@@ -19,32 +19,21 @@ LlvmWrap::LlvmWrap(const std::string& moduleName) { // initilises llvm
     builder = std::make_unique<llvm::IRBuilder<>>(*context);
 }
 
-llvm::Type* LlvmWrap::i32Type() {
-    return llvm::Type::getInt32Ty(*context);
-}
-
-llvm::Type * LlvmWrap::i8Type() {
-    return llvm::Type::getInt8Ty(*context);
-}
-
-llvm::Type * LlvmWrap::f64Type() {
-    return llvm::Type::getDoubleTy(*context);
-}
-
-llvm::Type * LlvmWrap::boolType() {
-    return llvm::Type::getInt1Ty(*context);
+llvm::Type* LlvmWrap::createType(const Type& t) {
+    switch (t.kind) {
+        case Int_:  return llvm::Type::getIntNTy(*context, t.bitSize); // any width, free
+        case Float_: return t.bitSize== 64 ? llvm::Type::getDoubleTy(*context) : llvm::Type::getFloatTy(*context);
+        case Bool_: return llvm::Type::getInt1Ty(*context);
+        case Char_: return llvm::Type::getInt8Ty(*context);
+        case Void_: return llvm::Type::getVoidTy(*context);
+        default: return nullptr;
+    }
 }
 
 std::vector<llvm::Type*> LlvmWrap::argsToLlvmTypes(const std::vector<Argument>& args) {
     std::vector<llvm::Type*> types;
     for (const auto& arg : args) {
-        switch (arg.type) {
-            case TokenType::I32:  types.push_back(i32Type()); break;
-            case TokenType::F64:  types.push_back(f64Type()); break;
-            case TokenType::I8:  types.push_back(i8Type()); break;
-            case TokenType::Char:  types.push_back(i8Type()); break;
-            case TokenType::Bool:  types.push_back(boolType()); break;
-        }
+        types.push_back(createType(arg.type));
     }
     return types;
 }
@@ -73,6 +62,7 @@ void LlvmWrap::setInsertPoint(llvm::BasicBlock* block) {
 }
 
 llvm::Value* LlvmWrap::createReturn(llvm::Value* value) {
+    if (!value) return builder->CreateRetVoid(); // handles plain return; in void functions
     return builder->CreateRet(value);
 }
 

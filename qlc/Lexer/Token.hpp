@@ -2,7 +2,7 @@
 #include <string_view>
 #include <iomanip>
 
-enum class TokenType {
+enum TokenType {
     Identifier, // eg "main" or "myVariable"
 
     // keyword
@@ -22,11 +22,13 @@ enum class TokenType {
     CharLiteral,
 
     // Types
-    I32,
-    I8,
+    SignedInt, // i<n>
+    UnsignedInt, // u<n>
     F64,
+    F32,
     Bool,
     Char,
+    Void,
 
     // math operators
     Plus, // '+'
@@ -82,8 +84,8 @@ inline std::string_view tokenTypeToString(TokenType type) { // helper, {ai/2}
         case TokenType::FloatLiteral: return "FloatLiteral";
         case TokenType::BoolLiteral: return "BoolLiteral";
         case TokenType::CharLiteral: return "CharLiteral";
-        case TokenType::I32:         return "I32";
-        case TokenType::I8:          return "I8";
+        case TokenType::SignedInt:   return "Int";
+        case TokenType::UnsignedInt: return "UInt";
         case TokenType::F64:         return "F64";
         case TokenType::Bool:        return "Bool";
         case TokenType::Char:        return "Char";

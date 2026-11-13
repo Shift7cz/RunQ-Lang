@@ -20,6 +20,32 @@ void Ast::add(Ast &otherAst) {
     }
 }
 
+std::string Ast::typeToString(Type type) {
+    std::string str;
+    if (type.kind == Int_) {
+        if (type.isSigned) {
+            str = "i";
+        }
+        else {
+            str = "u";
+        }
+
+        str += std::to_string(type.bitSize);
+        return str;
+    }
+    if (type.kind == Float_) {
+        str = "f";
+        str += std::to_string(type.bitSize);
+        return str;
+    }
+    switch (type.kind) {
+        case Bool_: return "bool";
+        case Char_: return "char";
+        case Void_: return "void";
+        default: return "ERROR in Ast";
+    }
+}
+
 void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
     if (!node) return;
 
@@ -39,50 +65,12 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
         case NodeType::Func: {
             // 1. Cast to FuncNode to access unique features (.identifier and .body)
             auto func = static_cast<FuncNode*>(node);
-            switch (func->returnType) {
-                case TokenType::I32:
-                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'i32'\n";
-                    break;
-                case TokenType::I8:
-                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'i8'\n";
-                    break;
-                case TokenType::F64:
-                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'f64'\n";
-                    break;
-                case TokenType::Bool:
-                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'bool'\n";
-                    break;
-                case TokenType::Char:
-                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'char'\n";
-                    break;
-                default:
-                    std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'ERROR in Ast'\n";
-                    break;
-            }
+            std::cout << spaces << "[[Function]] -> name: '" << func->identifier << "'; [Return Type] -> '" << typeToString(func->returnType) << "'\n";
 
             std::cout << spaces << "[[Function]][Args]" << std::endl;
             //indent += 1;
             for (const auto& child : func->args) {
-                switch (child.type) {
-                    case TokenType::I32:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'i32'" << std::endl;
-                        break;
-                    case TokenType::I8:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'i8'" << std::endl;
-                        break;
-                    case TokenType::F64:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'f64'" << std::endl;
-                        break;
-                    case TokenType::Bool:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'bool'" << std::endl;
-                        break;
-                    case TokenType::Char:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'char'" << std::endl;
-                        break;
-                    default:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'ERROR in Ast'" << std::endl;
-                        break;
-                }
+                std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'" << typeToString(child.type) << "'" << std::endl;
             }
             //indent -= 1;
 
@@ -96,50 +84,12 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
         case NodeType::ExternFunc: {
                         // 1. Cast to FuncNode to access unique features (.identifier and .body)
             auto func = static_cast<ExternFuncNode*>(node);
-            switch (func->returnType) {
-                case TokenType::I32:
-                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'i32'\n";
-                    break;
-                case TokenType::I8:
-                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'i8'\n";
-                    break;
-                case TokenType::F64:
-                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'f64'\n";
-                    break;
-                case TokenType::Bool:
-                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'bool'\n";
-                    break;
-                case TokenType::Char:
-                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'char'\n";
-                    break;
-                default:
-                    std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> 'ERROR in Ast'\n";
-                    break;
-            }
+            std::cout << spaces << "[[Extern Function]] -> name: '" << func->identifier << "'; [Return Type] -> '" << typeToString(func->returnType) << "'\n";
 
             std::cout << spaces << "[[Extrn Function]][Args]" << std::endl;
             //indent += 1;
             for (const auto& child : func->args) {
-                switch (child.type) {
-                    case TokenType::I32:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'i32'" << std::endl;
-                        break;
-                    case TokenType::I8:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'i8'" << std::endl;
-                        break;
-                    case TokenType::F64:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'f64'" << std::endl;
-                        break;
-                    case TokenType::Bool:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'bool'" << std::endl;
-                        break;
-                    case TokenType::Char:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'char'" << std::endl;
-                        break;
-                    default:
-                        std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'ERROR in Ast'" << std::endl;
-                        break;
-                }
+                std::cout << spaces << "[Argument] -> name: '" << child.identifier << "'; Type ->'" << typeToString(child.type) << "'" << std::endl;
             }
             //indent -= 1;
             break;
@@ -185,27 +135,7 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
         }
         case NodeType::VarDeclare: {
             auto var = static_cast<VarDeclareNode*>(node);
-            switch (var->valueType) {
-                case TokenType::I32:
-                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'i32'; [Mutable] -> '" << var -> isMutable << "'\n";
-                    break;
-                case TokenType::I8:
-                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'i8'; [Mutable] -> '" << var -> isMutable << "'\n";
-                    break;
-                case TokenType::F64:
-                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'f64'; [Mutable] -> '" << var -> isMutable << "'\n";
-                    break;
-                case TokenType::Bool:
-                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'bool'; [Mutable] -> '" << var -> isMutable << "'\n";
-                    break;
-                case TokenType::Char:
-                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'char'; [Mutable] -> '" << var -> isMutable << "'\n";
-                    break;
-                    // todo: Other return types printing here
-                default:
-                    std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> 'ERROR in Ast'\n";
-                    break;
-            }
+            std::cout << spaces << "[VarDeclare] -> name: '" << var->identifier << "'; [Type] -> '" << typeToString(var->valueType) << "'; [Mutable] -> '" << var -> isMutable << "'\n";
 
             printNode(var->body.get(), indent + 1);
             break;
@@ -234,19 +164,10 @@ void Ast::printNode(Node* node, int indent) { // helper print function, {ai/2}
         }
         case NodeType::IntLiteral: {
             auto intl = static_cast<IntLiteralNode*>(node);
-            switch (intl->type) {
-                case TokenType::I32:
-                    std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'; [Type] -> 'i32'\n";
-                    break;
-                case TokenType::I8:
-                    std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'; [Type] -> 'i8'\n";
-                    break;
-                default:
-                    std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'; [Type] -> 'ERROR in Ast'\n";
-            }
+            std::cout << spaces << "[IntLiteral] -> value: '" << intl->value << "'; [Type] -> '" << typeToString(intl->type) << "'\n";
             break;
         }
-        case NodeType::FloatLiteral: {
+        case NodeType::FloatLiteral: { // todo: multiple float types
             auto floatl = static_cast<FloatLiteralNode*>(node);
             std::cout << spaces << "[FloatLiteral] -> value: '" << floatl->value << "'\n";
             break;

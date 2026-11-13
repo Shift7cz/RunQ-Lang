@@ -104,10 +104,10 @@ int main() {
     std::cout << "Hello, RunQ!" << std::endl;
 
     std::string path = "../stdlib/RunQ-Stdlib.qlc";
-    compile(path, std::filesystem::path(path).filename().string());
+    //compile(path, std::filesystem::path(path).filename().string());
+    path = "../libExample/Library-Example.qlc";
+    //compile(path, std::filesystem::path(path).filename().string());
     path = "../example/RunQ-Project.qlc";
-    //std::string path = "../libExample/Library-Example.qlc";
-    //std::string path = "../stdlib/RunQ-Stdlib.qlc";
     compile(path, std::filesystem::path(path).filename().string());  // todo: changeable
 
     return 0;

@@ -95,7 +95,7 @@ entry main() { // code starts here
 |  | Full Checker |  | Comments|
 |  | Rust style borow-checker |  | While loop |
 |  | Compiler wont recompile unchanged files |  | Multi functional code with arguments and function calling |
-|  |  |  | C FFI | 
+|  | Platform sepcific fetures (eg: size_t equivalent or char being signed/unsigned on different devices) |  | C FFI | 
 |  |  |  | Proper project structure (multiple files, proper bin folder) |
 |  |  |  | Two pass codegen (functions can be in whatever order) |
 |  |  |  | Proper error handeling and logging |

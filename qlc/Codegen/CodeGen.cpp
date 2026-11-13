@@ -8,26 +8,7 @@ CodeGen::CodeGen() : llvm("RunQ-Lang_Test") {
 
 void CodeGen::declareFunction(FuncNode *node) {
     //std::cout << "entering switch" << std::endl;
-    switch (node->returnType) {
-        case TokenType::I32:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i32Type(), llvm.argsToLlvmTypes(node->args));
-            break;
-        case TokenType::I8:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i8Type(), llvm.argsToLlvmTypes(node->args));
-            break;
-        case TokenType::F64:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.f64Type(), llvm.argsToLlvmTypes(node->args));
-            break;
-        case TokenType::Bool:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.boolType(), llvm.argsToLlvmTypes(node->args));
-            break;
-        case TokenType::Char:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i8Type(), llvm.argsToLlvmTypes(node->args));
-            break;
-        default:
-            // todo: error handling
-            break;
-    }
+    currentFunction = llvm.createFunc(std::string(node->identifier), llvm.createType(node->returnType), llvm.argsToLlvmTypes(node->args));
 }
 
 llvm::Value* CodeGen::compileFunction(FuncNode* node) {
@@ -57,6 +38,11 @@ llvm::Value* CodeGen::compileFunction(FuncNode* node) {
     for (const auto& statement : node->body) {
         compileExpression(statement.get());
     }
+
+    if (node->returnType.kind == Void_ && !llvm.currentBlockHasTerminator()) { // creates return in void function if there isnt one
+        llvm.createReturn(nullptr);
+    }
+
     //std::cout << "finished compilefunc" << std::endl;
     return currentFunction;
 }
@@ -65,26 +51,7 @@ llvm::Value * CodeGen::compileExternFunction(ExternFuncNode *node) {
     symbolTable.clear(); // new function scope
 
     //std::cout << "entering switch" << std::endl;
-    switch (node->returnType) {
-        case TokenType::I32:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i32Type(), llvm.argsToLlvmTypes(node->args));
-            break;
-        case TokenType::I8:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i8Type(), llvm.argsToLlvmTypes(node->args));
-            break;
-        case TokenType::F64:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.f64Type(), llvm.argsToLlvmTypes(node->args));
-            break;
-        case TokenType::Bool:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.boolType(), llvm.argsToLlvmTypes(node->args));
-            break;
-        case TokenType::Char:
-            currentFunction = llvm.createFunc(std::string(node->identifier), llvm.i8Type(), llvm.argsToLlvmTypes(node->args));
-            break;
-        default:
-            // todo: error handling
-            return nullptr;
-    }
+    currentFunction = llvm.createFunc(std::string(node->identifier), llvm.createType(node->returnType), llvm.argsToLlvmTypes(node->args));
 
     size_t index = 0;
     for (auto& arg : currentFunction->args()) {
@@ -105,9 +72,9 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
         case NodeType::Func: {
             return compileFunction(static_cast<FuncNode*>(node));
         }
-        case NodeType::ExternFunc: {
-            return compileExternFunction(static_cast<ExternFuncNode*>(node));
-        }
+        // case NodeType::ExternFunc: {
+        //     return compileExternFunction(static_cast<ExternFuncNode*>(node));
+        // }
         case NodeType::If: {
             return compileIf(static_cast<IfNode*>(node));
         }
@@ -116,19 +83,11 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
         }
         case NodeType::IntLiteral: {
             auto* literal = static_cast<IntLiteralNode*>(node);
-            switch (literal->type) {
-                case TokenType::I32:
-                    return llvm.createIntLiteral(literal->value, 32);
-                case TokenType::I8:
-                    return llvm.createIntLiteral(literal->value, 8);
-                default:
-                    //std::cout << "Unknown var type in Codegen" << std::endl;
-                    return nullptr;
-            }
+            return llvm.createIntLiteral(literal->value, literal->type.bitSize, literal->type.isSigned);
         }
         case NodeType::FloatLiteral: {
             auto* literal = static_cast<FloatLiteralNode*>(node);
-            return llvm.createF64Literal(literal->value); // todo: handling of f32 and potentially f128 later same as in ints
+            return llvm.createF64Literal(literal->value); // todo: handling of other sized floats
         }
         case NodeType::BoolLiteral: {
             auto* literal = static_cast<BoolLiteralNode*>(node);
@@ -136,7 +95,7 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
         }
         case NodeType::CharLiteral: {
             auto* literal = static_cast<CharLiteralNode*>(node);
-            return llvm.createIntLiteral(literal->value, 8);
+            return llvm.createIntLiteral(literal->value, 8, true); // todo: char can be not signed
         }
         case NodeType::MathOperator: {
             auto* mathOp = static_cast<MathOperatorNode*>(node);
@@ -180,63 +139,30 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
 }
 
 llvm::Value* CodeGen::compileReturn(ReturnNode* node) { // todo: return statement typing
+    if (!node->body) return llvm.createReturn(nullptr); // when return is void
     llvm::Value* val = compileExpression(node->body.get());
     return llvm.createReturn(val);
-}
-
-llvm::Type* CodeGen::llvmTypeFromToken(TokenType type) {
-    switch (type) {
-        case TokenType::I32:  return llvm.i32Type();
-        case TokenType::I8:   return llvm.i8Type();
-        case TokenType::F64:  return llvm.f64Type();
-        case TokenType::Bool: return llvm.boolType();
-        case TokenType::Char: return llvm.i8Type();
-        default: return nullptr;
-    }
 }
 
 llvm::Value* CodeGen::compileVarDeclare(VarDeclareNode* node) {
     if (!node->isMutable) {
         // immutable - SSA value, no alloca needed
         llvm::Value* val = compileExpression(node->body.get());
-        llvm::Type* type = llvmTypeFromToken(node->valueType);
+        llvm::Type* type = llvm.createType(node->valueType);
         symbolTable[std::string(node->identifier)] = {false, val, type};
         return val;
     }
 
     // mutable - alloca/store/load
-    llvm::Value* pointer;
-    llvm::Type* type;
-    switch (node->valueType) {
-        case TokenType::I32:
-            pointer = llvm.createAlloca(std::string(node->identifier), llvm.i32Type());
-            type = llvm.i32Type();
-            break;
-        case TokenType::I8:
-            pointer = llvm.createAlloca(std::string(node->identifier), llvm.i8Type());
-            type = llvm.i8Type();
-            break;
-        case TokenType::F64:
-            pointer = llvm.createAlloca(std::string(node->identifier), llvm.f64Type());
-            type = llvm.f64Type();
-            break;
-        case TokenType::Bool:
-            pointer = llvm.createAlloca(std::string(node->identifier), llvm.boolType());
-            type = llvm.boolType();
-            break;
-        case TokenType::Char:
-            pointer = llvm.createAlloca(std::string(node->identifier), llvm.i8Type());
-            type = llvm.i8Type();
-            break;
-        default:
-            return nullptr;
-    }
+    llvm::Type* type = llvm.createType(node->valueType);
+    llvm::Value* pointer = llvm.createAlloca(std::string(node->identifier), type);
+
 
     symbolTable[std::string(node->identifier)] = {true, pointer, type};
     llvm::Value* val = compileExpression(node->body.get());
-    if (node->valueType == TokenType::I8 && val->getType() == llvm.i32Type()) {
-        val = llvm.createIntLiteral(static_cast<IntLiteralNode*>(node->body.get())->value, 8);
-    }
+    // if (node->valueType == TokenType::I8 && val->getType() == llvm.i32Type()) { obsolete??????
+    //     val = llvm.createIntLiteral(static_cast<IntLiteralNode*>(node->body.get())->value, 8);
+    // }
     return llvm.createStore(val, pointer);
 }
 
@@ -339,7 +265,12 @@ void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool i
 
         // first pass
         for (const auto& statement : node->body) {
-            declareFunction(static_cast<FuncNode*>(statement.get()));
+            if (statement->type == NodeType::Func) {
+                declareFunction(static_cast<FuncNode*>(statement.get()));
+            }
+            else if (statement->type == NodeType::ExternFunc) {
+                compileExternFunction(static_cast<ExternFuncNode*>(statement.get()));
+            }
         }
 
         // second pass

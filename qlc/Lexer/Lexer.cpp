@@ -106,7 +106,7 @@ Token Lexer::nextToken() {
             advance();
         }
 
-        std::string_view nextToken = code.substr(startPos, pos - startPos);
+        std::string nextToken = code.substr(startPos, pos - startPos);
 
         if (nextToken.contains('.')) {
             return Token{TokenType::FloatLiteral, std::string(nextToken), line, column, source};
@@ -121,14 +121,13 @@ Token Lexer::nextToken() {
             advance();
         }
 
-        std::string_view nextToken = code.substr(startPos, pos - startPos);
+        std::string nextToken = code.substr(startPos, pos - startPos);
 
         // todo: sort them based on use to be faster? and make it a switch?
         if (nextToken == "return") return Token{TokenType::Return, "return", line, column, source};
         if (nextToken == "fn") return Token{TokenType::Fn, "fn", line, column, source};
         if (nextToken == "let") return Token{TokenType::Let, "let", line, column, source};
-        if (nextToken == "i32") return Token{TokenType::I32, "i32", line, column, source};
-        if (nextToken == "i8") return Token{TokenType::I8, "i8", line, column, source};
+        if (nextToken == "f32") return Token{TokenType::F32, "f32", line, column, source};
         if (nextToken == "f64") return Token{TokenType::F64, "f64", line, column, source};
         if (nextToken == "bool") return Token{TokenType::Bool, "bool", line, column, source};
         if (nextToken == "char") return Token{TokenType::Char, "char", line, column, source};
@@ -137,11 +136,21 @@ Token Lexer::nextToken() {
         if (nextToken == "while") return Token{TokenType::While, "while", line, column, source};
         if (nextToken == "entry") return Token{TokenType::Entry, "entry", line, column, source};
         if (nextToken == "extern") return Token{TokenType::Extern, "extern", line, column, source};
+        if (nextToken == "void") return Token{TokenType::Void, "void", line, column, source};
 
-        if (nextToken == "true" || nextToken == "false") {
+        if (nextToken == "true" || nextToken == "false") { // bool
             return Token{TokenType::BoolLiteral, std::string(nextToken), line, column, source};
         }
-        if (nextToken[0] == '\'' && nextToken.back() == '\'') {
+
+        if (nextToken[0] == 'i' && isdigit(nextToken[1])) { // int
+            return Token{TokenType::SignedInt, std::string(nextToken.substr(1, nextToken.length())), line, column, source};
+        }
+
+        if (nextToken[0] == 'u' && isdigit(nextToken[1])) { // uint
+            return  Token{TokenType::UnsignedInt, std::string(nextToken.substr(1, nextToken.length())), line, column, source};
+        }
+
+        if (nextToken[0] == '\'' && nextToken.back() == '\'') { // char
             std::string_view data;
             switch (nextToken.length()) {
                 case 3:
