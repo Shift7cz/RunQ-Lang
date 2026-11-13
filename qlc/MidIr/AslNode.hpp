@@ -10,7 +10,7 @@ enum AslNodeType {
     // functions
     Func,
     ExternFunc,
-    Return,
+    Ret,
 
     // control flow
     Marker,
