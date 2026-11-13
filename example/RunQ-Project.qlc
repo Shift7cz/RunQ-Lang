@@ -1,5 +1,6 @@
 [Flags]
 > EmitAsm
+> DevMode
 
 [RunQ]
 > main.runq

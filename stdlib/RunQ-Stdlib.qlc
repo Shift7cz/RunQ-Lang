@@ -1,7 +1,6 @@
 [Flags]
 > IsLibrary
 > EmitAsm
-> DevMode
 
 [RunQ]
 > term.runq

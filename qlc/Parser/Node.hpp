@@ -57,8 +57,8 @@ class FuncNode : public Node {
 public:
     std::string identifier;
     std::vector<Argument> args;
+    Type returnType;
     std::vector<std::unique_ptr<Node>> body;
-    Type returnType; // only section types allowed.
 
     FuncNode() : Node(NodeType::Func) {}
 };

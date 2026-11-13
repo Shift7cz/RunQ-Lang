@@ -1,3 +1,11 @@
 fn addOne(i32 value) : i32 {
     return value + 1;
 }
+
+fn maxVal(i32 a, i32 b) : i32 {
+    if a > b {
+        return a;
+    } else {
+        return b;
+    }
+}

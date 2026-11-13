@@ -1,36 +1,18 @@
-extern fn myCFunc(i32 num) : i32;
+// --- External C & Library declarations ---
 extern fn factorialC(i32 num) : i32;
-extern fn addOne(i32 num) : i32;
-extern fn putc(char c) : char;
-extern fn getc() : char;
-extern fn newLn() : char;
-extern fn castDigitToChar(i32 digit) : char;
-extern fn putI32(i32 num) : i32;
-extern fn getDigit() : i32;
-
-fn isPositive(i32 num) : bool {
-    return num > 0;
-}
-
-fn sayRunq() : i32 {
-    putc('R'); putc('u'); putc('n'); putc('Q'); newLn();
-
-    putc(castDigitToChar(6));
-    newLn();
-    putI32(12367);
-    newLn();
-    // putI32(getDigit()); this works as well
-    putc(getc());
-    newLn();
-
-    return 0;
-}
+extern fn addOne(i32 value) : i32;
 
 entry main() {
-    let i32 value1 = myCFunc(6);
-    let i32 value2 = addOne(factorialC(5));
+    let i32 cVal = factorialC(5);   // C interop: 120
+    let i32 libVal = addOne(cVal);  // Library call: 121
 
-    sayRunq();
+    let~ i24 custom = 400i24;       // Arbitrary signed integer (i24)
+    custom = custom + 20i24;        // Mutable variable: 420
 
-    return value1 + value2 + example();
+    let~ u5 small = 25u5;           // Arbitrary unsigned integer (u5)
+    small = small + 6u5;            // Max value: 31u5
+
+    showcase(libVal);
+
+    return 0;
 }

@@ -106,7 +106,7 @@ Token Lexer::nextToken() {
             advance();
         }
 
-        std::string_view nextToken = code.substr(startPos, pos - startPos);
+        std::string nextToken = code.substr(startPos, pos - startPos);
 
         if (nextToken.contains('.')) {
             return Token{TokenType::FloatLiteral, std::string(nextToken), line, column, source};
@@ -121,7 +121,7 @@ Token Lexer::nextToken() {
             advance();
         }
 
-        std::string_view nextToken = code.substr(startPos, pos - startPos);
+        std::string nextToken = code.substr(startPos, pos - startPos);
 
         // todo: sort them based on use to be faster? and make it a switch?
         if (nextToken == "return") return Token{TokenType::Return, "return", line, column, source};
