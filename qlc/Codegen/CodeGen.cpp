@@ -72,9 +72,9 @@ llvm::Value* CodeGen::compileExpression(Node* node) {
         case NodeType::Func: {
             return compileFunction(static_cast<FuncNode*>(node));
         }
-        case NodeType::ExternFunc: {
-            return compileExternFunction(static_cast<ExternFuncNode*>(node));
-        }
+        // case NodeType::ExternFunc: {
+        //     return compileExternFunction(static_cast<ExternFuncNode*>(node));
+        // }
         case NodeType::If: {
             return compileIf(static_cast<IfNode*>(node));
         }
@@ -265,7 +265,12 @@ void CodeGen::compile(Ast& ast, bool generateCompiledFiles, bool printIr, bool i
 
         // first pass
         for (const auto& statement : node->body) {
-            declareFunction(static_cast<FuncNode*>(statement.get()));
+            if (statement->type == NodeType::Func) {
+                declareFunction(static_cast<FuncNode*>(statement.get()));
+            }
+            else if (statement->type == NodeType::ExternFunc) {
+                compileExternFunction(static_cast<ExternFuncNode*>(statement.get()));
+            }
         }
 
         // second pass
